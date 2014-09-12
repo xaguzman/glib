@@ -1,0 +1,4 @@
+name: glib
+description: webgl
+dependencies:
+  vector_math: any
