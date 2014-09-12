@@ -51,7 +51,7 @@ class VertexBufferObject implements Disposable{
 
    void setVertices (Float32List vertices, int offset, int count) {
     isDirty = true;
-    _buffer.setRange(offset, offset + count - 1, vertices);
+    _buffer.setRange(offset, offset + count, vertices);
     if(offset + count > _limit)
       _limit = offset + count ;
     _bufferChanged();

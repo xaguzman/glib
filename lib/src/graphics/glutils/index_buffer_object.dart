@@ -45,7 +45,7 @@ class IndexBufferObject implements Disposable{
    * count the number of shorts to copy */
   void setIndices (Int16List indices, int offset, int count) {
     isDirty = true;
-    buffer.setRange(offset, offset + count - 1, indices);
+    buffer.setRange(offset, offset + count, indices);
     if(offset + count > _limit)
           _limit = offset + count ;
 

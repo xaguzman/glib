@@ -8,7 +8,8 @@ import 'dart:typed_data';
 GraphicsTest test;
 
 void main(){
-  test = new GraphicsTest(querySelector("#canvas")); 
+  CanvasElement canvas = querySelector("#canvas");
+  test = new GraphicsTest(canvas);
   window.animationFrame.then(update);
 }
 
@@ -27,7 +28,7 @@ class GraphicsTest extends Object with Graphics{
     initGraphics(canvas);
     
     batch = new SpriteBatch();
-    texture = new Texture.fromUrl("assets/bunny.png");
+    texture = new Texture.fromUrl("assets/head.png");
   }
   
   render(){
@@ -36,7 +37,10 @@ class GraphicsTest extends Object with Graphics{
     
     batch
         ..begin()
-        ..drawTexture(texture, 50.0, 50.0)
+        ..drawTexture(texture, 0.0, 0.0)
+        ..drawTexture(texture, 27.0, 38.0)
+        ..drawTexture(texture, 54.0, 76.0)
+        ..drawTexture(texture, 54 + 27.0, 76+38.0)
         ..end();
     
   }
