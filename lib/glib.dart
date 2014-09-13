@@ -23,3 +23,4 @@ abstract class Game extends Object with Graphics{
   update(num delta);
   
 }
+

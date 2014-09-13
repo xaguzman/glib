@@ -5,6 +5,7 @@ import 'dart:web_gl' as GL;
 export 'dart:web_gl';
 import 'dart:core';
 import 'dart:typed_data';
+import 'dart:math' as Math;
 
 import 'glib_math.dart';
 import 'glib_common.dart';
@@ -12,6 +13,7 @@ import 'glib_common.dart';
 part 'src/graphics/glutils/mesh.dart';
 part 'src/graphics/glutils/gl_texture.dart';
 part 'src/graphics/texture.dart';
+part 'src/graphics/texture_region.dart';
 part 'src/graphics/glutils/vertex_attribute.dart';
 part 'src/graphics/glutils/shader_program.dart';
 part 'src/graphics/glutils/vertex_buffer_object.dart';

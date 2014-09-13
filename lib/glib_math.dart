@@ -1,7 +1,9 @@
 library glib;
 
-import 'dart:math';
 import 'dart:typed_data';
+
+import 'dart:math';
+
 import 'package:vector_math/vector_math.dart' as VMath;
 export 'package:vector_math/vector_math.dart' hide Vector2, Vector3, Vector4, Matrix4;
 

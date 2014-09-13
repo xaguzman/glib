@@ -6,6 +6,8 @@ class Texture extends GLTexture {
   int get id => _id;
   int _id;
   
+  bool loaded = false;
+  
   Texture._internal(): super(GL.TEXTURE_2D);
 
   factory Texture.fromUrl(String url, [String name]) {
@@ -34,8 +36,13 @@ class Texture extends GLTexture {
       setWrap(uWrap, uWrap, force: true);
       _gl.bindTexture(glTarget, null);
       _textures[url] = this;
+      loaded = true;
+      _loadCompleter.complete(this);
     });
   }
+  
+  Completer<Texture> _loadCompleter = new Completer();
+  Future<Texture> get onLoad => _loadCompleter.future;
   
   void uploadData(int width, int height,{int level:0, int format:GL.RGBA, int type:GL.UNSIGNED_BYTE, bool genMipMaps:false, data:null}){
     if (width == null)

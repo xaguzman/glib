@@ -20,9 +20,11 @@ class SpriteBatch implements Disposable{
   
   double _color = Color.WHITE.toDouble();
   int _totalRenderCalls = 0;
+  int _textureSwaps, _batchRenderCalls;
   
   int _blendSrcFunc = GL.SRC_ALPHA;
   int _blendDstFunc = GL.ONE_MINUS_SRC_ALPHA;
+  
  
   
   /** 
@@ -78,7 +80,8 @@ class SpriteBatch implements Disposable{
   }
   
   void begin(){
-    if (_drawing) throw new StateError('Spritebatch.end() should be called before calling Spritebatch.begin() a second time');
+    if (_drawing) 
+      throw new StateError('Spritebatch.end() should be called before calling Spritebatch.begin() a second time');
     
     _gl.depthMask(false);
     
@@ -87,68 +90,89 @@ class SpriteBatch implements Disposable{
     _setupMatrices(currentShader);
     
     _drawing = true;
+    _textureSwaps = 0;
+    _batchRenderCalls = 0;
   }
   
   void end(){
-    if (!_drawing) throw new StateError("SpriteBatch.begin must be called before end.");
-      if (_currentVertex > 0) 
-        flush();
-      _prevTexture = null;
-      _drawing = false;
+    if (!_drawing) 
+      throw new StateError("SpriteBatch.begin must be called before end.");
+    
+    if (_currentVertex > 0) 
+      flush();
+    _prevTexture = null;
+    _drawing = false;
 
-      _gl.depthMask(true);
-      if (!isBlendingEnabled) 
-        _gl.disable(GL.BLEND);
+    _gl.depthMask(true);
+    if (!isBlendingEnabled) 
+      _gl.disable(GL.BLEND);
 
     var currentShader = _customShader == null ? _defaultShader: _customShader;
     currentShader.end();
+    
+//    _totalRenderCalls += _batchRenderCalls;
+    
+    print('Total Render calls: ${_totalRenderCalls} ');
+    print('Render calls: $_batchRenderCalls');
+    print('Texture swaps: $_textureSwaps');
   }
   
   
   void drawTexture(Texture texture, double x, double y, [double width, double height, double u1 = 0.0, double v1 = 1.0, double u2 = 1.0, double v2 = 0.0]) {
-      if (!_drawing) throw new StateError("SpriteBatch.begin must be called before drawTexture");
+    if (!_drawing) 
+      throw new StateError("SpriteBatch.begin must be called before drawTexture");
 
-      if (texture != _prevTexture)
-        _changeTexture(texture);
-      else if (_currentVertex == _vertices.length) //
-        flush();
+    if (texture != _prevTexture)
+      _changeTexture(texture);
+    else if (_currentVertex == _vertices.length) //
+      flush();
+    
+    if (width == null)
+      width = texture.width.toDouble();
+    if (height == null)
+      height = texture.height.toDouble();
+
+    final num x2 = x + width;
+    final num y2 = y + height;
+    
+    num color = _color;
+    _vertices[_currentVertex++] = x;
+    _vertices[_currentVertex++] = y;
+    _vertices[_currentVertex++] = color;
+    _vertices[_currentVertex++] = u1;
+    _vertices[_currentVertex++] = v1;
+
+    _vertices[_currentVertex++] = x;
+    _vertices[_currentVertex++] = y2;
+    _vertices[_currentVertex++] = color;
+    _vertices[_currentVertex++] = u1;
+    _vertices[_currentVertex++] = v2;
+
+    _vertices[_currentVertex++] = x2;
+    _vertices[_currentVertex++] = y2;
+    _vertices[_currentVertex++] = color;
+    _vertices[_currentVertex++] = u2;
+    _vertices[_currentVertex++] = v2;
+
+    _vertices[_currentVertex++] = x2;
+    _vertices[_currentVertex++] = y;
+    _vertices[_currentVertex++] = color;
+    _vertices[_currentVertex++] = u2;
+    _vertices[_currentVertex++] = v1;
+    
+    _batchRenderCalls++;
       
-      if (width == null)
-        width = texture.width.toDouble();
-      if (height == null)
-        height = texture.height.toDouble();
-
-      final num x2 = x + width;
-      final num y2 = y + height;
-      
-      num color = _color;
-      _vertices[_currentVertex++] = x;
-      _vertices[_currentVertex++] = y;
-      _vertices[_currentVertex++] = color;
-      _vertices[_currentVertex++] = u1;
-      _vertices[_currentVertex++] = v1;
-
-      _vertices[_currentVertex++] = x;
-      _vertices[_currentVertex++] = y2;
-      _vertices[_currentVertex++] = color;
-      _vertices[_currentVertex++] = u1;
-      _vertices[_currentVertex++] = v2;
-
-      _vertices[_currentVertex++] = x2;
-      _vertices[_currentVertex++] = y2;
-      _vertices[_currentVertex++] = color;
-      _vertices[_currentVertex++] = u2;
-      _vertices[_currentVertex++] = v2;
-
-      _vertices[_currentVertex++] = x2;
-      _vertices[_currentVertex++] = y;
-      _vertices[_currentVertex++] = color;
-      _vertices[_currentVertex++] = u2;
-      _vertices[_currentVertex++] = v1;
-      
-    }
+  }
   
-  
+  void drawRegion(TextureRegion region, double x, double y, [double width, double height]){
+    if(width == null)
+      width = region.regionWidth.toDouble();
+    
+    if(height == null)
+      height = region.regionHeight.toDouble();
+    
+    drawTexture(region.texture, x, y, width, height, region.u, region.v2, region.u2, region.v);
+  }
   
   void flush(){
     if (_currentVertex == 0) return;
@@ -178,6 +202,7 @@ class SpriteBatch implements Disposable{
     _prevTexture = texture;
     _invTexWidth = 1 / texture.width;
     _invTexHeight = 1 / texture.height;
+    _textureSwaps++;
   }
   
   void set shader(ShaderProgram newShader){
