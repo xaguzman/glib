@@ -1,6 +1,6 @@
 part of glib.graphics;
 
-class TextureLoader implements AssetLoader{
+class TextureLoader {//implements AssetLoader{
   Completer<ImageElement> _completer = new Completer();
   Future<ImageElement> get done => _completer.future;
 

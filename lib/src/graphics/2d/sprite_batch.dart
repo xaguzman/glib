@@ -174,6 +174,41 @@ class SpriteBatch implements Disposable{
     drawTexture(region.texture, x, y, width, height, region.u, region.v2, region.u2, region.v);
   }
   
+  void drawVertices(Texture texture, Float32List vertices, int offset, int count) {
+    if (!_drawing) 
+      throw new StateError("SpriteBatch.begin must be called before draw.");
+
+    int verticesLength = _vertices.length;
+    int remainingVertices = verticesLength;
+    if (texture != _prevTexture)
+      _changeTexture(texture);
+    else {
+      remainingVertices -= _currentVertex;
+      if (remainingVertices == 0) {
+        flush();
+        remainingVertices = verticesLength;
+      }
+    }
+    int copyCount = Math.min(remainingVertices, count);
+
+    _vertices.setRange(_currentVertex, _currentVertex + copyCount, vertices, offset + 1);
+    
+    _currentVertex += copyCount;
+    count -= copyCount;
+    while (count > 0) {
+      offset += copyCount;
+      flush();
+      copyCount = Math.min(verticesLength, count);
+      _vertices.setRange(0, copyCount, vertices, offset + 1);
+      _currentVertex += copyCount;
+      count -= copyCount;
+    }
+  }
+  
+  void drawText(Text text, double x, double y){
+    drawTexture(text.texture, x, y);
+  }
+  
   void flush(){
     if (_currentVertex == 0) return;
 

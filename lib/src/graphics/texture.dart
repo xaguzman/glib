@@ -8,7 +8,7 @@ class Texture extends GLTexture {
   
   bool loaded = false;
   
-  Texture._internal(): super(GL.TEXTURE_2D);
+  Texture(): super(GL.TEXTURE_2D);
 
   factory Texture.fromUrl(String url, [String name]) {
     if (_textures.containsKey(url)){
@@ -17,7 +17,7 @@ class Texture extends GLTexture {
     
     var loader = new TextureLoader(url);
     
-    var t = new Texture._internal()
+    var t = new Texture()
       ..url = url
       ..uploadData(1, 1)
       .._attachFutureHandlers(loader);
@@ -56,6 +56,16 @@ class Texture extends GLTexture {
     bind();
     _gl.texImage2DTyped(glTarget, level, format, width, height, 0, format, type, data);
     if (genMipMaps)
+      _gl.generateMipmap(glTarget);
+  }
+  
+  void uploadCanvas(CanvasElement canvas, {int level:0, int format:GL.RGBA, int type:GL.UNSIGNED_BYTE, bool genMipMaps:false}){
+    width = canvas.width;
+    height = canvas.height;
+    
+    _gl.texImage2DCanvas(glTarget, level, format, format, type, canvas);
+    
+    if(genMipMaps)
       _gl.generateMipmap(glTarget);
   }
     

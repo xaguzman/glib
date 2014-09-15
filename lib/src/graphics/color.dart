@@ -32,39 +32,79 @@ class Color{
   }
   
   Color.html(String color){
-    color = color.trim();
-    if (color.startsWith('#'))
+    hexValue = color;
+  }
+  
+  String get hexValue {
+    String red = _toInt(r).toRadixString(16).padLeft(2, '0');
+    String green = _toInt(g).toRadixString(16).padLeft(2, '0');
+    String blue = _toInt(b).toRadixString(16).padLeft(2, '0');
+    
+    return '#$red$green$blue';
+  }
+  
+  void set hexValue(String hexColor){   
+    hexColor = hexColor.trim();
+    
+    if (hexColor.startsWith('#'))
     {
-      if (color.length == 4)
+      if (hexColor.length == 4)
       {
-        r = double.parse(color[1] + color[1]);
-        g = double.parse(color[2] + color[2]);
-        b = double.parse(color[3] + color[3]);
+        r = _toDouble(int.parse('${hexColor[1]}${hexColor[1]}', radix: 16));
+        g = _toDouble(int.parse('${hexColor[2]}${hexColor[2]}', radix: 16));
+        b = _toDouble(int.parse('${hexColor[3]}${hexColor[3]}', radix: 16));
       }
-      else if (color.length == 7)
+      else if (hexColor.length == 7)
       {
-        r = double.parse(color.substring(1, 3));
-        g = double.parse(color.substring(3, 5));
-        b = double.parse(color.substring(5, 7));
+        r = _toDouble(int.parse(hexColor.substring(1, 3)));
+        g = _toDouble(int.parse(hexColor.substring(3, 5)));
+        b = _toDouble(int.parse(hexColor.substring(5, 7)));
       }
     }
-    else if (color.startsWith('rgb'))
+    else if (hexColor.startsWith('rgb'))
     {
-      var m = new RegExp(r'rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)').firstMatch(color);
+      var m = new RegExp(r'rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)').firstMatch(hexColor);
 
       if (m != null)
       {
-        r = double.parse(m.group(1));
-        g = double.parse(m.group(2));
-        b = double.parse(m.group(3));
+        r = _toDouble(int.parse(m.group(1)));
+        g = _toDouble(int.parse(m.group(2)));
+        b = _toDouble(int.parse(m.group(3)));
       }
     }
     a = 1.0;
   }
   
+  Color copy(){
+    return new Color(r, g, b, a);
+  }
+  
   /// returns the 32 bits representation of this color (IEEE 754) 
   double toDouble() => NumberUtils.colorToDouble(_toInt(r), _toInt(g), _toInt(b), _toInt(a));
   
-  double _toDouble(int channel) => channel / 255;
-  int _toInt(double channel) => (channel * 255).toInt();
+  static double _toDouble(int channel) => channel / 255;
+  static int _toInt(double channel) => (channel * 255).toInt();
 }
+
+
+final Map<String, Color> Colors = {
+    "CLEAR": Color.CLEAR,
+    "WHITE": Color.WHITE,
+    "BLACK": Color.BLACK,
+    "RED": Color.RED,
+    "GREEN": Color.GREEN,
+    "BLUE": Color.BLUE,
+    "LIGHT_GRAY": Color.LIGHT_GRAY,
+    "GRAY": Color.GRAY,
+    "DARK_GRAY": Color.DARK_GRAY,
+    "PINK": Color.PINK,
+    "ORANGE": Color.ORANGE,
+    "YELLOW": Color.YELLOW,
+    "MAGENTA": Color.MAGENTA,
+    "CYAN": Color.CYAN,
+    "OLIVE": Color.OLIVE,
+    "PURPLE": Color.PURPLE,
+    "MAROON": Color.MAROON,
+    "TEAL": Color.TEAL,
+    "NAVY": Color.NAVY,
+};

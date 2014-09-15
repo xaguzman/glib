@@ -1,11 +1,15 @@
 part of glib.common;
 
-class ResourceLoadingException implements Exception{
-  String _msg;
+class GlibException implements Exception{
+  String msg;
   
-  ResourceLoadingException(String url){
-    _msg = 'Unable to load resource: $url';
-  }
+  GlibException(String this.msg);
   
-  toString() => _msg;
+  toString() => msg;
 }
+
+class ResourceLoadingException extends GlibException{  
+  ResourceLoadingException.forUrl(String url): super('Unable to load resource: $url');
+  ResourceLoadingException(String msg, String url) :super('$msg: $url');
+}
+

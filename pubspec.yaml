@@ -1,4 +1,5 @@
 name: glib
 description: webgl
 dependencies:
+  asset_pack: any
   vector_math: any
