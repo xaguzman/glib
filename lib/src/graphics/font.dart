@@ -28,10 +28,10 @@ class Font implements Disposable{
   int maxTexureHeight = 1024;
   int minTextureHeight = 32;
   
-  /// Creates a font with the given style. If style is not specified, a default of arial 16 is used.
+  /// Creates a font with the given style. If style is not specified, a default of monospace 16 is used.
   Font([FontStyle style]){
     if (style == null)
-      style = new FontStyle(16, 'arial');
+      style = new FontStyle(16, 'monospace');
     textures = new List();
     this.style = style;
     canvas = new CanvasElement();
@@ -44,7 +44,7 @@ class Font implements Disposable{
     int width = minTextureWidth;
     int height = minTextureHeight;
     double currentRowWidth = 0.0;
-    int rowHeight = style.size + 2; //2 pixels bottom margin
+    int rowHeight = style.size + 4; //2 pixels bottom margin
     List<String> rows = new List();
     List<Character> currentRowsSymbols = new List();
     int currentPage = 0;
@@ -62,7 +62,7 @@ class Font implements Disposable{
         }else{
           var lastStr = rows.last;
           int currentSymbolIdx = lastStr.indexOf(symbol);
-          rows[rows.length - 1] = lastStr.substring(0, currentSymbolIdx-1);
+          rows[rows.length - 1] = lastStr.substring(0, currentSymbolIdx);
           var nextRow = lastStr.substring(currentSymbolIdx);
           
           //if unable to add more rows (becasue it will exceed maxTextureHeight), flush and create
@@ -71,7 +71,7 @@ class Font implements Disposable{
             var generatedTexture = _flush(width, NumberUtils.nextPowerOfTwo( rowHeight * rows.length), rowHeight, rows);
             
             currentRowsSymbols.forEach( (char) {
-              char.region = new TextureRegion(generatedTexture, char.x.toInt(), char.y.toInt(), char.width.toInt(), char.height.toInt());
+              char.region = new TextureRegion(generatedTexture, char.x, char.y, char.width, char.height);
             });
             
             currentPage++;
@@ -86,15 +86,17 @@ class Font implements Disposable{
       
       var char = new Character()
         ..id = symbolId
-        ..width = symbolWidth.roundToDouble()
-        ..height = rowHeight.toDouble()
-        ..x = currentRowWidth.roundToDouble()
-        ..y = ( rowHeight  * (rows.length - 1)).roundToDouble()
+        ..width = symbolWidth.round()
+        ..height = rowHeight 
+        ..x = currentRowWidth.round()
+        ..y = ( rowHeight  * (rows.length - 1)).round()
         ..page = currentPage;
       
       currentRowsSymbols.add(char);
       symbolMap[char.id] = char;
-      currentRowWidth += symbolWidth;
+      //hacky +2 ...some fonts overlap themselves, so forcing padding between symbols
+      // best example is arial font, lower r and s overlap very badly...
+      currentRowWidth += symbolWidth + 2;
       
     }
     
@@ -114,11 +116,21 @@ class Font implements Disposable{
     ctx
       ..fillStyle = '#FFF'
       ..font = "${style.size}px ${style.fontFamily}"  // This determines the size of the text and the font family used
-      ..textBaseline = 'bottom';
+      ..textBaseline = 'top'
+      ..fillStyle = style.color.hexValue;
     
     for(int i = 0; i < rows.length; i++){
-      ctx.fillText(rows[i], 0, rowHeight * (i + 1) + 1);
+//      ctx.fillText(rows[i], 0, rowHeight * (i + 1) + 1);
+      var row = rows[i];
+      var chars = row.codeUnits;
+      for (int j = 0 ; j < chars.length; j++){
+        var charId = chars[j];
+        Character char = symbolMap[charId];
+        ctx.fillText(row[j], char.x, char.y);
+      }
     }
+    
+      
     
     if (debugTextures)
       ctx.strokeRect(0, 0, canvas.width, canvas.height);
@@ -146,10 +158,6 @@ class Font implements Disposable{
       batch.drawRegion( symbol.region , x + xoffset, y);
       xoffset += symbol.width;
     });
-//    int c = 0;
-//    textures.forEach( (texture){
-//      batch.drawTexture(texture, x, y + 30 * c++);
-//    });
   }
     
   void dispose(){
@@ -169,12 +177,17 @@ class FontStyle{
   /// the font family to use for this font 
   final String fontFamily;
   
-  FontStyle(this.size, this.fontFamily);
+  Color color;
+  
+  FontStyle(this.size, this.fontFamily, {this.color }){
+    if (color == null)
+      color = Color.WHITE;
+  }
 }
 
 class Character{
   int id, page = 0;
-  double x, y, width, height;
+  int x, y, width, height;
   TextureRegion region;
 }
 
