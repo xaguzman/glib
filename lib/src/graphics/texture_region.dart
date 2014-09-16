@@ -31,14 +31,12 @@ class TextureRegion{
     }
   }
   
-  TextureRegion.empty() : this(null, 0, 0, 1, 1);
-  
   TextureRegion.copy(TextureRegion other){
     texture = other.texture;
     setUVs(other.u, other.v, other.u2, other.v2);
   }
   
-  void setRegion(int x, int y, int width, int height){
+  void setRegion(num x, num y, num width, num height){
     num invTexWidth = 1.0 / texture.width;
     num invTexHeight = 1.0 / texture.height;
     setUVs(x * invTexWidth, y * invTexHeight, (x + width) * invTexWidth, (y + height) * invTexHeight);

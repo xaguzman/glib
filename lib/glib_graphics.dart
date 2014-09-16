@@ -42,6 +42,8 @@ abstract class Graphics{
   
   /// initializes the graphics context 
   initGraphics(CanvasElement canvas){
+    if(this.canvas == canvas)
+      return;
     this.canvas = canvas;
     _gl = this.canvas.getContext("webgl");
     if (_gl == null) 

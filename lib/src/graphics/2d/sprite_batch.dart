@@ -109,12 +109,10 @@ class SpriteBatch implements Disposable{
 
     var currentShader = _customShader == null ? _defaultShader: _customShader;
     currentShader.end();
-    
-//    _totalRenderCalls += _batchRenderCalls;
-    
-    print('Total Render calls: ${_totalRenderCalls} ');
-    print('Render calls: $_batchRenderCalls');
-    print('Texture swaps: $_textureSwaps');
+        
+//    print('Total Render calls: ${_totalRenderCalls} ');
+//    print('Render calls: $_batchRenderCalls');
+//    print('Texture swaps: $_textureSwaps');
   }
   
   
@@ -204,10 +202,7 @@ class SpriteBatch implements Disposable{
       count -= copyCount;
     }
   }
-  
-  void drawText(Text text, double x, double y){
-    drawTexture(text.texture, x, y);
-  }
+ 
   
   void flush(){
     if (_currentVertex == 0) return;
