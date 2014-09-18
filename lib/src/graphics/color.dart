@@ -31,11 +31,11 @@ class Color{
     this.a = MathUtils.clampDouble(a, 0.0, 1.0);
   }
   
-  Color.html(String color){
-    hexValue = color;
+  Color.hex(String color){
+    setHex(color);
   }
   
-  String get hexValue {
+  String toHex() {
     String red = _toInt(r).toRadixString(16).padLeft(2, '0');
     String green = _toInt(g).toRadixString(16).padLeft(2, '0');
     String blue = _toInt(b).toRadixString(16).padLeft(2, '0');
@@ -43,7 +43,7 @@ class Color{
     return '#$red$green$blue';
   }
   
-  void set hexValue(String hexColor){   
+  void setHex(String hexColor){   
     hexColor = hexColor.trim();
     
     if (hexColor.startsWith('#'))
@@ -81,6 +81,23 @@ class Color{
   
   /// returns the 32 bits representation of this color (IEEE 754) 
   double toDouble() => NumberUtils.colorToDouble(_toInt(r), _toInt(g), _toInt(b), _toInt(a));
+  
+  /// sets this color from the passed IEEE 754 double 
+  void setDouble(double color){
+    int intBits = NumberUtils.floatToIntBits(color);
+    r = (intBits & 0xff) / 255;
+    g = ((intBits >> 8) & 0xff) / 255;
+    b = ((intBits >> 16) & 0xff) / 255;
+    a = ((intBits >> 24) & 0xff) / 255;
+  }
+  
+  /// copies the rgba channels from [other] into this color
+  void set(Color other){
+    r = other.r;
+    g = other.g;
+    b = other.b;
+    a = other.a;
+  }
   
   static double _toDouble(int channel) => channel / 255;
   static int _toInt(double channel) => (channel * 255).toInt();

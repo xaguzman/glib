@@ -23,9 +23,12 @@ class TextureTest extends Test{
       ..drawTexture(texture, 54.0, 76.0)
       ..drawTexture(texture, 54 + 27.0, 76+38.0)
       ..drawRegion(firstFrame, 67.0, 38.0)
+      ..color = Color.RED
       ..drawRegion(firstFrame, 80.0, 76.0)
+      ..color = Color.YELLOW
       ..drawTexture(spriteSheet, 100.0, 100.0)
-      ..end();
+      ..end()
+      ..color = Color.WHITE;
   }
   
   dispose(){

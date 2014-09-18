@@ -15,7 +15,7 @@ TestSuite suite;
 main(){
   var canvas = querySelector('#canvas');
   suite = new TestSuite(canvas);
-  suite.currentTest = new FontTest(suite.gl)..init();
+  suite.currentTest = new TextureTest(suite.gl)..init();
   window.animationFrame.then(update);
 }
 

@@ -117,7 +117,7 @@ class Font implements Disposable{
       ..fillStyle = '#FFF'
       ..font = "${style.size}px ${style.fontFamily}"  // This determines the size of the text and the font family used
       ..textBaseline = 'top'
-      ..fillStyle = style.color.hexValue;
+      ..fillStyle = style.color.toHex();
     
     for(int i = 0; i < rows.length; i++){
 //      ctx.fillText(rows[i], 0, rowHeight * (i + 1) + 1);

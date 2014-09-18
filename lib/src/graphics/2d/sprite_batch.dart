@@ -18,7 +18,8 @@ class SpriteBatch implements Disposable{
   Texture _prevTexture;
   num _invTexWidth, _invTexHeight;
   
-  double _color = Color.WHITE.toDouble();
+  double _colorDouble = Color.WHITE.toDouble();
+  Color _color = new Color(1.0, 1.0, 1.0, 1.0);
   int _totalRenderCalls = 0;
   int _textureSwaps, _batchRenderCalls;
   
@@ -79,6 +80,12 @@ class SpriteBatch implements Disposable{
       return shader;
   }
   
+  Color get color => _color..setDouble(_colorDouble);
+  void set color(Color color){
+    _color.set(color);
+    _colorDouble = _color.toDouble();
+  }
+  
   void begin(){
     if (_drawing) 
       throw new StateError('Spritebatch.end() should be called before calling Spritebatch.begin() a second time');
@@ -133,7 +140,7 @@ class SpriteBatch implements Disposable{
     final num x2 = x + width;
     final num y2 = y + height;
     
-    num color = _color;
+    num color = _colorDouble;
     _vertices[_currentVertex++] = x;
     _vertices[_currentVertex++] = y;
     _vertices[_currentVertex++] = color;
