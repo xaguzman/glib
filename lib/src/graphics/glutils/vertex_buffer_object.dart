@@ -118,6 +118,6 @@ class VertexBufferObject implements Disposable{
     _gl.bindBuffer(GL.ARRAY_BUFFER, null);
     _gl.deleteBuffer(glBuffer);
     glBuffer = null;
-    _buffer.clear();
+//    _buffer.clear();
   }
 }

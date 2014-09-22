@@ -18,6 +18,8 @@ export 'package:vector_math/vector_math.dart';
 class MathUtils{
   static const num radiansToDegrees = 180 / PI; 
   static const num degreesToRadians = PI / 180;
+//  static final num radiansToDegrees = radians2degrees;
+//  static final num degreesToRadians = degrees2radians;
   
   static double clampDouble(double value, double min, double max){
     if ( value < min)

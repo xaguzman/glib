@@ -35,4 +35,6 @@ class TextureTest extends Test{
     texture.dispose();
     spriteSheet.dispose();
   }
+  
+  String get name => 'Texture test';
 }

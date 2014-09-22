@@ -43,4 +43,6 @@ class FontTest extends Test{
     arial.dispose();
     monospace.dispose();
   }
+  
+  String get name => 'Font test';
 }

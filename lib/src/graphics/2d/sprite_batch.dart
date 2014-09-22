@@ -34,7 +34,7 @@ class SpriteBatch implements Disposable{
    * 1: packed color
    * 2: texcoord0.xy
    */
-  var _vertexPerSprite = 5;
+  static const int _vertexPerSprite = 5;
   
   
   SpriteBatch ([int size = 500, ShaderProgram defaultShader]) {

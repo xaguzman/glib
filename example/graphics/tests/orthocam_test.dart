@@ -12,7 +12,7 @@ class OrthographicCameraTest extends Test{
   
   init(){
     texture = new Texture.from('assets/spritesheet-body.png');
-    camera = new OrthographicCamera()..setToOrtho(true);
+    camera = new OrthographicCamera()..setToOrtho();
     
   }
     
@@ -36,4 +36,6 @@ class OrthographicCameraTest extends Test{
   dispose(){
     texture.dispose();
   }
+  
+  String get name=> "Orthographic Camera test";
 }

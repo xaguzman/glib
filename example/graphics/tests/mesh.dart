@@ -63,4 +63,6 @@ class MeshTest extends Test{
     mesh.dispose();
     shader.dispose();
   }
+  
+  String get name => 'Mesh test';
 }
