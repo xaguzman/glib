@@ -6,10 +6,10 @@ export 'dart:web_gl';
 import 'dart:core';
 import 'dart:typed_data';
 import 'dart:math' as Math;
-//import 'package:vector_math/vector_math.dart';
 
-import 'glib_math.dart';
-import 'glib_common.dart';
+import 'src/maths.dart';
+export 'src/maths.dart';
+import 'src/common.dart';
 
 
 part 'src/graphics/glutils/mesh.dart';

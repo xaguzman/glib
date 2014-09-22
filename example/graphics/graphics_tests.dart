@@ -1,7 +1,6 @@
 library glib.tests;
 
 import 'package:glib/glib_graphics.dart';
-import 'package:glib/glib_math.dart';
 import 'dart:html';
 import 'dart:web_gl' as GL;
 import 'dart:typed_data';

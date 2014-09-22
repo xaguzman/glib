@@ -2,7 +2,6 @@ library glib.math;
 
 import 'dart:typed_data';
 import 'dart:math';
-import 'glib_common.dart';
 
 import 'package:vector_math/vector_math.dart' as VMath;
 export 'package:vector_math/vector_math.dart';
