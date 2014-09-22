@@ -1,13 +1,13 @@
-part of glib;
+part of glib.math;
 
 class Vec2{
-  num x, y;
+  double x, y;
   
   static final Vec2 Zero = new Vec2();
-  static final Vec2 X = new Vec2(1, 0);
-  static final Vec2 Y = new Vec2(0, 1);
+  static final Vec2 X = new Vec2(1.0, 0.0);
+  static final Vec2 Y = new Vec2(0.0, 1.0);
   
-  Vec2([this.x = 0, this.y = 0]);
+  Vec2([this.x = 0.0, this.y = 0.0]);
   
   Vec2.from(Vec2 v): this(v.x, v.y);
   
@@ -16,6 +16,9 @@ class Vec2{
   Vec2 copy () {
     return new Vec2.from(this);
   }
+  
+  bool get isZero => this == Vec2.Zero;
+  Vec2 setZero () => set(Vec2.Zero);
   
  /// the negation of this vector
  Vec2 operator -() => copy().scl(-1);
@@ -38,7 +41,7 @@ class Vec2{
   
   Vec2 setFrom(Vec2 other) => setValues(other.x, other.y);
   
-  Vec2 setValues(num x, num y){
+  Vec2 setValues(double x, double y){
     this.x = x;
     this.y = y;
     return this;
@@ -94,6 +97,7 @@ class Vec2{
     return this;
   }
 
+  /// Normalizes this vector. Does nothing if it is zero.
   Vec2 nor () {
     num len = length();
     if (len != 0) {
@@ -225,16 +229,12 @@ class Vec2{
     if ((y - this.y).abs() > epsilon) return false;
     return true;
   }
-   
-  bool get isZero => this == Vec2.Zero;
   
   bool isPerpendicularTo(Vec2 vector) => dot(vector) == 0;
   
   bool hasSameDirection (Vec2 vector) => dot(vector) > 0; 
 
-  bool hasOppositeDirection (Vec2 vector) => dot(vector) < 0;
-
-  Vec2 setZero () => set(Vec2.Zero); 
+  bool hasOppositeDirection (Vec2 vector) => dot(vector) < 0; 
   
   toString() => '[x: $x, y: $y]';
 }

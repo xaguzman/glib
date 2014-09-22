@@ -9,13 +9,14 @@ import 'dart:typed_data';
 part 'tests/mesh.dart';
 part 'tests/font_test.dart';
 part 'tests/texture.dart';
+part 'tests/orthocam_test.dart';
 
 TestSuite suite;
 
 main(){
   var canvas = querySelector('#canvas');
   suite = new TestSuite(canvas);
-  suite.currentTest = new TextureTest(suite.gl)..init();
+  suite.currentTest = new OrthographicCameraTest(suite.gl)..init();
   window.animationFrame.then(update);
 }
 

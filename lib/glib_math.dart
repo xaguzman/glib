@@ -1,21 +1,24 @@
-library glib;
+library glib.math;
 
 import 'dart:typed_data';
-
 import 'dart:math';
+import 'glib_common.dart';
 
 import 'package:vector_math/vector_math.dart' as VMath;
-export 'package:vector_math/vector_math.dart' hide Vector2, Vector3, Vector4, Matrix4;
+export 'package:vector_math/vector_math.dart';
 
-part 'src/math/matrix.dart';
-part 'src/math/vector2.dart';
-part 'src/math/vector3.dart';
+//part 'src/math/matrix.dart';
+//part 'src/math/vector2.dart';
+//part 'src/math/vector3.dart';
+//part 'src/math/quaternion.dart';
+//part 'src/math/ray.dart';
+//part 'src/math/frustum.dart';
 
 
 
 class MathUtils{
-  static final num radiansToDegrees = VMath.radians2degrees; 
-  static final num degreesToRadians = VMath.degrees2radians;
+  static const num radiansToDegrees = 180 / PI; 
+  static const num degreesToRadians = PI / 180;
   
   static double clampDouble(double value, double min, double max){
     if ( value < min)

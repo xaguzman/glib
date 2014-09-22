@@ -22,7 +22,7 @@ class ShaderProgram implements Disposable {
   /// flag indicating whether attributes & uniforms must be present at all times
   static bool pedantic = true;
 
-  /** the list of currently available shaders **/
+//  /** the list of currently available shaders **/
 //  static final Map<Application, Array<ShaderProgram>> _shaders = new Map<Application, Array<ShaderProgram>>();
 
   String _log = "";

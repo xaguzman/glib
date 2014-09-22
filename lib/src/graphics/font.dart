@@ -16,16 +16,25 @@ class Font implements Disposable{
   bool generated = false;
   
   /// the canvas to render the text to, before sending it to our texture
-  CanvasElement canvas;
+  CanvasElement _canvas;
+  
+  /// the [CanvasRenderingContext2D] used to render the text to a canvas, to later put it into our texture
   CanvasRenderingContext2D ctx;
   
   FontStyle style;
   
   String symbols ='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ +-*/()[]{}!@#%^_\\\$0123456789';
-   
+  
+  /// max width each [Texture] in [textures] should have. Better to keep as a pot.
   int maxTextureWidth = 1024;
+  
+  /// min width each [Texture] in [textures] should have. Better to keep as a pot.
   int minTextureWidth = 128;
+  
+  /// max height each [Texture] in [textures] should have. Better to keep as a pot.
   int maxTexureHeight = 1024;
+  
+  /// min height each [Texture] in [textures] should have. Better to keep as a pot.
   int minTextureHeight = 32;
   
   /// Creates a font with the given style. If style is not specified, a default of monospace 16 is used.
@@ -34,11 +43,11 @@ class Font implements Disposable{
       style = new FontStyle(16, 'monospace');
     textures = new List();
     this.style = style;
-    canvas = new CanvasElement();
-    ctx = canvas.context2D;
+    _canvas = new CanvasElement();
+    ctx = _canvas.context2D;
   }
   
-  ///creates a glTexture which will contain all the [symbols] to later be drawn
+  ///creates a glTexture which will contain all the [symbols] with the given [style] to later be drawn
   void generate(){
     ctx.font = '${style.size}px ${style.fontFamily}';
     int width = minTextureWidth;
@@ -65,7 +74,7 @@ class Font implements Disposable{
           rows[rows.length - 1] = lastStr.substring(0, currentSymbolIdx);
           var nextRow = lastStr.substring(currentSymbolIdx);
           
-          //if unable to add more rows (becasue it will exceed maxTextureHeight), flush and create
+          //if unable to add more rows (because it will exceed maxTextureHeight), flush and create
           //new texture
           if ( (rows.length + 1) * rowHeight > maxTexureHeight ){
             var generatedTexture = _flush(width, NumberUtils.nextPowerOfTwo( rowHeight * rows.length), rowHeight, rows);
@@ -94,8 +103,8 @@ class Font implements Disposable{
       
       currentRowsSymbols.add(char);
       symbolMap[char.id] = char;
-      //hacky +2 ...some fonts overlap themselves, so forcing padding between symbols
-      // best example is arial font, lower r and s overlap very badly...
+      // hacky +2 ...some fonts overlap themselves, so forcing padding between symbols.
+      // A good example is arial font, lower r and s overlap very badly...
       currentRowWidth += symbolWidth + 2;
       
     }
@@ -109,10 +118,10 @@ class Font implements Disposable{
     generated = true;
   }
  
-  
+  /// sends all the text in [rows] to the [_canvas]
   Texture _flush(canvasWidth, canvasHeight, int rowHeight, List<String> rows){
-    canvas.width = canvasWidth ;
-    canvas.height = canvasHeight;
+    _canvas.width = canvasWidth ;
+    _canvas.height = canvasHeight;
     ctx
       ..fillStyle = '#FFF'
       ..font = "${style.size}px ${style.fontFamily}"  // This determines the size of the text and the font family used
@@ -120,7 +129,6 @@ class Font implements Disposable{
       ..fillStyle = style.color.toHex();
     
     for(int i = 0; i < rows.length; i++){
-//      ctx.fillText(rows[i], 0, rowHeight * (i + 1) + 1);
       var row = rows[i];
       var chars = row.codeUnits;
       for (int j = 0 ; j < chars.length; j++){
@@ -133,12 +141,12 @@ class Font implements Disposable{
       
     
     if (debugTextures)
-      ctx.strokeRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeRect(0, 0, _canvas.width, _canvas.height);
     
     var texture = new Texture()
       ..bind()
       ..setFilter(TextureFilter.MipMapLinearNearest, TextureFilter.Linear)
-      ..uploadCanvas(canvas, genMipMaps: true)
+      ..uploadCanvas(_canvas, genMipMaps: true)
       ..loaded = true;
     
     textures.add(texture);
@@ -164,7 +172,7 @@ class Font implements Disposable{
     for(int i = 0; i < textures.length; i++)
       textures[i].dispose();
     ctx = null;
-    canvas = null;
+    _canvas = null;
     textures.clear();
   }
 }
@@ -177,11 +185,15 @@ class FontStyle{
   /// the font family to use for this font 
   final String fontFamily;
   
+  /** the color which the text will be created with, usually, letting this one as [Color.WHITE] and
+   * changing the [Font] color while drawing is enough, this is provided for future usage when fonts with
+   * border are allowed. This color is only meaningful before [Font.generate] is invoked
+   */
   Color color;
   
   FontStyle(this.size, this.fontFamily, {this.color }){
     if (color == null)
-      color = Color.WHITE;
+      color = new Color(1.0, 1.0, 1.0, 1.0);
   }
 }
 
@@ -191,28 +203,28 @@ class Character{
   TextureRegion region;
 }
 
-class VAlign{
-  final int val;
-  final String strVal;
-  const VAlign(this.val, this.strVal);
-  
-  toString()=> strVal;
-  
-  static const VAlign TOP = const VAlign(-1, 'top');
-  static const VAlign MIDDLE = const VAlign(0, 'middle');
-  static const VAlign BOTTOM = const VAlign(1, 'bottom');
-}
-
-class Align{
-  final int val;
-  final String strVal;
-  const Align(this.val, this.strVal);
-  
-  toString()=> strVal;
-  
-  static const Align LEFT = const Align(-1, 'left');
-  static const Align CENTER = const Align(0, 'center');
-  static const Align RIGHT = const Align(1, 'right');
-}
-
-
+//class VAlign{
+//  final int val;
+//  final String strVal;
+//  const VAlign(this.val, this.strVal);
+//  
+//  toString()=> strVal;
+//  
+//  static const VAlign TOP = const VAlign(-1, 'top');
+//  static const VAlign MIDDLE = const VAlign(0, 'middle');
+//  static const VAlign BOTTOM = const VAlign(1, 'bottom');
+//}
+//
+//class Align{
+//  final int val;
+//  final String strVal;
+//  const Align(this.val, this.strVal);
+//  
+//  toString()=> strVal;
+//  
+//  static const Align LEFT = const Align(-1, 'left');
+//  static const Align CENTER = const Align(0, 'center');
+//  static const Align RIGHT = const Align(1, 'right');
+//}
+//
+//

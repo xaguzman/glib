@@ -4,9 +4,9 @@ part of glib.graphics;
 class SpriteBatch implements Disposable{
 
   bool isBlendingEnabled = true;
-  final Matrix4 transform = new Matrix4();
-  final Matrix4 projection = new Matrix4();
-  final Matrix4 combined = new Matrix4();
+  final Matrix4 transform = new Matrix4.identity();
+  final Matrix4 projection = new Matrix4.identity();
+  final Matrix4 combined = new Matrix4.identity();
   
   Mesh _mesh;
   Float32List _vertices;
@@ -50,7 +50,8 @@ class SpriteBatch implements Disposable{
      ]);
     
     _mesh = new Mesh(false, size * 4, size * 6, attributes);
-    setOrthographicMatrix(projection, 0, _width, 0, _height, 0, 1);
+    setOrthographicMatrix(projection, 0.0, _width.toDouble(), 0.0, _height.toDouble(), 0.0, 1.0);
+//    projection.setToOrtho2D(0.0, _width.toDouble(), 0.0, _height.toDouble());
 
     _vertices = new Float32List(size * _vertexPerSprite);
 

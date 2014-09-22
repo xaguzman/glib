@@ -6,7 +6,7 @@ export 'dart:web_gl';
 import 'dart:core';
 import 'dart:typed_data';
 import 'dart:math' as Math;
-import 'package:asset_pack/asset_pack.dart';
+//import 'package:vector_math/vector_math.dart';
 
 import 'glib_math.dart';
 import 'glib_common.dart';
@@ -24,7 +24,8 @@ part 'src/graphics/2d/sprite_batch.dart';
 //part 'src/graphics/bitmap_font.dart';
 //part 'src/graphics/bitmap_font_cache.dart';
 part 'src/graphics/font.dart';
-
+part 'src/graphics/camera.dart';
+part 'src/graphics/orthographic_camera.dart';
 part 'src/graphics/loaders/texture_loader.dart';
 part 'src/graphics/loaders/bitmapfontdata_loader.dart';
 part 'src/graphics/color.dart';

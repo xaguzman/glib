@@ -5,7 +5,7 @@ class MeshTest extends Test{
   Mesh mesh;
   Texture texture;
   ShaderProgram shader;
-  Matrix4 matrix = new Matrix4();
+  Matrix4 matrix = new Matrix4.identity();
   
   MeshTest(gl):super(gl);
   
