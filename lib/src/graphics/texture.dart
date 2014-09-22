@@ -6,24 +6,26 @@ class Texture extends GLTexture {
   int get id => _id;
   int _id;
   
-  bool loaded = false;
+  /// wether this texture is ready to be rendered. Usually, you should only see this as false when the constructor
+  /// [Texture.from] is used, and the image hasn't been totally downloaded from the remote server
+  bool loaded = true;
   
-  Texture(): super(GL.TEXTURE_2D);
-
-  factory Texture.fromUrl(String url, [String name]) {
-    if (_textures.containsKey(url)){
-      return _textures[url];
-    }
-    
+  Texture(): super(GL.TEXTURE_2D){
+    this.width = this.height = 1;
+  }
+  
+  ///creates a GL texture of the specified size. 
+  Texture.size(int width, int height):super(GL.TEXTURE_2D){
+    this.width = width;
+    this.height = height;
+  }
+  
+  /// creates a texture from an image stored in the given [url]. Not cross-domain friendly
+  Texture.from(this.url): super(GL.TEXTURE_2D), loaded = false {
     var loader = new TextureLoader(url);
-    
-    var t = new Texture()
-      ..url = url
-      ..uploadData(1, 1)
-      .._attachFutureHandlers(loader);
-    
+    uploadData(1, 1); //create dummy data so rendering doesn't break when using this constructor
+    _attachFutureHandlers(loader);
     loader.load();
-    return t;
   }
   
   void _attachFutureHandlers (TextureLoader loader) {

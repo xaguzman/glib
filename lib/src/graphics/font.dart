@@ -23,6 +23,7 @@ class Font implements Disposable{
   
   FontStyle style;
   
+  /// The glyphs that will be drawn into the underlying [textures], with set [style], when [generate] is called
   String symbols ='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ +-*/()[]{}!@#%^_\\\$0123456789';
   
   /// max width each [Texture] in [textures] should have. Better to keep as a pot.
@@ -146,8 +147,7 @@ class Font implements Disposable{
     var texture = new Texture()
       ..bind()
       ..setFilter(TextureFilter.MipMapLinearNearest, TextureFilter.Linear)
-      ..uploadCanvas(_canvas, genMipMaps: true)
-      ..loaded = true;
+      ..uploadCanvas(_canvas, genMipMaps: true);
     
     textures.add(texture);
     return texture;

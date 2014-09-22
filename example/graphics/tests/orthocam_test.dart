@@ -11,8 +11,8 @@ class OrthographicCameraTest extends Test{
   }
   
   init(){
-    texture = new Texture.fromUrl('assets/spritesheet-body.png');
-    camera = new OrthographicCamera()..setToOrtho();
+    texture = new Texture.from('assets/spritesheet-body.png');
+    camera = new OrthographicCamera()..setToOrtho(true);
     
   }
     

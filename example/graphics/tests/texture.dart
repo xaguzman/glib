@@ -9,8 +9,8 @@ class TextureTest extends Test{
   TextureTest(gl):super(gl);
   
   init(){    
-    texture = new Texture.fromUrl("assets/head.png");
-    spriteSheet = new Texture.fromUrl('assets/spritesheet-body.png');
+    texture = new Texture.from("assets/head.png");
+    spriteSheet = new Texture.from('assets/spritesheet-body.png');
     firstFrame = new TextureRegion(spriteSheet, 0, 0, 64, 64);
   }
   
