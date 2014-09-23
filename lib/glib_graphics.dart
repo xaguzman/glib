@@ -21,13 +21,10 @@ part 'src/graphics/glutils/shader_program.dart';
 part 'src/graphics/glutils/vertex_buffer_object.dart';
 part 'src/graphics/glutils/index_buffer_object.dart';
 part 'src/graphics/2d/sprite_batch.dart';
-//part 'src/graphics/bitmap_font.dart';
-//part 'src/graphics/bitmap_font_cache.dart';
 part 'src/graphics/font.dart';
 part 'src/graphics/camera.dart';
 part 'src/graphics/orthographic_camera.dart';
 part 'src/graphics/loaders/texture_loader.dart';
-part 'src/graphics/loaders/bitmapfontdata_loader.dart';
 part 'src/graphics/color.dart';
 
 
