@@ -5,19 +5,22 @@ class Texture extends GLTexture {
   
   int get id => _id;
   int _id;
-  
+    
   /// wether this texture is ready to be rendered. Usually, you should only see this as false when the constructor
   /// [Texture.from] is used, and the image hasn't been totally downloaded from the remote server
   bool loaded = true;
   
   Texture(): super(GL.TEXTURE_2D){
     this.width = this.height = 1;
+    _id = _textures.length;
+    _assignId();
   }
   
   ///creates a GL texture of the specified size. 
   Texture.size(int width, int height):super(GL.TEXTURE_2D){
     this.width = width;
     this.height = height;
+    _assignId();
   }
   
   /// creates a texture from an image stored in the given [url]. Not cross-domain friendly
@@ -26,6 +29,14 @@ class Texture extends GLTexture {
     uploadData(1, 1); //create dummy data so rendering doesn't break when using this constructor
     loader.done.then(_loadImageElement);
     loader.load();
+    _assignId();
+  }
+  
+//  Texture.copy(Texture other): super(GL.TEXTURE_2D, other.glTexture) ;
+  
+  _assignId(){
+    _id = _textures.length;
+    _textures[_id] = this;
   }
   
   void _loadImageElement(ImageElement img){
@@ -36,7 +47,6 @@ class Texture extends GLTexture {
     setFilter(minFilter, magFilter, force: true);
     setWrap(uWrap, uWrap, force: true);
     _gl.bindTexture(glTarget, null);
-    _textures[url] = this;
     loaded = true;
     _loadCompleter.complete(this);
   }
@@ -83,15 +93,15 @@ class Texture extends GLTexture {
       _gl.generateMipmap(glTarget);
   }
   
-//  /// @return whether this texture is managed or not.
-//  bool get isManaged => data.isManaged();
-
-  /// Disposes all resources associated with this texture. If autoremove is set to true, it will
-  /// be immediatly removed from Graphics.textures, otherwise you need to remove it yourself
-  void dispose ([bool autoRemove = true]) {
+  /// Disposes all resources associated with this texture. it will be immediatly removed from [Graphics.textures]
+  void dispose () {
+    _dispose();
+    _textures.remove(id);
+  }
+  
+  ///internal disposal used by [Graphics.disposeGraphics]
+  void _dispose(){
     super.dispose();
-    if(autoRemove)
-      _textures.remove(glTexture);
   }
 
 //  /** Sets the {@link AssetManager}. When the context is lost, textures managed by the asset manager are reloaded by the manager

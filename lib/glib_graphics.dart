@@ -11,7 +11,6 @@ import 'src/maths.dart';
 export 'src/maths.dart';
 import 'src/common.dart';
 
-
 part 'src/graphics/glutils/mesh.dart';
 part 'src/graphics/glutils/gl_texture.dart';
 part 'src/graphics/texture.dart';
@@ -29,7 +28,7 @@ part 'src/graphics/color.dart';
 
 
 GL.RenderingContext _gl;
-Map<String, Texture> _textures;
+Map<int, Texture> _textures;
 int _width, _height;
 
 abstract class Graphics{
@@ -54,12 +53,13 @@ abstract class Graphics{
   }
   
   disposeGraphics(){
-    textures.values.forEach( (texture) => texture.dispose(false));
+    textures.values.forEach( (texture) => texture._dispose());
     textures.clear();
+    assert( textures.length == 0 );
   }
   
   GL.RenderingContext get gl => _gl;
-  Map<String, Texture> get textures => _textures;
+  Map<int, Texture> get textures => _textures;
   
   int get width => _width;
   int get height => _height;

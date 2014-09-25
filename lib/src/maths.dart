@@ -1,7 +1,6 @@
 library glib.math;
 
 import 'dart:typed_data';
-import 'dart:math';
 
 //import 'package:vector_math/vector_math.dart' as VMath;
 export 'package:vector_math/vector_math.dart';
@@ -15,12 +14,7 @@ export 'package:vector_math/vector_math.dart';
 
 
 
-class MathUtils{
-  static const num radiansToDegrees = 180 / PI; 
-  static const num degreesToRadians = PI / 180;
-//  static final num radiansToDegrees = radians2degrees;
-//  static final num degreesToRadians = degrees2radians;
-  
+class MathUtils{ 
   static double clampDouble(double value, double min, double max){
     if ( value < min)
       return min;

@@ -13,7 +13,7 @@ class Font implements Disposable{
   ///enables creating a border around each [Texture] in [textures]. Must be set before calling [generate]
   bool debugTextures = false; 
   
-  bool generated = false;
+  bool isGenerated = false;
   
   /// the canvas to render the text to, before sending it to our texture
   CanvasElement _canvas;
@@ -38,12 +38,10 @@ class Font implements Disposable{
   /// min height each [Texture] in [textures] should have. Better to keep as a pot.
   int minTextureHeight = 32;
   
-  /// Creates a font with the given style. If style is not specified, a default of monospace 16 is used.
+  /// Creates a font with the given style. If style is not specified, a default of arial 16 is used.
   Font([FontStyle style]){
-    if (style == null)
-      style = new FontStyle(16, 'monospace');
     textures = new List();
-    this.style = style;
+    this.style = style == null ? FontStyles.ARIAL_16 : style;
     _canvas = new CanvasElement();
     ctx = _canvas.context2D;
   }
@@ -75,8 +73,7 @@ class Font implements Disposable{
           rows[rows.length - 1] = lastStr.substring(0, currentSymbolIdx);
           var nextRow = lastStr.substring(currentSymbolIdx);
           
-          //if unable to add more rows (because it will exceed maxTextureHeight), flush and create
-          //new texture
+          //if unable to add more rows (because it will exceed maxTextureHeight), flush and create new texture
           if ( (rows.length + 1) * rowHeight > maxTexureHeight ){
             var generatedTexture = _flush(width, NumberUtils.nextPowerOfTwo( rowHeight * rows.length), rowHeight, rows);
             
@@ -116,7 +113,7 @@ class Font implements Disposable{
       char.region = new TextureRegion(generatedTexture, char.x.round(), char.y.round(), char.width.round(), char.height.round());
     });
     
-    generated = true;
+    isGenerated = true;
   }
  
   /// sends all the text in [rows] to the [_canvas]
@@ -124,7 +121,7 @@ class Font implements Disposable{
     _canvas.width = canvasWidth ;
     _canvas.height = canvasHeight;
     ctx
-      ..fillStyle = '#FFF'
+      ..fillStyle = '${style.color}'
       ..font = "${style.size}px ${style.fontFamily}"  // This determines the size of the text and the font family used
       ..textBaseline = 'top'
       ..fillStyle = style.color.toHex();
@@ -138,8 +135,6 @@ class Font implements Disposable{
         ctx.fillText(row[j], char.x, char.y);
       }
     }
-    
-      
     
     if (debugTextures)
       ctx.strokeRect(0, 0, _canvas.width, _canvas.height);
@@ -155,7 +150,7 @@ class Font implements Disposable{
   
   void draw(SpriteBatch batch, String text, double x, double y){
     
-    if(!generated){
+    if(!isGenerated){
       generate();
     }
     
@@ -189,11 +184,11 @@ class FontStyle{
    * changing the [Font] color while drawing is enough, this is provided for future usage when fonts with
    * border are allowed. This color is only meaningful before [Font.generate] is invoked
    */
-  Color color;
+  final Color color = Color.WHITE.copy();
   
-  FontStyle(this.size, this.fontFamily, {this.color }){
-    if (color == null)
-      color = new Color(1.0, 1.0, 1.0, 1.0);
+  FontStyle(this.size, this.fontFamily, {Color color}){
+    if (color != null)
+      this.color.set(color);
   }
 }
 
@@ -203,28 +198,7 @@ class Character{
   TextureRegion region;
 }
 
-//class VAlign{
-//  final int val;
-//  final String strVal;
-//  const VAlign(this.val, this.strVal);
-//  
-//  toString()=> strVal;
-//  
-//  static const VAlign TOP = const VAlign(-1, 'top');
-//  static const VAlign MIDDLE = const VAlign(0, 'middle');
-//  static const VAlign BOTTOM = const VAlign(1, 'bottom');
-//}
-//
-//class Align{
-//  final int val;
-//  final String strVal;
-//  const Align(this.val, this.strVal);
-//  
-//  toString()=> strVal;
-//  
-//  static const Align LEFT = const Align(-1, 'left');
-//  static const Align CENTER = const Align(0, 'center');
-//  static const Align RIGHT = const Align(1, 'right');
-//}
-//
-//
+abstract class FontStyles{
+  static final FontStyle ARIAL_16 = new FontStyle(16, 'arial');
+  static final FontStyle MONOSPACE_16 = new FontStyle(16, 'monospace');
+}
