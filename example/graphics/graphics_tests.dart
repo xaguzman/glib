@@ -1,6 +1,6 @@
-library glib.tests;
+library glib.tests.graphics;
 
-import 'package:glib/glib_graphics.dart';
+import 'package:glib/glib.dart';
 import 'dart:html';
 import 'dart:web_gl' as GL;
 import 'dart:typed_data';

@@ -1,26 +1,15 @@
 library glib;
 
 import 'dart:html';
-import 'glib_graphics.dart';
+import 'dart:async';
 
-abstract class Game extends Object with Graphics{
-  CanvasElement canvas;
-  
-  Game({CanvasElement canvas}){
-    if (canvas == null){
-      canvas = new CanvasElement(width:800, height: 480);
-      document.body.append(canvas);
-    }
-    this.canvas = canvas;
-  }
-  
-  start(){
-    this.initGraphics(canvas); //init graphics
-    
-  }
-  
-  init();
-  update(num delta);
-  
-}
+import 'src/graphics.dart';
+export 'src/graphics.dart';
+
+import 'src/input.dart';
+export 'src/input.dart';
+
+part 'src/application.dart';
+part 'src/application_configuration.dart';
+
 

@@ -1,4 +1,4 @@
-part of glib.tests;
+part of glib.tests.graphics;
 
 class FontTest extends Test{
   
