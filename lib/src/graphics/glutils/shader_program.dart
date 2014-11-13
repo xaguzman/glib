@@ -45,9 +45,6 @@ class ShaderProgram implements Disposable {
   GL.Shader _vertexShader;
   GL.Shader _fragmentShader;
 
-  /// matrix buffer
-//  final Float32List matrix;
-
   /// vertex shader source
   final String vertexShaderSource;
 
@@ -81,8 +78,8 @@ class ShaderProgram implements Disposable {
 
   /** Loads and compiles the shaders, creates a new program and links the shaders.
    * 
-   * @param vertexShader
-   * @param fragmentShader */
+   * [vertexShader] the source code for the vertex shader
+   * [fragmentShader] the source code for the fragment shader */
   void _compileShaders (String vertexShader, String fragmentShader) {
     _vertexShader = _loadShader(GL.VERTEX_SHADER, vertexShader);
     _fragmentShader = _loadShader(GL.FRAGMENT_SHADER, fragmentShader);
@@ -148,7 +145,7 @@ class ShaderProgram implements Disposable {
       return location_OR_name;
     
     if(location_OR_name is! String)
-      throw new Exception("Can't fetch the attribute location using ${location_OR_name.runtimeType}");
+      throw new ArgumentError("Can't fetch the attribute location using ${location_OR_name.runtimeType}");
     
     int location;
     if (!_attributesLocation.containsKey(location_OR_name)) {
@@ -167,7 +164,7 @@ class ShaderProgram implements Disposable {
       return location_OR_name;
     
     if(location_OR_name is! String)
-      throw new Exception("Can't fetch the attribute location using ${location_OR_name.runtimeType}");
+      throw new ArgumentError("Can't fetch the attribute location using ${location_OR_name.runtimeType}");
     
     if( pedantic == null)
       pedantic = ShaderProgram.pedantic;
@@ -191,11 +188,11 @@ class ShaderProgram implements Disposable {
    * The GL call is determined based on the number of arguments passed. 
    * For example, `setUniformi("var", 0, 1)` maps to `gl.uniform2i`.
    * 
-   * location_OR_name the name of the uniform, or the uniform itself
-   * x  the x component for ints
-   * y  the y component for ivec2
-   * z  the z component for ivec3
-   * w  the w component for ivec4
+   * [location_OR_name] the name of the uniform, or the [GL.UniformLocation] itself
+   * [x]  the x component 
+   * [y]  the y component 
+   * [z]  the z component 
+   * [w]  the w component 
    */
   void setUniformi(location_OR_name, int x, [int y = null, int z = null, int w = null]) {
     _checkManaged();
@@ -220,11 +217,11 @@ class ShaderProgram implements Disposable {
    * The GL call is determined based on the number of arguments passed. 
    * For example, `setUniformf("var", 0, 1)` maps to `gl.uniform2f`.
    * 
-   * location_OR_name the name of the uniform, or the uniform itself
-   * x  the x component for ints
-   * y  the y component for ivec2
-   * z  the z component for ivec3
-   * w  the w component for ivec4
+   * [location_OR_name] the name of the uniform, or the [GL.UniformLocation] itself
+   * [x]  the x component for ints
+   * [y]  the y component for ivec2
+   * [z]  the z component for ivec3
+   * [w]  the w component for ivec4
    */
     void setUniformf(location_OR_name, num x, [num y = null, num z = null, num w = null]) {
       _checkManaged();
@@ -249,8 +246,8 @@ class ShaderProgram implements Disposable {
    * The GL call is determined based length of [buffer] 
    * For example, `setUniformfv("var", buffer)` maps to `gl.uniform2fv`, if buffer.length == 2
    * 
-   * location_OR_name the name of the uniform, or the uniform itself
-   * buffer  the list containing all the values to set in the uniform
+   * [location_OR_name] the name of the uniform, or the [GL.UniformLocation] itself
+   * [buffer]  the list containing all the values to set in the uniform
    */
   void setUniformfv(location_OR_name, Float32List buffer) {
     _checkManaged();
@@ -277,8 +274,8 @@ class ShaderProgram implements Disposable {
    * The GL call is determined based length of [buffer] 
    * For example, `setUniformiv("var", buffer)` maps to `gl.uniform2iv`, if buffer.length == 2
    * 
-   * location_OR_name the name of the uniform, or the uniform itself
-   * buffer  the list containing all the values to set in the uniform
+   * [location_OR_name] the name of the uniform, or the [GL.UniformLocation] itself
+   * [buffer] the list containing all the values to set in the uniform
    */
   void setUniformiv(location_OR_name, Int32List buffer) {
     _checkManaged();
@@ -300,12 +297,11 @@ class ShaderProgram implements Disposable {
     }
   }
 
-  /** Sets the uniform matrix with the given name. Throws an IllegalArgumentException in case it is not called in between a
-   * {@link #begin()}/{@link #end()} block.
+  /** Sets the uniform matrix with the given name. This needs to be called in between a [begin]/[end] block
    * 
-   * @param name the name of the uniform
-   * @param matrix the matrix
-   * @param transpose whether the matrix should be transposed */
+   * [location_OR_name] the name of the uniform
+   * [values_OR_Matrix4] the [Matrix4], or a [Float32List] with length of 16
+   * [transpose] whether the matrix should be transposed */
   void setUniformMatrix4fv (location_OR_name, values_OR_Matrix4, [bool transpose = false]) {
     _checkManaged();
     var location = _fetchUniformLocation(location_OR_name);
@@ -313,12 +309,11 @@ class ShaderProgram implements Disposable {
     _gl.uniformMatrix4fv(location, transpose, values);
   }
 
-  /** Sets the uniform matrix with the given name. Throws an IllegalArgumentException in case it is not called in between a
-   * {@link #begin()}/{@link #end()} block.
+  /** Sets the uniform matrix with the given [location_OR_name]. This needs to be called in between a [begin]/[end] block.
    * 
-   * @param name the name of the uniform
-   * @param matrix the matrix
-   * @param transpose whether the uniform matrix should be transposed */
+   * [location_OR_name] the name of the uniform, or the [GL.UniformLocation] itself
+   * [values_OR_Matrix3] the [Matrix3], or a [Float32List] with length of 9
+   * [transpose] whether the uniform matrix should be transposed, defaults to false */
   void setUniformMatrix3fv (location_OR_name, values_OR_Matrix3, [bool transpose = false]) {
     _checkManaged();
     var location = _fetchUniformLocation(location_OR_name);
@@ -327,15 +322,14 @@ class ShaderProgram implements Disposable {
   }
 
   
-  /** Sets the vertex attribute with the given name. Throws an IllegalArgumentException in case it is not called in between a
-   * {@link #begin()}/{@link #end()} block.
+  /** Sets the vertex attribute with the given name. This needs to be called in between a [begin]/[end] block
    * 
-   * location_OR_name the attribute name, or the attribute location itself
-   * size the number of components, must be >= 1 and <= 4
-   * type the type, must be one of GL.BYTE, GL.UNSIGNED_BYTE, GL.SHORT, GL.UNSIGNED_SHORT, GL.FIXED, or GL.FLOAT
-   * normalize whether fixed point data should be normalized. Will not work on the desktop
-   * stride the stride in bytes between successive attributes
-   * offset byte offset into the vertex buffer object bound to GL20.GL_ARRAY_BUFFER. */
+   * [location_OR_name] the attribute name, or the attribute location itself
+   * [size] the number of components, must be >= 1 and <= 4
+   * [type] the type, must be one of GL.BYTE, GL.UNSIGNED_BYTE, GL.SHORT, GL.UNSIGNED_SHORT, GL.FIXED, or GL.FLOAT
+   * [normalize] whether fixed point data should be normalized. Will not work on the desktop
+   * [stride] the stride in bytes between successive attributes
+   * [offset] byte offset into the vertex buffer object bound to [GL.ARRAY_BUFFER]. */
   void setVertexAttribute (location_OR_name, int size, int type, bool normalize, int stride, int offset) {
     _checkManaged();
     int location = _fetchAttributeLocation(location_OR_name);

@@ -25,7 +25,6 @@ part 'graphics/font.dart';
 part 'graphics/camera.dart';
 part 'graphics/orthographic_camera.dart';
 part 'graphics/loaders/texture_loader.dart';
-part 'graphics/loaders/bitmapfontdata_loader.dart';
 part 'graphics/color.dart';
 
 
@@ -91,7 +90,7 @@ abstract class Graphics{
   }
   
   disposeGraphics(){
-    textures.values.forEach( (texture) => texture.dispose(false));
+    textures.values.forEach( (texture) => texture._dispose());
     textures.clear();
     _watch.stop();
   }

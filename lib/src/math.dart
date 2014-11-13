@@ -2,9 +2,8 @@ library glib.math;
 
 import 'dart:typed_data';
 
-import 'package:vector_math/vector_math.dart' as VMath;
+//import 'package:vector_math/vector_math.dart' as VMath;
 export 'package:vector_math/vector_math.dart';
-
 
 class MathUtils{  
   static double clampDouble(double value, double min, double max){
