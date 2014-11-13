@@ -55,27 +55,28 @@ class CanvasInput implements Input{
   
   final CanvasElement canvas;
   bool justTouched;
-  List<bool> _touched = new List(20);
-  List<int> _touchX = new List(20);
-  List<int> _touchY = new List(20);
-  List<int> _deltaX = new List(20);
-  List<int> _deltaY = new List(20);
+  List<bool> _touched = new List.filled(20, false);
+  List<int> _touchX = new List.filled(20, 0);
+  List<int> _touchY = new List.filled(20, 0);
+  List<int> _deltaX = new List.filled(20, 0);
+  List<int> _deltaY = new List.filled(20, 0);
   Set<int> pressedButtons = new Set();
   int pressedKeyCount = 0;
-  List<bool> pressedKeys = new List(256);
+  List<bool> pressedKeys = new List.filled(256, false);
   bool keyJustPressed = false;
-  List<bool> justPressedKeys = new List(256);
+  List<bool> justPressedKeys = new List.filled(256, false);
   InputHandler handler;
   String lastKeyCharPressed;
   double keyRepeatTimer;
   int currentEventTimeStamp;
   bool hasFocus = true;
   bool catchCursor;
-  DateTime _dt;
+  Stopwatch _watch;
   
-  CanvasInput(this.canvas, {this.catchCursor : true}){
-    _dt = new DateTime.now();
+  CanvasInput(this.canvas, {this.catchCursor : false}){
+    _watch = new Stopwatch();
     attachEvents();
+    _watch.start();
   }
   
   void reset () {
@@ -121,7 +122,7 @@ class CanvasInput implements Input{
         }       
       }
       
-      currentEventTimeStamp = _dt.millisecondsSinceEpoch;
+      currentEventTimeStamp = _watch.elapsedMilliseconds;
       e.preventDefault();
     }
     if (e.type == "touchmove") {
@@ -137,7 +138,7 @@ class CanvasInput implements Input{
           handler.mouseDragged(_touchX[touchId], _touchY[touchId], Buttons.LEFT);
         }
       }
-      currentEventTimeStamp = _dt.millisecondsSinceEpoch;
+      currentEventTimeStamp = _watch.elapsedMilliseconds;
       e.preventDefault();
     }
     if (e.type == "touchcancel"){
@@ -154,7 +155,7 @@ class CanvasInput implements Input{
           handler.mouseUp(_touchX[touchId], _touchY[touchId], Buttons.LEFT);
         }         
       }
-      this.currentEventTimeStamp = _dt.millisecondsSinceEpoch;
+      this.currentEventTimeStamp = _watch.elapsedMilliseconds;
       e.preventDefault();
     }
     if (e.type == "touchend") {     
@@ -171,9 +172,10 @@ class CanvasInput implements Input{
           handler.mouseUp(_touchX[touchId], _touchY[touchId], Buttons.LEFT);
         }         
       }
-      this.currentEventTimeStamp = _dt.millisecondsSinceEpoch;
+      this.currentEventTimeStamp = _watch.elapsedMilliseconds;
       e.preventDefault();
     }
+    _watch.reset();
   }
   
   canvasKeyListener(KeyEvent e){
@@ -229,7 +231,7 @@ class CanvasInput implements Input{
 
       if (handler != null)
         handler.mouseScrolled(val);
-      currentEventTimeStamp = _dt.millisecondsSinceEpoch;
+      currentEventTimeStamp = _watch.elapsedMilliseconds;
     }
     
     if(event.type == 'mousedown'){
@@ -240,14 +242,14 @@ class CanvasInput implements Input{
       _deltaY[0] = 0;
       
       if(catchCursor){
-        _touchX[0] = event.movement.x;
-        _touchY[0] = event.movement.y;
+        _touchX[0] = event.offset.x;
+        _touchY[0] = canvas.height - event.offset.y;
       }else{
         _touchX[0] = _getMouseRelativeX(event, canvas).toInt();
         _touchY[0] = _getMouseRelativeY(event, canvas).toInt();
       }
       
-      currentEventTimeStamp = _dt.millisecondsSinceEpoch;
+      currentEventTimeStamp = _watch.elapsedMilliseconds;
       if (handler != null) 
         handler.mouseDown(_touchX[0], _touchY[0], event.button);
     }
@@ -264,7 +266,7 @@ class CanvasInput implements Input{
         _touchX[0] = _getMouseRelativeX(event, canvas);
         _touchY[0] = _getMouseRelativeY(event, canvas);
       }
-      this.currentEventTimeStamp = _dt.millisecondsSinceEpoch;
+      this.currentEventTimeStamp = _watch.elapsedMilliseconds;
       if (handler != null) {
         if (_touched[0])
           handler.mouseDragged(_touchX[0], _touchY[0], event.button);
@@ -290,12 +292,13 @@ class CanvasInput implements Input{
         _touchX[0] = _getMouseRelativeX(event, canvas);
         _touchY[0] = _getMouseRelativeY(event, canvas);
       }
-      this.currentEventTimeStamp = _dt.millisecondsSinceEpoch;
+      this.currentEventTimeStamp = _watch.elapsedMilliseconds;
       this._touched[0] = false;
       if (handler != null) 
         handler.mouseUp(_touchX[0], _touchY[0], event.button);
       
     }
+    _watch.reset();
   }
   
   @override
@@ -335,9 +338,9 @@ class CanvasInput implements Input{
     return justPressedKeys[keycode];
   }
   
-  int _getMouseRelativeX(MouseEvent e, Element target) => e.client.x - target.getBoundingClientRect().left;
-  int _getMouseRelativeY(MouseEvent e, Element target) => e.client.y - target.getBoundingClientRect().top;
+  int _getMouseRelativeX(MouseEvent e, Element target) => e.client.x - target.offset.left;
+  int _getMouseRelativeY(MouseEvent e, Element target) => canvas.height - ( e.client.y - target.offset.top);
   
-  int _getTouchRelativeX(Touch e, Element target) => e.client.x - target.getBoundingClientRect().left;
-  int _getTouchRelativeY(Touch e, Element target) => e.client.y - target.getBoundingClientRect().top;
+  int _getTouchRelativeX(Touch e, Element target) => e.client.x - target.offset.left;
+  int _getTouchRelativeY(Touch e, Element target) => canvas.height - (e.client.y - target.offset.top);
 }
