@@ -1,21 +1,24 @@
-part of glib.tests.graphics; 
+part of glib.tests; 
 
 class TextureTest extends Test{
   
   Texture texture;
   Texture spriteSheet;
   TextureRegion firstFrame;
+  SpriteBatch batch;
   
-  TextureTest(gl):super(gl);
+  TextureTest():super("Texture test");
   
-  init(){    
+  create(){    
     texture = new Texture.from("assets/head.png");
     spriteSheet = new Texture.from('assets/spritesheet-body.png');
     firstFrame = new TextureRegion(spriteSheet, 0, 0, 64, 64);
+    batch = new SpriteBatch();
   }
   
   render(){
-    Test.batch
+    super.render();
+    batch
       ..begin()
       ..drawTexture(texture, 0.0, 0.0)
       ..drawRegion(firstFrame, 40.0, 1.0)

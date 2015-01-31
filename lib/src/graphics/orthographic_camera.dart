@@ -47,9 +47,9 @@ class OrthographicCamera extends Camera{
    */
   void setToOrtho ([bool yDown = false, double viewportWidth, double viewportHeight]) {
     if (viewportWidth == null)
-      viewportWidth = _width.toDouble();
+      viewportWidth = _graphics.width.toDouble();
     if (viewportHeight == null)
-      viewportHeight = _height.toDouble();
+      viewportHeight = _graphics.height.toDouble();
     
     if (yDown) {
       up.setValues(0.0, -1.0, 0.0);

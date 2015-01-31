@@ -1,4 +1,4 @@
-part of glib.tests.input;
+part of glib.tests;
 
 class TouchTest extends Test{
   
@@ -6,16 +6,27 @@ class TouchTest extends Test{
   SpriteBatch _batch;
   MyInputHandler _handler;
   
-  TouchTest(gl):super(gl);
+  TouchTest():super("Touch test");
   
-  init(Input input ){
+  create(){
     font = new Font();
-    _batch = Test.batch;
+    _batch = new SpriteBatch();
     _handler = new MyInputHandler();
-    input.handler = _handler;
+    Glib.input.handler = _handler;
+  }
+  
+  pause(){}
+  
+  resume(){}
+  
+  resize(width, height){
+ 
   }
   
   render(){
+//    super.render();
+    Glib.gl.clearColor(0, 0, 0, 1);
+    Glib.gl.clear(GL.COLOR_BUFFER_BIT);
     _batch.begin();
     
     font.draw(_batch, "Mouse position: ${_handler.mousePos}", 20.0, 5.0);

@@ -24,7 +24,7 @@ abstract class GLTexture implements Disposable {
   /// Generates a new webgl texture with the specified target. */
   GLTexture(this.glTarget, [this.glTexture = null]){
     if( glTexture == null )
-      glTexture = _gl.createTexture();
+      glTexture = _graphics.gl.createTexture();
   }
 
   /// return whether this texture is managed or not.
@@ -36,8 +36,8 @@ abstract class GLTexture implements Disposable {
   */
   void bind ([int unit = null]) {
     if ( unit != null )
-      _gl.activeTexture(GL.TEXTURE0 + unit);
-    _gl.bindTexture(glTarget, glTexture);
+      _graphics.gl.activeTexture(GL.TEXTURE0 + unit);
+    _graphics.gl.bindTexture(glTarget, glTexture);
   }
 
 //  /** @return The OpenGL handle for this texture. */
@@ -67,11 +67,11 @@ abstract class GLTexture implements Disposable {
     
     if(updateU){
       uWrap = u;
-      _gl.texParameterf(glTarget, GL.TEXTURE_WRAP_S, u.glEnum);
+      _graphics.gl.texParameterf(glTarget, GL.TEXTURE_WRAP_S, u.glEnum);
     }
     if (updateV){
       vWrap = v;
-      _gl.texParameterf(glTarget, GL.TEXTURE_WRAP_T, v.glEnum);
+      _graphics.gl.texParameterf(glTarget, GL.TEXTURE_WRAP_T, v.glEnum);
     }
   }
 
@@ -97,11 +97,11 @@ abstract class GLTexture implements Disposable {
     
     if(updateMin){
       minFilter = min;
-      _gl.texParameterf(glTarget, GL.TEXTURE_MIN_FILTER, minFilter.glEnum);
+      _graphics.gl.texParameterf(glTarget, GL.TEXTURE_MIN_FILTER, minFilter.glEnum);
     }
     if (updateMag){
       magFilter = mag;
-      _gl.texParameterf(glTarget, GL.TEXTURE_MAG_FILTER, magFilter.glEnum);
+      _graphics.gl.texParameterf(glTarget, GL.TEXTURE_MAG_FILTER, magFilter.glEnum);
     }
   }
 
@@ -109,7 +109,7 @@ abstract class GLTexture implements Disposable {
     if (glTexture == null) 
           return;
         
-    _gl.deleteTexture(glTexture);
+    _graphics.gl.deleteTexture(glTexture);
     glTexture = null;
   }
 }

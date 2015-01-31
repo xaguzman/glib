@@ -1,4 +1,4 @@
-part of glib.tests.graphics;
+part of glib.tests;
 
 class FontTest extends Test{
   
@@ -6,9 +6,9 @@ class FontTest extends Test{
   Font monospace;
   String testmsg = 'The quick brown fox jumps over the lazy dog 0123456789';
   
-  FontTest(gl):super(gl);
+  FontTest():super("Font test");
   
-  init(){
+  create(){
     arial = new Font(new FontStyle(28, 'arial'))
 //      ..debugTextures = true
       ..maxTextureWidth = 512;
@@ -17,7 +17,8 @@ class FontTest extends Test{
   }
   
   render(){
-    var batch = Test.batch;
+    super.render();
+    var batch = new SpriteBatch();
     batch.begin();
     arial
       ..draw(batch, testmsg, 20.0, 20.0)

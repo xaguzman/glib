@@ -168,10 +168,10 @@ abstract class Camera{
      * [viewportHeight] the height of the viewport in pixels If not specified, it will take the value of [_height] */
     Vector3 unproject (Vector3 screenCoords, [double viewportX = 0.0, double viewportY = 0.0, double viewportWidth, double viewportHeight]) {
       if (viewportWidth == null)
-        viewportWidth = _width.toDouble();
+        viewportWidth = _graphics.width.toDouble();
       
       if(viewportHeight == null)
-        viewportHeight = _height.toDouble();
+        viewportHeight = _graphics.height.toDouble();
       
       double x = screenCoords.x, y = screenCoords.y;
       x = x - viewportX;

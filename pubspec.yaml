@@ -3,3 +3,5 @@ description: webgl
 dependencies:
   asset_pack: any
   vector_math: any
+dev_dependencies:
+  browser: any

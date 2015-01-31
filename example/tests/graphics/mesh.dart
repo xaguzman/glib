@@ -1,4 +1,4 @@
-part of glib.tests.graphics;
+part of glib.tests;
 
 class MeshTest extends Test{
   
@@ -7,9 +7,9 @@ class MeshTest extends Test{
   ShaderProgram shader;
   Matrix4 matrix = new Matrix4.identity();
   
-  MeshTest(gl):super(gl);
+  MeshTest():super("Mesh test");
   
-  init(){
+  create(){
     
     var attrib = new VertexAttributes([new VertexAttribute.Position()]);
     
@@ -29,7 +29,7 @@ class MeshTest extends Test{
       varying vec4 v_color;
       
       void main(){ 
-        v_color = vec4(1, 1, 1, 1);
+        v_color = vec4(1, 0, 0, 1);
         gl_Position =  u_worldView * a_position;
       }""";
     
@@ -48,11 +48,11 @@ class MeshTest extends Test{
   }
   
   render(){
-    gl.viewport(0, 0, 800, 480);
-    gl.clearColor(0,0,0, 1);
-    gl.clear(GL.COLOR_BUFFER_BIT);
-    gl.enable(GL.BLEND);
-    gl.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA);
+    Glib.gl.viewport(0, 0, 800, 480);
+    Glib.gl.clearColor(0,0,0, 1);
+    Glib.gl.clear(GL.COLOR_BUFFER_BIT);
+    Glib.gl.enable(GL.BLEND);
+    Glib.gl.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA);
     shader.begin();
     shader.setUniformMatrix4fv("u_worldView", matrix);
     mesh.render(shader, GL.TRIANGLES);

@@ -1,4 +1,4 @@
-part of glib.tests.graphics;
+part of glib.tests;
 
 class OrthographicCameraTest extends Test{
  
@@ -6,18 +6,18 @@ class OrthographicCameraTest extends Test{
   OrthographicCamera camera;
   double cameraDelta;
     
-  OrthographicCameraTest(gl):super(gl){
+  OrthographicCameraTest():super("Orthographic camera test"){
     cameraDelta = 2.0;
   }
   
-  init(){
+  create(){
     texture = new Texture.from('assets/spritesheet-body.png');
     camera = new OrthographicCamera()..setToOrtho();
-    
   }
     
   render(){
-    var batch = Test.batch;
+    super.render();
+    var batch = new SpriteBatch();
     camera.update();
     batch.projection.setFrom(camera.combined);
     batch

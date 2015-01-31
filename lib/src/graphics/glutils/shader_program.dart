@@ -99,16 +99,16 @@ class ShaderProgram implements Disposable {
   }
 
   GL.Shader _loadShader (int type, String source) {
-    var shader = _gl.createShader(type);
+    var shader = _graphics.gl.createShader(type);
     if (shader == null) return null;
 
-    _gl.shaderSource(shader, source);
-    _gl.compileShader(shader);
+    _graphics.gl.shaderSource(shader, source);
+    _graphics.gl.compileShader(shader);
     
-    bool compiled = _gl.getShaderParameter(shader, GL.COMPILE_STATUS);
+    bool compiled = _graphics.gl.getShaderParameter(shader, GL.COMPILE_STATUS);
 
     if (!compiled) {
-      _log += _gl.getShaderInfoLog(shader);;
+      _log += _graphics.gl.getShaderInfoLog(shader);;
       return null;
     }
 
@@ -116,17 +116,17 @@ class ShaderProgram implements Disposable {
   }
 
   GL.Program _linkProgram () {
-    var program = _gl.createProgram();
+    var program = _graphics.gl.createProgram();
     if (program == null) return null;
 
-    _gl.attachShader(program, _vertexShader);
-    _gl.attachShader(program, _fragmentShader);
-    _gl.linkProgram(program);
+    _graphics.gl.attachShader(program, _vertexShader);
+    _graphics.gl.attachShader(program, _fragmentShader);
+    _graphics.gl.linkProgram(program);
 
-    bool linked = _gl.getProgramParameter(program, GL.LINK_STATUS);
+    bool linked = _graphics.gl.getProgramParameter(program, GL.LINK_STATUS);
     
     if (!linked) {
-      _log = _gl.getProgramInfoLog(program);
+      _log = _graphics.gl.getProgramInfoLog(program);
       return null;
     }
 
@@ -136,7 +136,7 @@ class ShaderProgram implements Disposable {
   /// the log info for the shader compilation and program linking stage. The shader needs to be bound for this method to have an effect.
   String get log{
     if (_isCompiled)
-      _log = _gl.getProgramInfoLog(_program);
+      _log = _graphics.gl.getProgramInfoLog(_program);
     return _log;
   }
 
@@ -149,7 +149,7 @@ class ShaderProgram implements Disposable {
     
     int location;
     if (!_attributesLocation.containsKey(location_OR_name)) {
-      location = _gl.getAttribLocation(_program, location_OR_name);
+      location = _graphics.gl.getAttribLocation(_program, location_OR_name);
       if (location == -1 ) return -1;
       
       _attributesLocation[location_OR_name] = location;
@@ -174,7 +174,7 @@ class ShaderProgram implements Disposable {
     if( _uniformLocations.containsKey(location_OR_name) )
       return _uniformLocations[location_OR_name];
     
-    location = _gl.getUniformLocation(_program, location_OR_name);
+    location = _graphics.gl.getUniformLocation(_program, location_OR_name);
     if (location == null && pedantic)
         throw new Exception("no uniform with name '" + location_OR_name + "' in shader");
          
@@ -201,13 +201,13 @@ class ShaderProgram implements Disposable {
       return;
     
     if (w != null)
-      _gl.uniform4i(location, x, y, z, w);
+      _graphics.gl.uniform4i(location, x, y, z, w);
     else if (z != null)
-      _gl.uniform3i(location, x, y, z);
+      _graphics.gl.uniform3i(location, x, y, z);
     else if ( y != null)
-      _gl.uniform2i(location, x, y);
+      _graphics.gl.uniform2i(location, x, y);
     else if( x != null)
-      _gl.uniform1i(location, x);
+      _graphics.gl.uniform1i(location, x);
     else
       throw new ArgumentError('Incorrect arguments for setUniformi');
   }
@@ -230,13 +230,13 @@ class ShaderProgram implements Disposable {
         return;
       
       if (w != null)
-        _gl.uniform4f(location, x, y, z, w);
+        _graphics.gl.uniform4f(location, x, y, z, w);
       else if (z != null)
-        _gl.uniform3f(location, x, y, z);
+        _graphics.gl.uniform3f(location, x, y, z);
       else if ( y != null)
-        _gl.uniform2f(location, x, y);
+        _graphics.gl.uniform2f(location, x, y);
       else if( x != null)
-        _gl.uniform1f(location, x);
+        _graphics.gl.uniform1f(location, x);
       else
         throw new ArgumentError('Incorrect arguments for setUniformf');
     }
@@ -256,13 +256,13 @@ class ShaderProgram implements Disposable {
       return;
     
     switch(buffer.length){
-      case 1: _gl.uniform1fv(location, buffer);
+      case 1: _graphics.gl.uniform1fv(location, buffer);
         break;
-      case 2: _gl.uniform2fv(location, buffer);
+      case 2: _graphics.gl.uniform2fv(location, buffer);
         break;
-      case 3: _gl.uniform3fv(location, buffer);
+      case 3: _graphics.gl.uniform3fv(location, buffer);
         break;
-      case 4: _gl.uniform4fv(location, buffer);
+      case 4: _graphics.gl.uniform4fv(location, buffer);
         break;
       default:
         throw new ArgumentError('Incorrect arguments for setUniformfv');
@@ -284,13 +284,13 @@ class ShaderProgram implements Disposable {
       return;
     
     switch(buffer.length){
-      case 1: _gl.uniform1iv(location, buffer);
+      case 1: _graphics.gl.uniform1iv(location, buffer);
         break;
-      case 2: _gl.uniform2iv(location, buffer);
+      case 2: _graphics.gl.uniform2iv(location, buffer);
         break;
-      case 3: _gl.uniform3iv(location, buffer);
+      case 3: _graphics.gl.uniform3iv(location, buffer);
         break;
-      case 4: _gl.uniform4iv(location, buffer);
+      case 4: _graphics.gl.uniform4iv(location, buffer);
         break;
       default:
         throw new ArgumentError('Incorrect arguments for setUniformiv');
@@ -306,7 +306,7 @@ class ShaderProgram implements Disposable {
     _checkManaged();
     var location = _fetchUniformLocation(location_OR_name);
     Float32List values = values_OR_Matrix4 is Matrix4 ? values_OR_Matrix4.storage : values_OR_Matrix4;
-    _gl.uniformMatrix4fv(location, transpose, values);
+    _graphics.gl.uniformMatrix4fv(location, transpose, values);
   }
 
   /** Sets the uniform matrix with the given [location_OR_name]. This needs to be called in between a [begin]/[end] block.
@@ -318,7 +318,7 @@ class ShaderProgram implements Disposable {
     _checkManaged();
     var location = _fetchUniformLocation(location_OR_name);
     Float32List values = values_OR_Matrix3 is Matrix3 ? values_OR_Matrix3 : values_OR_Matrix3;
-    _gl.uniformMatrix3fv(location, transpose, values);
+    _graphics.gl.uniformMatrix3fv(location, transpose, values);
   }
 
   
@@ -334,26 +334,26 @@ class ShaderProgram implements Disposable {
     _checkManaged();
     int location = _fetchAttributeLocation(location_OR_name);
     if (location == -1) return;
-    _gl.vertexAttribPointer(location, size, type, normalize, stride, offset);
+    _graphics.gl.vertexAttribPointer(location, size, type, normalize, stride, offset);
   }
 
   /// Makes WebGL use this vertex and fragment shader pair. Make sure to call [end] when you are done with this shader 
   void begin () {
     _checkManaged();
-    _gl.useProgram(_program);
+    _graphics.gl.useProgram(_program);
   }
 
   /// Disables this shader. Must be called when one is done with the shader (during draw calls)
   void end () {
-    _gl.useProgram(null);
+    _graphics.gl.useProgram(null);
   }
 
   /// Disposes all resources associated with this shader. Must be called when the shader is no longer used
   void dispose () {
-    _gl.useProgram(null);
-    _gl.deleteShader(_vertexShader);
-    _gl.deleteShader(_fragmentShader);
-    _gl.deleteProgram(_program);
+    _graphics.gl.useProgram(null);
+    _graphics.gl.deleteShader(_vertexShader);
+    _graphics.gl.deleteShader(_fragmentShader);
+    _graphics.gl.deleteProgram(_program);
     
 //    _shaders.remove(Gdx.app);
   }
@@ -367,7 +367,7 @@ class ShaderProgram implements Disposable {
     _checkManaged();
     int location = _fetchAttributeLocation(location_OR_name);
     if (location == -1) return;
-    _gl.disableVertexAttribArray(location);
+    _graphics.gl.disableVertexAttribArray(location);
   }
 
   /** 
@@ -379,7 +379,7 @@ class ShaderProgram implements Disposable {
     _checkManaged();
     int location = _fetchAttributeLocation(location_OR_name);
     if (location == -1) return;
-    _gl.enableVertexAttribArray(location);
+    _graphics.gl.enableVertexAttribArray(location);
   }
 
   void _checkManaged () {
@@ -434,16 +434,16 @@ class ShaderProgram implements Disposable {
   void setAttributef (location_OR_name, num value1, num value2, num value3, num value4) {
     _checkManaged();
     var location = _fetchAttributeLocation(location_OR_name);    
-    _gl.vertexAttrib4f(location, value1, value2, value3, value4);
+    _graphics.gl.vertexAttrib4f(location, value1, value2, value3, value4);
   }
 
   void _fetchUniforms () {
-    int numUniforms = _gl.getProgramParameter(_program, GL.ACTIVE_UNIFORMS);
+    int numUniforms = _graphics.gl.getProgramParameter(_program, GL.ACTIVE_UNIFORMS);
     _uniformNames = new List<String>(numUniforms);
 
     for (int i = 0; i < numUniforms; i++) {
-      var info = _gl.getActiveUniform(_program, i);
-      var location = _gl.getUniformLocation(_program, info.name);
+      var info = _graphics.gl.getActiveUniform(_program, i);
+      var location = _graphics.gl.getUniformLocation(_program, info.name);
       _uniforms[info.name] = info;
       _uniformNames[i] = info.name;
     }
@@ -451,12 +451,12 @@ class ShaderProgram implements Disposable {
 
   void _fetchAttributes () {
     
-    int numAttributes = _gl.getProgramParameter(_program,  GL.ACTIVE_ATTRIBUTES);   
+    int numAttributes = _graphics.gl.getProgramParameter(_program,  GL.ACTIVE_ATTRIBUTES);   
     _attributeNames = new List<String>(numAttributes);
 
     for (int i = 0; i < numAttributes; i++) {
-      GL.ActiveInfo info = _gl.getActiveAttrib(_program, i);
-      int location = _gl.getAttribLocation(_program, info.name);
+      GL.ActiveInfo info = _graphics.gl.getActiveAttrib(_program, i);
+      int location = _graphics.gl.getAttribLocation(_program, info.name);
       _attributes[info.name] = info;
       _attributesLocation[info.name] = location; 
       _attributeNames[i] = info.name;

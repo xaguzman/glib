@@ -19,7 +19,7 @@ class VertexBufferObject implements Disposable{
   {
     int numComponents = numVertices * (_attributes.vertexStride ~/ 4);
     _buffer = new Float32List(numComponents);
-    glBuffer = _gl.createBuffer();
+    glBuffer = _graphics.gl.createBuffer();
     usage = isStatic ? GL.STATIC_DRAW : GL.DYNAMIC_DRAW;
   }
   
@@ -45,7 +45,7 @@ class VertexBufferObject implements Disposable{
     if (!isBound)
       return;
     
-    _gl.bufferData(GL.ARRAY_BUFFER, _buffer, usage);
+    _graphics.gl.bufferData(GL.ARRAY_BUFFER, _buffer, usage);
     isDirty = false;
   }
 
@@ -59,9 +59,9 @@ class VertexBufferObject implements Disposable{
 
   void bind (ShaderProgram shader, [List<int> locations = null]) {
     
-    _gl.bindBuffer(GL.ARRAY_BUFFER, glBuffer); 
+    _graphics.gl.bindBuffer(GL.ARRAY_BUFFER, glBuffer); 
     if (isDirty) {
-      _gl.bufferData(GL.ARRAY_BUFFER, _buffer, usage);
+      _graphics.gl.bufferData(GL.ARRAY_BUFFER, _buffer, usage);
       isDirty = false;
     }
 
@@ -103,7 +103,7 @@ class VertexBufferObject implements Disposable{
         if (location >= 0) shader.disableVertexAttribute(location);
       }
     }
-    _gl.bindBuffer(GL.ARRAY_BUFFER, null);
+    _graphics.gl.bindBuffer(GL.ARRAY_BUFFER, null);
     isBound = false;
   }
 
@@ -115,8 +115,8 @@ class VertexBufferObject implements Disposable{
 
   /// Disposes of all resources this VertexBufferObject uses
   void dispose () {   
-    _gl.bindBuffer(GL.ARRAY_BUFFER, null);
-    _gl.deleteBuffer(glBuffer);
+    _graphics.gl.bindBuffer(GL.ARRAY_BUFFER, null);
+    _graphics.gl.deleteBuffer(glBuffer);
     glBuffer = null;
 //    _buffer.clear();
   }

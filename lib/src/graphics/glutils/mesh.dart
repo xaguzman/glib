@@ -142,9 +142,9 @@ class Mesh implements Disposable {
       bind(shader);
 
     if (indices.getNumIndices() > 0)
-      _gl.drawElements(primitiveType, count, GL.UNSIGNED_SHORT, offset * 2);
+      _graphics.gl.drawElements(primitiveType, count, GL.UNSIGNED_SHORT, offset * 2);
     else
-      _gl.drawArrays(primitiveType, offset, count);
+      _graphics.gl.drawArrays(primitiveType, offset, count);
     
     if (autoBind) 
       unbind(shader);

@@ -28,32 +28,69 @@ part 'graphics/loaders/texture_loader.dart';
 part 'graphics/color.dart';
 
 
-GL.RenderingContext _gl;
-Map<String, Texture> _textures;
-int _width, _height;
+//GL.RenderingContext _gl;
+//Map<String, Texture> _textures;
+//int _width, _height;
+
+Graphics _graphics;
 
 abstract class Graphics{
   
-  CanvasElement canvas;
+  double get deltaTime;
   
-  double _deltatime = 0.0;
-  double get deltaTime =>_deltatime;
-  
-  double elapsedTime = 0.0;
-  Stopwatch _watch;
-  
-  int _fps = 0, _frames = 0;
   /// the current frames per second
-  int get fps => _fps;
+  int get fps;
   
   /// updates the elapsed time since the last rendering, also the frames per second.
   /// you should not directly call this
-  update(){
+  void update();
+  
+  void disposeGraphics();
+    
+  GL.RenderingContext get gl; 
+  Map<int, Texture> get textures; 
+  
+  int get width;
+  int get height;
+}
+
+class WebGraphics extends Graphics{
+  Stopwatch _watch;
+  CanvasElement canvas;
+  GL.RenderingContext _gl;
+  Map<int, Texture> _textures;
+  int _width, _height;
+    
+  double _deltatime = 0.0, _elapsedTime = 0.0;
+  ///time elapsed (in seconds) since the last frame
+  @override double get deltaTime =>_deltatime;
+  
+  int _fps = 0, _frames = 0;
+  
+  @override int get fps => _fps;
+  @override int get width => _width;
+  @override int get height => _height;
+  @override GL.RenderingContext get gl => _gl;
+  @override Map<int, Texture> get textures => _textures;
+  
+  WebGraphics();
+
+  WebGraphics.config(int width, int height, [bool stencil=false, bool antialiasing=false, bool preserveDrawingBuffer=false]){
+    this.canvas = new CanvasElement(width: width, height: height);
+    _initGraphics(stencil: stencil, antialiasing: antialiasing, preserveDrawingBuffer: preserveDrawingBuffer);
+  }
+  
+  WebGraphics.withCanvas(this.canvas, [bool stencil=false, bool antialiasing=false, bool preserveDrawingBuffer=false]){
+    _initGraphics(stencil: stencil, antialiasing: antialiasing, preserveDrawingBuffer: preserveDrawingBuffer);
+  }
+  
+  @override 
+  void update(){
     _deltatime = _watch.elapsedMilliseconds / 1000; 
-    elapsedTime += deltaTime;
+    _elapsedTime += deltaTime;
     _frames++;
-    if (elapsedTime > 1) {
-      elapsedTime = 0.0;
+    if (_elapsedTime > 1) {
+      _elapsedTime = 0.0;
       _fps = _frames;
       _frames = 0;
     }
@@ -61,11 +98,10 @@ abstract class Graphics{
   }
   
   /// initializes the graphics context 
-  initGraphics(CanvasElement canvas, 
-      {bool stencil:false, bool antialiasing:false, bool preserveDrawingBuffer:false}){
-    if(this.canvas == canvas)
-      return;
-    this.canvas = canvas;
+  _initGraphics( {bool stencil:false, bool antialiasing:false, bool preserveDrawingBuffer:false}){
+    if (this.canvas == null)
+      throw new GlibException("No canvas element assigned");
+    
     _gl = this.canvas.getContext("webgl");
     if (_gl == null) 
       _gl = this.canvas.getContext("experimental-webgl");
@@ -86,31 +122,15 @@ abstract class Graphics{
     
     _gl.viewport(0, 0, canvas.width, canvas.height);
     
+    _graphics = this;
     _watch = new Stopwatch()..start(); 
   }
   
-  disposeGraphics(){
-    textures.values.forEach( (texture) => texture._dispose());
-    textures.clear();
-    _watch.stop();
+  @override
+  void disposeGraphics(){
+      textures.values.forEach( (texture) => texture._dispose());
+      textures.clear();
+      _watch.stop();
   }
-  
-  GL.RenderingContext get gl => _gl;
-  Map<String, Texture> get textures => _textures;
-  
-  int get width => _width;
-  int get height => _height;
-    
-}
-
-class WebGraphics extends Graphics{
-
-  WebGraphics();
-
-  WebGraphics.config(int width, int height, [bool stencil=false, bool antialiasing=false, bool preserveDrawingBuffer=false]){
-    
-    var canvas = new CanvasElement(width: width, height: height);
-    initGraphics(canvas, stencil: stencil, antialiasing: antialiasing, preserveDrawingBuffer: preserveDrawingBuffer);
-  }
- 
+   
 }

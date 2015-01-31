@@ -50,7 +50,7 @@ class SpriteBatch implements Disposable{
      ]);
     
     _mesh = new Mesh(false, size * 4, size * 6, attributes);
-    setOrthographicMatrix(projection, 0.0, _width.toDouble(), 0.0, _height.toDouble(), 0.0, 1.0);
+    setOrthographicMatrix(projection, 0.0, _graphics.width.toDouble(), 0.0, _graphics.height.toDouble(), 0.0, 1.0);
 //    projection.setToOrtho2D(0.0, _width.toDouble(), 0.0, _height.toDouble());
 
     _vertices = new Float32List(size * _vertexPerSprite);
@@ -91,7 +91,7 @@ class SpriteBatch implements Disposable{
     if (_drawing) 
       throw new StateError('Spritebatch.end() should be called before calling Spritebatch.begin() a second time');
     
-    _gl.depthMask(false);
+    _graphics.gl.depthMask(false);
     
     var currentShader = (_customShader == null ? _defaultShader: _customShader)
         ..begin();
@@ -111,9 +111,9 @@ class SpriteBatch implements Disposable{
     _prevTexture = null;
     _drawing = false;
 
-    _gl.depthMask(true);
+    _graphics.gl.depthMask(true);
     if (!isBlendingEnabled) 
-      _gl.disable(GL.BLEND);
+      _graphics.gl.disable(GL.BLEND);
 
     var currentShader = _customShader == null ? _defaultShader: _customShader;
     currentShader.end();
@@ -222,11 +222,11 @@ class SpriteBatch implements Disposable{
     _mesh.setVertices(_vertices, 0, _currentVertex);
 
     if (isBlendingEnabled) {
-      _gl.enable(GL.BLEND);
+      _graphics.gl.enable(GL.BLEND);
       if (_blendSrcFunc != -1)
-        _gl.blendFunc(_blendSrcFunc, _blendDstFunc);
+        _graphics.gl.blendFunc(_blendSrcFunc, _blendDstFunc);
     } else {
-      _gl.disable(GL.BLEND);
+      _graphics.gl.disable(GL.BLEND);
     }
 
     _mesh.render(_customShader != null ? _customShader : _defaultShader, GL.TRIANGLES, 0, count);

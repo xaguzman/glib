@@ -21,7 +21,7 @@ class IndexBufferObject implements Disposable{
   }
 
   void _createBufferObject () {
-    glBuffer = _gl.createBuffer();
+    glBuffer = _graphics.gl.createBuffer();
   }
 
   /// the number of indices currently stored in this buffer
@@ -50,7 +50,7 @@ class IndexBufferObject implements Disposable{
           _limit = offset + count ;
 
     if (isBound) {
-      _gl.bufferData(GL.ELEMENT_ARRAY_BUFFER, buffer, usage);
+      _graphics.gl.bufferData(GL.ELEMENT_ARRAY_BUFFER, buffer, usage);
       isDirty = false;
     }
   }
@@ -64,9 +64,9 @@ class IndexBufferObject implements Disposable{
   void bind () {
     if (glBuffer == null) throw new StateError("No buffer allocated!");
 
-    _gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, glBuffer);
+    _graphics.gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, glBuffer);
     if (isDirty) {
-      _gl.bufferData(GL.ELEMENT_ARRAY_BUFFER, buffer, usage);
+      _graphics.gl.bufferData(GL.ELEMENT_ARRAY_BUFFER, buffer, usage);
       isDirty = false;
     }
     isBound = true;
@@ -74,7 +74,7 @@ class IndexBufferObject implements Disposable{
 
   /// Unbinds this IndexBufferObject
   void unbind () {
-    _gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
+    _graphics.gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
     isBound = false;
   }
 
@@ -86,8 +86,8 @@ class IndexBufferObject implements Disposable{
 
   /// Disposes this IndexBufferObject and all its associated OpenGL resources.
   void dispose () {
-    _gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
-    _gl.deleteBuffer(glBuffer);
+    _graphics.gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
+    _graphics.gl.deleteBuffer(glBuffer);
     glBuffer = null;
   }
 }

@@ -9,7 +9,11 @@ export 'src/graphics.dart';
 import 'src/input.dart';
 export 'src/input.dart';
 
-part 'src/application.dart';
-part 'src/application_configuration.dart';
+import 'src/common.dart';
+
+part 'src/glib.dart';
+part 'src/application/application.dart';
+part 'src/application/application_listener.dart';
+part 'src/application/application_configuration.dart';
 
 

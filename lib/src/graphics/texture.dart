@@ -1,7 +1,10 @@
 part of glib.graphics;
 
+
 class Texture extends GLTexture { 
   String url;
+  
+  static int _texturesCount = 0;
   
   int get id => _id;
   int _id;
@@ -12,7 +15,6 @@ class Texture extends GLTexture {
   
   Texture(): super(GL.TEXTURE_2D){
     this.width = this.height = 1;
-    _id = _textures.length;
     _assignId();
   }
   
@@ -23,7 +25,7 @@ class Texture extends GLTexture {
     _assignId();
   }
   
-  /// creates a texture from an image stored in the given [url]. Not cross-domain friendly
+  /// creates a texture from an image stored in the given [url]
   Texture.from(this.url): super(GL.TEXTURE_2D), loaded = false {
     var loader = new TextureLoader(url);
     uploadData(1, 1); //create dummy data so rendering doesn't break when using this constructor
@@ -35,8 +37,8 @@ class Texture extends GLTexture {
 //  Texture.copy(Texture other): super(GL.TEXTURE_2D, other.glTexture) ;
   
   _assignId(){
-    _id = _textures.length;
-    _textures[_id] = this;
+    _id = Texture._texturesCount++;
+    _graphics.textures[_id] = this;
   }
   
   void _loadImageElement(ImageElement img){
@@ -46,7 +48,7 @@ class Texture extends GLTexture {
     uploadImage(img);
     setFilter(minFilter, magFilter, force: true);
     setWrap(uWrap, uWrap, force: true);
-    _gl.bindTexture(glTarget, null);
+    _graphics.gl.bindTexture(glTarget, null);
     loaded = true;
     _loadCompleter.complete(this);
   }
@@ -64,19 +66,19 @@ class Texture extends GLTexture {
     this.height = height;
     
     bind();
-    _gl.texImage2DTyped(glTarget, level, format, width, height, 0, format, type, data);
+    _graphics.gl.texImage2DTyped(glTarget, level, format, width, height, 0, format, type, data);
     if (genMipMaps)
-      _gl.generateMipmap(glTarget);
+      _graphics.gl.generateMipmap(glTarget);
   }
   
   void uploadCanvas(CanvasElement canvas, {int level:0, int format:GL.RGBA, int type:GL.UNSIGNED_BYTE, bool genMipMaps:false}){
     width = canvas.width;
     height = canvas.height;
     
-    _gl.texImage2DCanvas(glTarget, level, format, format, type, canvas);
+    _graphics.gl.texImage2DCanvas(glTarget, level, format, format, type, canvas);
     
     if(genMipMaps)
-      _gl.generateMipmap(glTarget);
+      _graphics.gl.generateMipmap(glTarget);
   }
     
   void uploadImage(ImageElement img, {int level:0, int format:GL.RGBA, int type:GL.UNSIGNED_BYTE, bool genMipMaps:false}){
@@ -84,19 +86,19 @@ class Texture extends GLTexture {
     width = img.width;
     height = img.height;
     
-//    _gl.pixelStorei(GL.UNPACK_FLIP_Y_WEBGL, 1);
-    _gl.texImage2DImage(glTarget,  level,  format,  format,  type, img);
+//    _graphics.gl.pixelStorei(GL.UNPACK_FLIP_Y_WEBGL, 1);
+    _graphics.gl.texImage2DImage(glTarget,  level,  format,  format,  type, img);
     
     
     
     if(genMipMaps)
-      _gl.generateMipmap(glTarget);
+      _graphics.gl.generateMipmap(glTarget);
   }
   
   /// Disposes all resources associated with this texture. it will be immediatly removed from [Graphics.textures]
   void dispose () {
     _dispose();
-    _textures.remove(id);
+    _graphics.textures.remove(id);
   }
   
   ///internal disposal used by [Graphics.disposeGraphics]
