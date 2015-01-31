@@ -1,13 +1,13 @@
 part of glib.input;
 
 
-/** An InputHandler is used to receive input events from the keyboard and the mouse. 
+/** An InputProcessor is used to receive input events from the keyboard and the mouse. 
  * Before using it, you need to register it via game.input.processor.
- * It will be called each frame before the all to [ApplicationListener.render]. 
+ * It will be called each frame before the call to [ApplicationListener.render]. 
  * Each method returns a boolean in case you want to use this with the [InputMultiplexer] 
  * to chain input processors.
  */
-abstract class InputHandler{
+abstract class InputProcessor{
   /// called when a key with the given [keycode] was pressed
   /// return true if the input was processed by this processor, false otherwise
   bool keyDown(int keycode);
@@ -18,7 +18,7 @@ abstract class InputHandler{
   
   /// called when a key with the given [keycode] was typed
   /// return true if the input was processed by this processor, false otherwise
-  bool keyTyped(int keycode);
+  bool keyTyped(String keycode);
   
   /// called when a mouse button was pressed
   /// return true if the input was processed by this processor, false otherwise
@@ -38,25 +38,24 @@ abstract class InputHandler{
   
   /// called when the mouse wheel was scrolled
   /// 
-  /// [amount] the scroll amount, -1 or 1 depending on the direction the wheel was scrolled.
-  /// 
+  /// [amount] -1 or 1 depending on the direction the wheel was scrolled.
   /// returns true if the input was processed by this processor, false otherwise
   bool mouseScrolled(int ammount);
   
   /// Generates an [EmptyProcessor]
-  factory InputHandler(){
+  factory InputProcessor(){
     return new EmptyProcessor();
   }
 }
 
-/// Convenience class, which implements all of the [InputHandler], so you only need
+/// Convenience class, which implements all of the [InputProcessor], so you only need
 /// to override whatever you need
-class EmptyProcessor implements InputHandler{
+class EmptyProcessor implements InputProcessor{
   bool keyDown(int keycode) => false;
 
   bool keyUp(int keycode) => false;
 
-  bool keyTyped(int keycode) => false;
+  bool keyTyped(String key) => false;
 
   bool mouseDown(int screenX, int screenY, int button) => false;
 

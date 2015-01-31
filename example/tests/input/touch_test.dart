@@ -12,7 +12,7 @@ class TouchTest extends Test{
     font = new Font();
     _batch = new SpriteBatch();
     _handler = new MyInputHandler();
-    Glib.input.handler = _handler;
+    Glib.input.processor = _handler;
   }
   
   pause(){}

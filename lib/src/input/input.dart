@@ -2,7 +2,7 @@ part of glib.input;
 
 /** 
  * Interface to the input facilities. This allows polling the state of the keyboard and mouse.
- * Instead of polling for events, one can process all input in an event-driven by setting the [handler] (see [InputHandler]) 
+ * Instead of polling for events, one can process all input in an event-driven by setting the [processor] (see [InputProcessor]) 
  * 
  * Keyboard keys are translated to the constants in [KeyCode], while mouse buttons make reference to [Buttons] to provided the mouse clicked button
  */
@@ -37,10 +37,13 @@ abstract class Input{
   /// if no keycode is specified, this will check if any key was just pressed
   bool isKeyJustPressed([int keycode]);
   
-  InputHandler handler;
+  InputProcessor processor;
   
   /// set to true to not allow the mouse to leave your application's canvas
   bool catchCursor;
+  
+  /// gets the string representation of the given [KeyCode]
+  String keyCodeToString(int keycode);
 }
 
 ///mouse buttons
@@ -65,13 +68,15 @@ class CanvasInput implements Input{
   List<bool> pressedKeys = new List.filled(256, false);
   bool keyJustPressed = false;
   List<bool> justPressedKeys = new List.filled(256, false);
-  InputHandler handler;
+  InputProcessor processor;
   String lastKeyCharPressed;
   double keyRepeatTimer;
   int currentEventTimeStamp;
-  bool hasFocus = true;
+  bool _hasFocus = true;
   bool catchCursor;
   Stopwatch _watch;
+  List _eventSubscriptions = new List();
+  
   
   CanvasInput(this.canvas, {this.catchCursor : false}){
     _watch = new Stopwatch();
@@ -90,19 +95,23 @@ class CanvasInput implements Input{
   }
   
   attachEvents(){
-    canvas.onMouseDown.listen( canvasMouseListener );
-    canvas.onMouseUp.listen( canvasMouseListener );
-    canvas.onMouseMove.listen( canvasMouseListener );
-    canvas.onMouseWheel.listen( canvasMouseListener );
+    _eventSubscriptions.add( canvas.onMouseDown.listen( canvasMouseListener ) );
+    _eventSubscriptions.add( document.onMouseDown.listen(canvasMouseListener) );
+    _eventSubscriptions.add( canvas.onMouseUp.listen( canvasMouseListener )) ;
+    _eventSubscriptions.add( canvas.onMouseMove.listen( canvasMouseListener ));
+    _eventSubscriptions.add( canvas.onMouseWheel.listen( canvasMouseListener ));
     
-    canvas.onKeyDown.listen(canvasKeyListener);
-    canvas.onKeyUp.listen(canvasKeyListener);
-    canvas.onKeyPress.listen(canvasKeyListener);
+//    canvas.onKeyDown.listen(canvasKeyListener);
+//    canvas.onKeyUp.listen(canvasKeyListener);
+//    canvas.onKeyPress.listen(canvasKeyListener);
+    _eventSubscriptions.add( document.onKeyDown.listen(canvasKeyListener) );
+    _eventSubscriptions.add( document.onKeyUp.listen(canvasKeyListener));
+    _eventSubscriptions.add( document.onKeyPress.listen(canvasKeyListener));
     
-    canvas.onTouchStart.listen( canvasTouchListener );
-    canvas.onTouchMove.listen( canvasTouchListener );
-    canvas.onTouchCancel.listen( canvasTouchListener );
-    canvas.onTouchEnd.listen( canvasTouchListener );
+    _eventSubscriptions.add( canvas.onTouchStart.listen( canvasTouchListener ));
+    _eventSubscriptions.add( canvas.onTouchMove.listen( canvasTouchListener ));
+    _eventSubscriptions.add( canvas.onTouchCancel.listen( canvasTouchListener ));
+    _eventSubscriptions.add( canvas.onTouchEnd.listen( canvasTouchListener ));
   }
   
   canvasTouchListener(TouchEvent e){
@@ -117,8 +126,8 @@ class CanvasInput implements Input{
         _touchY[touchId] = _getTouchRelativeY(touch, canvas);
         _deltaX[touchId] = 0;
         _deltaY[touchId] = 0;
-        if (handler != null) {
-          handler.mouseDown(_touchX[touchId], _touchY[touchId], Buttons.LEFT);
+        if (processor != null) {
+          processor.mouseDown(_touchX[touchId], _touchY[touchId], Buttons.LEFT);
         }       
       }
       
@@ -134,8 +143,8 @@ class CanvasInput implements Input{
         _deltaY[touchId] = _getTouchRelativeY(touch, canvas) - _touchY[touchId];
         _touchX[touchId] = _getTouchRelativeX(touch, canvas);
         _touchY[touchId] = _getTouchRelativeY(touch, canvas);
-        if (handler != null) {
-          handler.mouseDragged(_touchX[touchId], _touchY[touchId], Buttons.LEFT);
+        if (processor != null) {
+          processor.mouseDragged(_touchX[touchId], _touchY[touchId], Buttons.LEFT);
         }
       }
       currentEventTimeStamp = _watch.elapsedMilliseconds;
@@ -151,8 +160,8 @@ class CanvasInput implements Input{
         _deltaY[touchId] = _getTouchRelativeY(touch, canvas) - _touchY[touchId];       
         _touchX[touchId] = _getTouchRelativeX(touch, canvas);
         _touchY[touchId] = _getTouchRelativeY(touch, canvas);
-        if (handler != null) {
-          handler.mouseUp(_touchX[touchId], _touchY[touchId], Buttons.LEFT);
+        if (processor != null) {
+          processor.mouseUp(_touchX[touchId], _touchY[touchId], Buttons.LEFT);
         }         
       }
       this.currentEventTimeStamp = _watch.elapsedMilliseconds;
@@ -168,8 +177,8 @@ class CanvasInput implements Input{
         _deltaY[touchId] = _getTouchRelativeY(touch, canvas) - _touchY[touchId];       
         _touchX[touchId] = _getTouchRelativeX(touch, canvas);
         _touchY[touchId] = _getTouchRelativeY(touch, canvas);
-        if (handler != null) {
-          handler.mouseUp(_touchX[touchId], _touchY[touchId], Buttons.LEFT);
+        if (processor != null) {
+          processor.mouseUp(_touchX[touchId], _touchY[touchId], Buttons.LEFT);
         }         
       }
       this.currentEventTimeStamp = _watch.elapsedMilliseconds;
@@ -178,14 +187,14 @@ class CanvasInput implements Input{
     _watch.reset();
   }
   
-  canvasKeyListener(KeyEvent e){
-    if (e.type == "keydown" && hasFocus) {
+  canvasKeyListener(KeyboardEvent e){
+    if (e.type == "keydown" && _hasFocus) {
           var code = e.keyCode;
-          if (code == KeyCode.DELETE) {
+          if (code == KeyCode.DELETE || code == KeyCode.F5 ) {
             e.preventDefault();
-            if (handler != null) {
-              handler.keyDown(code);
-              handler.keyTyped(code);
+            if (processor != null) {
+              processor.keyDown(code);
+//              processor.keyTyped(code);
             }
           } else {
             if (!pressedKeys[code]) {
@@ -193,26 +202,27 @@ class CanvasInput implements Input{
               pressedKeys[code] = true;
               keyJustPressed = true;
               justPressedKeys[code] = true;
-              if (handler != null) {
-                handler.keyDown(code);
+              if (processor != null) {
+                processor.keyDown(code);
               }
             }
           }
         }
 
-        if (e.type == "keypress" && hasFocus) {
-          if (handler != null) 
-            handler.keyTyped(e.keyCode);
-        }
+//        if (e.type == "keypress" && _hasFocus) {
+//          var code = e.charCode;
+//          if (processor != null) 
+//            processor.keyTyped(e.keyCode);
+//        }
 
-        if (e.type == "keyup" && hasFocus) {
+        if (e.type == "keyup" && _hasFocus) {
           int code = e.keyCode;
           if (pressedKeys[code]) {
             pressedKeyCount--;
             pressedKeys[code] = false;
           }
-          if (handler != null) {
-            handler.keyUp(code);
+          if (processor != null) {
+            processor.keyUp(code);
           }
         }
   }
@@ -227,14 +237,29 @@ class CanvasInput implements Input{
       
       // reverse detail for firefox
 //      val = Math.max(-1, Math.min(1, val));
+      
       val = val.clamp(-1, 1);
 
-      if (handler != null)
-        handler.mouseScrolled(val);
+      if (processor != null)
+        processor.mouseScrolled(val);
       currentEventTimeStamp = _watch.elapsedMilliseconds;
     }
     
     if(event.type == 'mousedown'){
+      
+      if (event.target != canvas || _touched[0]) {
+        int mouseX = _getMouseRelativeX(event, canvas);
+        int mouseY = _getMouseRelativeX(event, canvas);
+        if (mouseX < canvas.clientLeft || 
+            mouseX > canvas.clientLeft + canvas.clientWidth || 
+            mouseY < canvas.clientTop || 
+            mouseY > canvas.clientTop + canvas.clientHeight ) {
+          _hasFocus = false;
+        }
+        return;
+      }
+      
+      _hasFocus = true;
       justTouched = true;
       _touched[0] = true;
       pressedButtons.add(event.button);
@@ -250,8 +275,8 @@ class CanvasInput implements Input{
       }
       
       currentEventTimeStamp = _watch.elapsedMilliseconds;
-      if (handler != null) 
-        handler.mouseDown(_touchX[0], _touchY[0], event.button);
+      if (processor != null) 
+        processor.mouseDown(_touchX[0], _touchY[0], event.button);
     }
     
     if (event.type == "mousemove") {
@@ -267,11 +292,11 @@ class CanvasInput implements Input{
         _touchY[0] = _getMouseRelativeY(event, canvas);
       }
       this.currentEventTimeStamp = _watch.elapsedMilliseconds;
-      if (handler != null) {
+      if (processor != null) {
         if (_touched[0])
-          handler.mouseDragged(_touchX[0], _touchY[0], event.button);
+          processor.mouseDragged(_touchX[0], _touchY[0], event.button);
         else
-          handler.mouseMoved(_touchX[0], _touchY[0]);
+          processor.mouseMoved(_touchX[0], _touchY[0]);
       }
     }
     
@@ -294,8 +319,8 @@ class CanvasInput implements Input{
       }
       this.currentEventTimeStamp = _watch.elapsedMilliseconds;
       this._touched[0] = false;
-      if (handler != null) 
-        handler.mouseUp(_touchX[0], _touchY[0], event.button);
+      if (processor != null) 
+        processor.mouseUp(_touchX[0], _touchY[0], event.button);
       
     }
     _watch.reset();
@@ -334,9 +359,17 @@ class CanvasInput implements Input{
   bool isKeyJustPressed([int keycode]){
     if (keycode == null)
       return keyJustPressed;
-    
     return justPressedKeys[keycode];
   }
+  
+  @override
+  void dispose(){
+    _eventSubscriptions.forEach( (x) => x.cancel());
+  }
+  
+  @override
+  String keyCodeToString(int keyCode) => 
+      _keyNames.containsKey(keyCode) ? _keyNames[keyCode] : '';
   
   int _getMouseRelativeX(MouseEvent e, Element target) => e.client.x - target.offset.left;
   int _getMouseRelativeY(MouseEvent e, Element target) => canvas.height - ( e.client.y - target.offset.top);
@@ -344,3 +377,259 @@ class CanvasInput implements Input{
   int _getTouchRelativeX(Touch e, Element target) => e.client.x - target.offset.left;
   int _getTouchRelativeY(Touch e, Element target) => canvas.height - (e.client.y - target.offset.top);
 }
+
+
+
+
+
+Map<int, String> _keyNames = new Map.fromIterables(
+      [KeyCode.WIN_KEY_FF_LINUX,
+       KeyCode.MAC_ENTER,
+       KeyCode.BACKSPACE,
+       KeyCode.TAB,
+       KeyCode.NUM_CENTER,
+       KeyCode.ENTER,
+       KeyCode.SHIFT,
+       KeyCode.CTRL,
+       KeyCode.ALT,
+       KeyCode.PAUSE,
+       KeyCode.CAPS_LOCK,
+       KeyCode.ESC,
+       KeyCode.SPACE,
+       KeyCode.PAGE_UP,
+       KeyCode.PAGE_DOWN,
+       KeyCode.END,
+       KeyCode.HOME,
+       KeyCode.LEFT,
+       KeyCode.UP,
+       KeyCode.RIGHT,
+       KeyCode.DOWN,
+       KeyCode.NUM_NORTH_EAST,
+       KeyCode.NUM_SOUTH_EAST,
+       KeyCode.NUM_SOUTH_WEST,
+       KeyCode.NUM_NORTH_WEST,
+       KeyCode.NUM_WEST,
+       KeyCode.NUM_NORTH,
+       KeyCode.NUM_EAST,
+       KeyCode.NUM_SOUTH,
+       KeyCode.PRINT_SCREEN,
+       KeyCode.INSERT,
+       KeyCode.NUM_INSERT,
+       KeyCode.DELETE,
+       KeyCode.NUM_DELETE,
+       KeyCode.ZERO,
+       KeyCode.ONE,
+       KeyCode.TWO,
+       KeyCode.THREE,
+       KeyCode.FOUR,
+       KeyCode.FIVE,
+       KeyCode.SIX,
+       KeyCode.SEVEN,
+       KeyCode.EIGHT,
+       KeyCode.NINE,
+       KeyCode.FF_SEMICOLON,
+       KeyCode.FF_EQUALS,
+       KeyCode.QUESTION_MARK,
+       KeyCode.A,
+       KeyCode.B,
+       KeyCode.C,
+       KeyCode.D,
+       KeyCode.E,
+       KeyCode.F,
+       KeyCode.G,
+       KeyCode.H,
+       KeyCode.I,
+       KeyCode.J,
+       KeyCode.K,
+       KeyCode.L,
+       KeyCode.M,
+       KeyCode.N,
+       KeyCode.O,
+       KeyCode.P,
+       KeyCode.Q,
+       KeyCode.R,
+       KeyCode.S,
+       KeyCode.T,
+       KeyCode.U,
+       KeyCode.V,
+       KeyCode.W,
+       KeyCode.X,
+       KeyCode.Y,
+       KeyCode.Z,
+       KeyCode.META,
+       KeyCode.WIN_KEY_LEFT,
+       KeyCode.WIN_KEY_RIGHT,
+       KeyCode.CONTEXT_MENU,
+       KeyCode.NUM_ZERO,
+       KeyCode.NUM_ONE,
+       KeyCode.NUM_TWO,
+       KeyCode.NUM_THREE,
+       KeyCode.NUM_FOUR,
+       KeyCode.NUM_FIVE,
+       KeyCode.NUM_SIX,
+       KeyCode.NUM_SEVEN,
+       KeyCode.NUM_EIGHT,
+       KeyCode.NUM_NINE,
+       KeyCode.NUM_MULTIPLY,
+       KeyCode.NUM_PLUS,
+       KeyCode.NUM_MINUS,
+       KeyCode.NUM_PERIOD,
+       KeyCode.NUM_DIVISION,
+       KeyCode.F1,
+       KeyCode.F2,
+       KeyCode.F3,
+       KeyCode.F4,
+       KeyCode.F5,
+       KeyCode.F6,
+       KeyCode.F7,
+       KeyCode.F8,
+       KeyCode.F9,
+       KeyCode.F10,
+       KeyCode.F11,
+       KeyCode.F12,
+       KeyCode.NUMLOCK,
+       KeyCode.SCROLL_LOCK,
+       KeyCode.FIRST_MEDIA_KEY,
+       KeyCode.LAST_MEDIA_KEY,
+       KeyCode.SEMICOLON,
+       KeyCode.DASH,
+       KeyCode.EQUALS,
+       KeyCode.COMMA,
+       KeyCode.PERIOD,
+       KeyCode.SLASH,
+       KeyCode.APOSTROPHE,
+       KeyCode.TILDE,
+       KeyCode.SINGLE_QUOTE,
+       KeyCode.OPEN_SQUARE_BRACKET,
+       KeyCode.BACKSLASH,
+       KeyCode.CLOSE_SQUARE_BRACKET,
+       KeyCode.WIN_KEY,
+       KeyCode.MAC_FF_META,
+       KeyCode.WIN_IME,
+       KeyCode.UNKNOWN ],
+       
+       ['Win', //KeyCode.WIN_KEY_FF_LINUX,
+        'Enter', //KeyCode.MAC_ENTER,
+        'Backspace', //KeyCode.BACKSPACE,
+        'Tab', //KeyCode.TAB,
+        'Num center', //KeyCode.NUM_CENTER,
+        'Enter', //KeyCode.ENTER,
+        'Shift', //KeyCode.SHIFT,
+        'Ctrl', //KeyCode.CTRL,
+        'Alt', //KeyCode.ALT,
+        'Pause', //KeyCode.PAUSE,
+        'Caps lock', //KeyCode.CAPS_LOCK,
+        'Escape', //KeyCode.ESC,
+        'Space', //KeyCode.SPACE,
+        'Page up', //KeyCode.PAGE_UP,
+        'Page down', //KeyCode.PAGE_DOWN,
+        'End', //KeyCode.END,
+        'Home', //KeyCode.HOME,
+        'Left', //KeyCode.LEFT,
+        'Up', //KeyCode.UP,
+        'Right', //KeyCode.RIGHT,
+        'Down', //KeyCode.DOWN,
+        'Numpad 9', //KeyCode.NUM_NORTH_EAST,
+        'Numpad 3', //KeyCode.NUM_SOUTH_EAST,
+        'Numpad 1', //KeyCode.NUM_SOUTH_WEST,
+        'Numpad 7', //KeyCode.NUM_NORTH_WEST,
+        'Numpad 4', //KeyCode.NUM_WEST,
+        'Numpad 8', //KeyCode.NUM_NORTH,
+        'Numpad 6', //KeyCode.NUM_EAST,
+        'Numpad 2', //KeyCode.NUM_SOUTH,
+        'PrtSc', //KeyCode.PRINT_SCREEN,
+        'Insert', //KeyCode.INSERT,
+        'Insert', //KeyCode.NUM_INSERT,
+        'Delete', //KeyCode.DELETE,
+        'Numpad .', //KeyCode.NUM_DELETE,
+        '0', //KeyCode.ZERO,
+        '1', //KeyCode.ONE,
+        '2', //KeyCode.TWO,
+        '3', //KeyCode.THREE,
+        '4', //KeyCode.FOUR,
+        '5', //KeyCode.FIVE,
+        '6', //KeyCode.SIX,
+        '7', //KeyCode.SEVEN,
+        '8', //KeyCode.EIGHT,
+        '9', //KeyCode.NINE,
+        ';', //KeyCode.FF_SEMICOLON,
+        '=', //KeyCode.FF_EQUALS,
+        '?', //KeyCode.QUESTION_MARK,
+        'A', //KeyCode.A,
+        'B', //KeyCode.B,
+        'C', //KeyCode.C,
+        'D', //KeyCode.D,
+        'E', //KeyCode.E,
+        'F', //KeyCode.F,
+        'G', //KeyCode.G,
+        'H', //KeyCode.H,
+        'I', //KeyCode.I,
+        'J', //KeyCode.J,
+        'K', //KeyCode.K,
+        'L', //KeyCode.L,
+        'M', //KeyCode.M,
+        'N', //KeyCode.N,
+        'O', //KeyCode.O,
+        'P', //KeyCode.P,
+        'Q', //KeyCode.Q,
+        'R', //KeyCode.R,
+        'S', //KeyCode.S,
+        'T', //KeyCode.T,
+        'U', //KeyCode.U,
+        'V', //KeyCode.V,
+        'W', //KeyCode.W,
+        'X', //KeyCode.X,
+        'Y', //KeyCode.Y,
+        'Z', //KeyCode.Z,
+        'Meta', //KeyCode.META,
+        'Left win', //KeyCode.WIN_KEY_LEFT,
+        'Right win', //KeyCode.WIN_KEY_RIGHT,
+        'Context menu', //KeyCode.CONTEXT_MENU,
+        'Numpad 0', //KeyCode.NUM_ZERO,
+        'Numpad 1', //KeyCode.NUM_ONE,
+        'Numpad 2', //KeyCode.NUM_TWO,
+        'Numpad 3', //KeyCode.NUM_THREE,
+        'Numpad 4', //KeyCode.NUM_FOUR,
+        'Numpad 5', //KeyCode.NUM_FIVE,
+        'Numpad 6', //KeyCode.NUM_SIX,
+        'Numpad 7', //KeyCode.NUM_SEVEN,
+        'Numpad 8', //KeyCode.NUM_EIGHT,
+        'Numpad 9', //KeyCode.NUM_NINE,
+        'Numpad *', //KeyCode.NUM_MULTIPLY,
+        'Numpad +', //KeyCode.NUM_PLUS,
+        'Numpad -', //KeyCode.NUM_MINUS,
+        'Numpad .', //KeyCode.NUM_PERIOD,
+        'Numpad /', //KeyCode.NUM_DIVISION,
+        'F1', //KeyCode.F1,
+        'F2', //KeyCode.F2,
+        'F3', //KeyCode.F3,
+        'F4', //KeyCode.F4,
+        'F5', //KeyCode.F5,
+        'F6', //KeyCode.F6,
+        'F7', //KeyCode.F7,
+        'F8', //KeyCode.F8,
+        'F9', //KeyCode.F9,
+        'F10', //KeyCode.F10,
+        'F11', //KeyCode.F11,
+        'F12', //KeyCode.F12,
+        'Numlock', //KeyCode.NUMLOCK,
+        'Scroll lock', //KeyCode.SCROLL_LOCK,
+        '', //KeyCode.FIRST_MEDIA_KEY,
+        '', //KeyCode.LAST_MEDIA_KEY,
+        ';', //KeyCode.SEMICOLON,
+        '-', //KeyCode.DASH,
+        '=', //KeyCode.EQUALS,
+        ',', //KeyCode.COMMA,
+        '.', //KeyCode.PERIOD,
+        '/', //KeyCode.SLASH,
+        'Apostrophe', //KeyCode.APOSTROPHE,
+        'Tilde', //KeyCode.TILDE,
+        "'", //KeyCode.SINGLE_QUOTE,
+        '[', //KeyCode.OPEN_SQUARE_BRACKET,
+        '\\', //KeyCode.BACKSLASH,
+        ']', //KeyCode.CLOSE_SQUARE_BRACKET,
+        'Win', //KeyCode.WIN_KEY,
+        'FF Meta', //KeyCode.MAC_FF_META,
+        'Win ime', //KeyCode.WIN_IME,
+        'Unknown', //KeyCode.UNKNOWN
+        ]);

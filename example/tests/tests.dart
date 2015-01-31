@@ -10,7 +10,7 @@ part 'graphics/mesh.dart';
 part 'graphics/orthocam_test.dart';
 part 'graphics/texture.dart';
 part 'input/touch_test.dart';
-
+part 'input/keyboard_test.dart';
 
 TestSuite suite;
 Map<String, ApplicationListener> tests;
@@ -26,7 +26,8 @@ main(){
     new FontTest(),
     new OrthographicCameraTest(),
     new TextureTest(),
-    new TouchTest()
+    new TouchTest(),
+    new KeyboardTest()
   ], key: (test) => test.name, value: (test) => test);
   
   suite = new TestSuite(tests.values.first, new WebApplicationConfiguration(), canvas);

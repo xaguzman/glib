@@ -48,7 +48,7 @@ abstract class WebApplication implements Application {
   @override Input get input => _input;
   @override ApplicationListener get listener => _listener;
   
-  ///Creates a new web application with the given configuration. If [canvas] is not specified, it will automatically
+  ///Creates a new application with the given configuration. If [canvas] is not specified, it will automatically
   ///use the [config.width] and [config.height] to create a new canvas, which you can then access through [graphics.canvas]
   WebApplication(this._listener, this.config, {CanvasElement canvas}) {
     if (canvas != null){

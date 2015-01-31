@@ -4,4 +4,4 @@ import 'dart:html';
 //import 'dart:math' as Math;
 
 part 'input/input.dart';
-part 'input/input_handler.dart';
+part 'input/input_processor.dart';
