@@ -109,7 +109,8 @@ abstract class WebApplication implements Application {
   
   void dispose(){
     _timer.cancel();
-    graphics.disposeGraphics();    
+    graphics.disposeGraphics();
+    input.dispose();
   }
 
 }

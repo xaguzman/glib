@@ -385,7 +385,7 @@ class Matrix4{
    */
   Matrix4 setToProjection (double near, double far, double fov, double aspectRatio) {
     setIdentity();
-    double l_fd = (1.0 / tan((fov * (PI / 180)) / 2.0));
+    double l_fd = (1.0 / math.tan( (fov * (math.PI/180) ) / 2.0));
     double l_a1 = (far + near) / (near - far);
     double l_a2 = (2 * far * near) / (near - far);
     val[M00] = l_fd / aspectRatio;
