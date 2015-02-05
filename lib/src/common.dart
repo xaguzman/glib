@@ -5,3 +5,4 @@ export 'dart:async';
 
 part 'util/interfaces.dart';
 part 'util/exceptions.dart';
+part 'util/scaling.dart';

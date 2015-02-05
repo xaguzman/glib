@@ -157,9 +157,11 @@ class Font implements Disposable{
     double xoffset = 0.0;
     var charIds = text.codeUnits;
     charIds.forEach( (id){
-      var symbol = symbolMap[id];
-      batch.drawRegion( symbol.region , x + xoffset, y);
-      xoffset += symbol.width;
+      Character symbol = symbolMap[id];
+      if (symbol != null){
+        batch.drawRegion( symbol.region , x + xoffset, y);
+        xoffset += symbol.width;
+      }
     });
   }
     

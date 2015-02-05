@@ -6,19 +6,45 @@ part of glib.input;
  * 
  * Keyboard keys are translated to the constants in [KeyCode], while mouse buttons make reference to [Buttons] to provided the mouse clicked button
  */
-abstract class Input{
+abstract class Input extends Disposable{
   
   /// The current mouse position over the x-axis in screen coordinates. The screen origin is the top left corner.
+  /// If no mouse is present, it represents the last touch 'x' coordinate on the screen
   int get x;
   
-  /// The difference between the current and the last mouse position on the x-axis.
+  /** Returns the x coordinate in screen coordinates of the given pointer. Pointers are indexed from 0 to n. The pointer id
+     * identifies the order in which the fingers went down on the screen, e.g. 0 is the first finger, 1 is the second and so on.
+     * When two fingers are touched down and the first one is lifted the second one keeps its index. If another finger is placed on
+     * the touch screen the first free index will be used.
+     * 
+     * [pointer] the pointer id.
+     * returns the x coordinate */
+  int getX(int pointer);
+  
+  /// The difference between the current and the last pointer location on the x-axis.
   int get deltaX;
   
-  /// The current mouse position in screen coordinates. The screen origin is the top left corner.
+  ///The difference between the current and the last pointer location on the x-axis for the given pointer.
+  int getDeltaX(int pointer);
+  
+  /// The current mouse position in screen coordinates. The screen origin is the top left corner
+  /// If no mouse is present, it represents the last touch 'y' coordinate on the screen
   int get y;
+  
+  /** Returns the y coordinate in screen coordinates of the given pointer. Pointers are indexed from 0 to n. The pointer id
+       * identifies the order in which the fingers went down on the screen, e.g. 0 is the first finger, 1 is the second and so on.
+       * When two fingers are touched down and the first one is lifted the second one keeps its index. If another finger is placed on
+       * the touch screen the first free index will be used.
+       * 
+       * [pointer] the pointer id.
+       * return the y coordinate */
+  int getY(int pointer);
 
-  /// The difference between the current and the last mouse position on the x-axis.
+  /// The difference between the current and the last mouse position on the y-axis.
   int get deltaY;
+  
+/// The difference between the current and the last mouse position on the y-axis.
+  int getDeltaY(int pointer);
   
   /// whether the screen is currently being clicked
   bool get isClicked;
@@ -189,31 +215,23 @@ class CanvasInput implements Input{
   
   canvasKeyListener(KeyboardEvent e){
     if (e.type == "keydown" && _hasFocus) {
-          var code = e.keyCode;
-          if (code == KeyCode.DELETE || code == KeyCode.F5 ) {
+          int code = e.keyCode;
+          String key = keyCodeToString(code);
+          if (code == KeyCode.BACKSPACE || code == KeyCode.F5 ) {
             e.preventDefault();
+          }
+          
+          if (!pressedKeys[code]) {
+            pressedKeyCount++;
+            pressedKeys[code] = true;
+            keyJustPressed = true;
+            justPressedKeys[code] = true;
             if (processor != null) {
               processor.keyDown(code);
-//              processor.keyTyped(code);
-            }
-          } else {
-            if (!pressedKeys[code]) {
-              pressedKeyCount++;
-              pressedKeys[code] = true;
-              keyJustPressed = true;
-              justPressedKeys[code] = true;
-              if (processor != null) {
-                processor.keyDown(code);
-              }
+              processor.keyTyped(key);
             }
           }
         }
-
-//        if (e.type == "keypress" && _hasFocus) {
-//          var code = e.charCode;
-//          if (processor != null) 
-//            processor.keyTyped(e.keyCode);
-//        }
 
         if (e.type == "keyup" && _hasFocus) {
           int code = e.keyCode;
@@ -327,16 +345,28 @@ class CanvasInput implements Input{
   }
   
   @override
-  int get x => _touchX[0];
+  int get x => getX(0);
+  
+  @override 
+  getX(int pointer) => _touchX[pointer];
   
   @override
-  int get deltaX => _deltaX[0];
+  int get deltaX => getDeltaX(0);
   
   @override
-  int get y => _touchY[0];
+  int getDeltaX(int pointer) => _deltaX[pointer];
   
   @override
-  int get deltaY => _deltaY[0];
+  int get y => getY(0);
+  
+  @override 
+  getY(int pointer) => _touchY[pointer];
+  
+  @override
+  int get deltaY => getDeltaY(0);
+  
+  @override
+  int getDeltaY(int pointer) => _deltaY[pointer];
   
   @override
   bool get isClicked => _touched[0];

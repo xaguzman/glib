@@ -26,6 +26,7 @@ part 'graphics/camera.dart';
 part 'graphics/orthographic_camera.dart';
 part 'graphics/loaders/texture_loader.dart';
 part 'graphics/color.dart';
+part 'graphics/viewport/viewport.dart';
 
 
 //GL.RenderingContext _gl;
