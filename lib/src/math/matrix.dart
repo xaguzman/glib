@@ -47,17 +47,20 @@ class Matrix4{
   static final Float32List tmp = new Float32List(16);
   final Float32List val = new Float32List(16);
   
+  static final Vector3 _tmpVec = new Vector3();
   static final Matrix4 _tmpMat = new Matrix4();
   static Quaternion _quat = new Quaternion();
   static Quaternion _quat2 = new Quaternion();
+  static final Vector3 _l_vez = new Vector3();
+  static final Vector3 _l_vey = new Vector3();
+  static final Vector3 _l_vex = new Vector3();
 
   ///creates an identity matrix
   Matrix4(){
-    val[M00] = 1.0;
-    val[M11] = 1.0;
-    val[M22] = 1.0;
-    val[M33] = 1.0;
+    setIdentity();
   }
+  
+  factory Matrix4.identity() => new Matrix4();
 
   /// Constructs a matrix from the given matrix.
   Matrix4.from(Matrix4 matrix){
@@ -65,10 +68,10 @@ class Matrix4{
   }
 
   /**
-   * Constructs a matrix from the given float array. The array must have at least 16 elements; the first 16 will be copied.
+   * Constructs a matrix from the given double array. The array must have at least 16 elements; the first 16 will be copied.
    * 
-   * [values] The float array to copy. Remember that this matrix is in [column major](http://en.wikipedia.org/wiki/Row-major_order) 
-   * order. (The float array is not modified)
+   * [values] The double array to copy. Remember that this matrix is in [column major](http://en.wikipedia.org/wiki/Row-major_order) 
+   * order. (The double array is not modified)
    */
   Matrix4.fromValues(Float32List values){
     setValues(values);
@@ -88,18 +91,18 @@ class Matrix4{
    * [position] The translation
    * [rotation] The rotation, must be normalized
    * [scale] The scale */
-  Matrix4.transform (Vec3 position, Quaternion rotation, Vec3 scale) {
+  Matrix4.transform (Vector3 position, Quaternion rotation, Vector3 scale) {
     setTransform(position, rotation, scale);
   }
   
   Matrix4 copy(Matrix4 matrix) => new Matrix4.from(matrix);
   
   /**
-   * Sets the matrix to the given matrix as a float array. The float array must have at least 16 elements; the first 16 will be
+   * Sets the matrix to the given matrix as a double array. The double array must have at least 16 elements; the first 16 will be
    * copied.
    * 
-   * [values] The float array to copy. Remember that this matrix is in [column major](http://en.wikipedia.org/wiki/Row-major_order) 
-   * order. (The float array is not modified)
+   * [values] The double array to copy. Remember that this matrix is in [column major](http://en.wikipedia.org/wiki/Row-major_order) 
+   * order. (The double array is not modified)
    */
   Matrix4 setValues(Float32List values) => this..val.setAll(0, values);
   
@@ -156,7 +159,7 @@ class Matrix4{
     return this;
   }
   
-  Matrix4 setTransform(Vec3 position, Quaternion orientation, Vec3 scale) =>
+  Matrix4 setTransform(Vector3 position, Quaternion orientation, Vector3 scale) =>
       setTransformValues(position.z, position.y, position.z, orientation.x, orientation.y, orientation.z, orientation.w,  scale.x, scale.y, scale.z);
   
   /** Sets the four columns of the matrix which correspond to the x-, y- and z-axis of the vector space this matrix creates as
@@ -166,7 +169,7 @@ class Matrix4{
    * [yAxis] The y-axis.
    * [zAxis] The z-axis.
    * [pos] The translation vector. */
-  Matrix4 setColumns(Vec3 xAxis, Vec3 yAxis, Vec3 zAxis, Vec3 pos) {
+  Matrix4 setColumns(Vector3 xAxis, Vector3 yAxis, Vector3 zAxis, Vector3 pos) {
     val[M00] = xAxis.x;
     val[M01] = xAxis.y;
     val[M02] = xAxis.z;
@@ -385,7 +388,7 @@ class Matrix4{
    */
   Matrix4 setToProjection (double near, double far, double fov, double aspectRatio) {
     setIdentity();
-    double l_fd = (1.0 / math.tan( (fov * (math.PI/180) ) / 2.0));
+    double l_fd = (1.0 / tan( (fov * (PI/180) ) / 2.0));
     double l_a1 = (far + near) / (near - far);
     double l_a2 = (2 * far * near) / (near - far);
     val[M00] = l_fd / aspectRatio;
@@ -467,7 +470,7 @@ class Matrix4{
    * 
    * [vector] The translation vector
    */
-  Matrix4 setTranslationVector(Vec3 vector) {
+  Matrix4 setTranslationVector(Vector3 vector) {
     val[M03] = vector.x;
     val[M13] = vector.y;
     val[M23] = vector.z;
@@ -489,7 +492,7 @@ class Matrix4{
   /// translation vector.
   Matrix4 setToTranslation (vec3_OR_x, [double y, double z]) {
     setIdentity();
-    if (vec3_OR_x is Vec3){
+    if (vec3_OR_x is Vector3){
       val[M03] = vec3_OR_x.x;
       val[M13] = vec3_OR_x.y;
       val[M23] = vec3_OR_x.z;
@@ -522,6 +525,79 @@ class Matrix4{
       return this;
     }
     return setRotationQuat( _quat.setFromAxisRad(axisX, axisY, axisZ, radians));
+  }
+  
+  Matrix4 setToLookAt(Vector3 position_OR_direction, Vector3 up, { Vector3 target: null} ){
+
+    if (target != null){
+      _tmpVec.set(target).sub(position_OR_direction);
+      _setToLookAt(_tmpVec, up);
+      this.multiply(_tmpMat.setToTranslation(-position_OR_direction.x, -position_OR_direction.y, -position_OR_direction.z));
+    }else{
+      _setToLookAt(position_OR_direction, up);
+    }
+
+    return this;
+  }
+  
+  Matrix4 _setToLookAt(Vector3 direction, Vector3 up){
+    _l_vez.set(direction).nor();
+    _l_vex.set(direction).nor();
+    _l_vex.crs(up).nor();
+    _l_vey.set(_l_vex).crs(_l_vez).nor();
+    setIdentity();
+    val[M00] = _l_vex.x;
+    val[M01] = _l_vex.y;
+    val[M02] = _l_vex.z;
+    val[M10] = _l_vey.x;
+    val[M11] = _l_vey.y;
+    val[M12] = _l_vey.z;
+    val[M20] = -_l_vez.x;
+    val[M21] = -_l_vez.y;
+    val[M22] = -_l_vez.z;
+    
+    return this;
+  }
+  
+  /// projects all the Vector3 in [vecs] using this matrix by calling [Vector3.project]
+  void projectAll(List<Vector3> vecs, [int offset = 0]){
+    for( int i = offset; i < vecs.length; i++){
+      Vector3 vec = vecs[i];
+      vec.project(this);
+    }
+  }
+  
+  /** Multiplies the vectors with the given matrix, performing a division by w. The matrix array is assumed to hold a 4x4 column
+     * major matrix as you can get from [Matrix4.val]. The [vecs] array is assumed to hold [Vector3]s, [offset]
+     * specifies the offset into the array where the x-component of the first vector is located. The [numVecs] parameter specifies
+     * the number of vectors stored in the vectors array. The stride parameter specifies the number of floats between subsequent
+     * vectors and must be >= 3. This is the same as [Vector3.project] applied to multiple vectors.
+     * 
+     * [mat] the matrix
+     * [vecs] the vectors
+     * [offset] the offset into the vectors array
+     * [numVecs] the number of vectors
+     * [stride] distance between each vector 
+    */
+  static void project(Float32List mat, Float32List vecs, int offset, int numVecs, int stride){
+    for(int i = 0; i < numVecs; i++){
+      _project(mat, vecs, offset);
+      offset += stride;
+    }
+  }
+  
+  static void _project(Float32List mat, Float32List vec, int offset){
+    double inv_w = 1.0 / (vec[0] * mat[M30] + vec[1] * mat[M31] + vec[2] * mat[M32] + mat[M33]);
+    int idx0 = offset;
+    int idx1 = offset + 1;
+    int idx2 = offset + 2;
+    
+    double x = (vec[idx0] * mat[M00] + vec[idx1] * mat[M01] + vec[idx2] * mat[M02] + mat[M03]) * inv_w;
+    double y = (vec[idx0] * mat[M10] + vec[idx1] * mat[M11] + vec[idx2] * mat[M12] + mat[M13]) * inv_w; 
+    double z = (vec[idx0] * mat[M20] + vec[idx1] * mat[M21] + vec[idx2] * mat[M22] + mat[M23]) * inv_w;
+    vec[idx0] = x;
+    vec[idx1] = y;
+    vec[idx2] = z;
   }
 }
 

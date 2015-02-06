@@ -5,6 +5,7 @@ class FontTest extends Test{
   Font arial;
   Font monospace;
   String testmsg = 'The quick brown fox jumps over the lazy dog 0123456789';
+  SpriteBatch batch;
   
   FontTest():super("Font test");
   
@@ -14,11 +15,12 @@ class FontTest extends Test{
       ..maxTextureWidth = 512;
     monospace = new Font(new FontStyle(20, 'monospace'))
       ..maxTextureWidth = 512;
+    
+    batch = new SpriteBatch();
   }
   
   render(){
     super.render();
-    var batch = new SpriteBatch();
     batch.begin();
     arial
       ..draw(batch, testmsg, 20.0, 20.0)

@@ -19,22 +19,20 @@ class OrthographicCamera extends Camera{
     update();
   }
 
-  final Vector3 _tmp = new Vector3.zero();
+  final Vector3 _tmp = new Vector3();
 
   void update ([bool updateFrustum = true]) {
-    setOrthographicMatrix(projection, zoom * -viewportWidth / 2, zoom * (viewportWidth / 2), zoom * -(viewportHeight / 2), zoom
-      * viewportHeight / 2, near, far);
     
-    setViewMatrix(view, position, _tmp.setFrom(position).add(direction) , up);
-    combined.setFrom(projection);
+    projection.setToOrtho(zoom * -viewportWidth / 2, zoom * (viewportWidth / 2), zoom * -(viewportHeight / 2), zoom * viewportHeight / 2, near, far);
+    view.setToLookAt(position, up, target: _tmp.set(position).add(direction));
     
+    combined.setMatrix(projection);
     combined.multiply(view);
 
     if (updateFrustum) {
-      invProjectionView.setFrom(combined);
+      invProjectionView.setMatrix(combined);
       invProjectionView.invert();
-      frustum.setFromMatrix(invProjectionView);
-//        frustum.update(invProjectionView);
+      frustum.update(invProjectionView);
     }
   }
 
@@ -42,8 +40,8 @@ class OrthographicCamera extends Camera{
    * with the y-axis pointing up
    * or down.
    * [yDown] whether y should be pointing down.
-   * [viewportWidth]
-   * [viewportHeight] 
+   * [viewportWidth] the ammount pixels that the viewport should be made of on the x-axis
+   * [viewportHeight] the ammount pixels that the viewport should be made of on the y-axis 
    */
   void setToOrtho ([bool yDown = false, double viewportWidth, double viewportHeight]) {
     if (viewportWidth == null)

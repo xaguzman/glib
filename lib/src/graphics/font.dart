@@ -24,7 +24,7 @@ class Font implements Disposable{
   FontStyle style;
   
   /// The glyphs that will be drawn into the underlying [textures], with set [style], when [generate] is called
-  String symbols ='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ,.;:+-*/()[]{}!@#%^&_\\\$0123456789';
+  String symbols ='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ \'\$\\,.;:+-*/()[]{}!@#%^&_0123456789"`~=|';
   
   /// max width each [Texture] in [textures] should have. Better to keep as a pot.
   int maxTextureWidth = 1024;

@@ -11,11 +11,11 @@ class Quaternion{
     
   }
   
-  rotate(Vec3 v) {
+  rotate(Vector3 v) {
     
   }
   
-  transform(Vec3 v){
+  transform(Vector3 v){
   
   }
 }

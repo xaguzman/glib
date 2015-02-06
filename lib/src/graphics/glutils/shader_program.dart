@@ -305,7 +305,7 @@ class ShaderProgram implements Disposable {
   void setUniformMatrix4fv (location_OR_name, values_OR_Matrix4, [bool transpose = false]) {
     _checkManaged();
     var location = _fetchUniformLocation(location_OR_name);
-    Float32List values = values_OR_Matrix4 is Matrix4 ? values_OR_Matrix4.storage : values_OR_Matrix4;
+    Float32List values = values_OR_Matrix4 is Matrix4 ? values_OR_Matrix4.val : values_OR_Matrix4;
     _graphics.gl.uniformMatrix4fv(location, transpose, values);
   }
 

@@ -3,7 +3,7 @@ part of glib.graphics;
 
 abstract class Camera{
     /// the position of the camera
-    final Vector3 position = new Vector3.zero();
+    final Vector3 position = new Vector3();
     /// the unit length direction vector of the camera
     final Vector3 direction = new Vector3(0.0, 0.0, -1.0);
     /// the unit length up vector of the camera
@@ -19,7 +19,7 @@ abstract class Camera{
     final Matrix4 combined = new Matrix4.identity();
     
     final Matrix4 _tmpM4 = new Matrix4.identity();
-    final Vector3 _tmpV3 = new Vector3.zero();
+    final Vector3 _tmpV3 = new Vector3();
     
     /// the inverse combined projection and view matrix
     final Matrix4 invProjectionView = new Matrix4.identity();
@@ -37,8 +37,8 @@ abstract class Camera{
     /// the frustum
     final Frustum frustum = new Frustum();
 
-    final Vector3 _tmpVec = new Vector3.zero();
-    final Ray _ray = new Ray.originDirection(new Vector3.zero(), new Vector3.zero());
+    final Vector3 _tmpVec = new Vector3();
+    final Ray _ray = new Ray.originDirection(new Vector3(), new Vector3());
 
     /** Recalculates the projection and view matrix of this camera and the [Frustum] planes if [updateFrustum] is
      * true. Use this after you've manipulated any of the attributes of the camera. */
@@ -49,17 +49,17 @@ abstract class Camera{
      * [y] the x-coordinate of the point to look at
      * [z] the x-coordinate of the point to look at */
     void lookAt(double x, double y, double z) {
-      _tmpVec.setValues(x, y, z).sub(position).normalize();
+      _tmpVec.setValues(x, y, z).sub(position).nor();
       if (! isZero(_tmpVec) ) {
         double dot = _tmpVec.dot(up); // up and direction must ALWAYS be orthonormal vectors
         if ((dot - 1).abs() < 0.000000001) {
           // Collinear
-          up.setFrom(direction).scale(-1.0);
+          up.setVector(direction).scl(-1.0);
         } else if ((dot + 1).abs() < 0.000000001) {
           // Collinear opposite
-          up.setFrom(direction);
+          up.setVector(direction);
         }
-        direction.setFrom(_tmpVec);
+        direction.setVector(_tmpVec);
         normalizeUp();
       }
     }
@@ -73,8 +73,8 @@ abstract class Camera{
     /** Normalizes the up vector by first calculating the right vector via a cross product between direction and up, and then
      * recalculating the up vector via a cross product between right and direction. */
     void normalizeUp () {
-      _tmpVec.setFrom(direction).cross(up).normalize();
-      up.setFrom(_tmpVec).cross(direction).normalize();
+      _tmpVec.setVector(direction).crs(up).nor();
+      up.setVector(_tmpVec).crs(direction).nor();
     }
 
 //    /** Rotates the direction and up vector of this camera by the given angle around the given axis. The direction and up vector
@@ -180,7 +180,9 @@ abstract class Camera{
       screenCoords.x = (2 * x) / viewportWidth - 1;
       screenCoords.y = (2 * y) / viewportHeight - 1;
       screenCoords.z = 2 * screenCoords.z - 1;
-      screenCoords.applyProjection(invProjectionView);
+      
+      screenCoords.project(invProjectionView);
+//      screenCoords.applyProjection(invProjectionView);
       return screenCoords;
     }
 
@@ -195,7 +197,7 @@ abstract class Camera{
      * [viewportWidth] the width of the viewport in pixels. If not specified, it will take the value of [_width]
      * [viewportHeight] the height of the viewport in pixels If not specified, it will take the value of [_height] */
     Vector3 project (Vector3 worldCoords, [double viewportX = 0.0, double viewportY = 0.0, double viewportWidth, double viewportHeight]) {
-      worldCoords.applyProjection(combined);
+      worldCoords.project(combined);
       worldCoords.x = viewportWidth * (worldCoords.x + 1) / 2 + viewportX;
       worldCoords.y = viewportHeight * (worldCoords.y + 1) / 2 + viewportY;
       worldCoords.z = (worldCoords.z + 1) / 2;
@@ -214,7 +216,7 @@ abstract class Camera{
       double viewportHeight]) {
       unproject(_ray.origin.setValues(screenX, screenY, 0.0), viewportX, viewportY, viewportWidth, viewportHeight);
       unproject(_ray.direction.setValues(screenX, screenY, 1.0), viewportX, viewportY, viewportWidth, viewportHeight);
-      _ray.direction.sub(_ray.origin).normalize();
+      _ray.direction.sub(_ray.origin).nor();
       return _ray;
     }
 }

@@ -6,7 +6,7 @@ abstract class Viewport {
   double worldWidth, worldHeight;
   int screenX, screenY, screenWidth, screenHeight;
 
-  final Vector3 _tmp = new Vector3.zero();
+  final Vector3 _tmp = new Vector3();
 
   /// Applies the viewport to the camera and sets the glViewport.
   /// [centerCamera] If true, the camera position is set to the center of the world
@@ -71,7 +71,8 @@ abstract class Viewport {
   Vector2 toScreenCoordinates (Vector2 worldCoords, Matrix4 transformMatrix) {
     _tmp.setValues(worldCoords.x, worldCoords.y, 0.0);
 //    _tmp.multiply(transformMatrix);
-    _tmp.applyProjection(transformMatrix);
+    _tmp.project(transformMatrix);
+//    _tmp.applyProjection(transformMatrix);
     camera.project(_tmp);
     _tmp.y = _graphics.height - _tmp.y;
     worldCoords.x = _tmp.x;

@@ -1,21 +1,32 @@
-part of glib.math;
+part of glib.math; 
 
 class Frustum{
   
   static final Float32List clipSpacePlanePointsArray = new Float32List(8 * 3);
   final Float32List planePointsArray = new Float32List(8 * 3);
-  final List<Vec3> planePoints = new List.generate(8, (_) => new Vec3() );
+  final List<Vector3> planePoints = new List.generate(8, (_) => new Vector3() );
+  
+  /// the six clipping planes, near, far, left, right, top, bottom
+  final List<Plane> planes = new List.generate(6, (_) => new Plane.withDistance(new Vector3(), 0.0) );
   
   /** Updates the clipping plane's based on the given inverse combined projection and view matrix, e.g. from an
-   * [OrthographicCamera] or [PerspectiveCamera].
+   * [OrthographicCamera]
    * 
    * [inverseProjectionView] the combined projection and view matrices. 
    */
   void update (Matrix4 inverseProjectionView) {
-    planePointsArray.setAll(0,  clipSpacePlanePointsArray);
-    Matrix4.prj(inverseProjectionView.val, planePointsArray, 0, 8, 3);
+//    planePointsArray.setAll(0,  clipSpacePlanePointsArray);
+    
+    for(int i = 0, idx = 0; i < planePoints.length; i++, idx += 3 ){
+      
+      planePoints[i].x = clipSpacePlanePointsArray[idx];
+      planePoints[i].y = clipSpacePlanePointsArray[idx+1];
+      planePoints[i].z = clipSpacePlanePointsArray[idx+2];
+    }
+    
+    inverseProjectionView.projectAll(planePoints);
     for (int i = 0, j = 0; i < 8; i++) {
-      Vec3 v = planePoints[i];
+      Vector3 v = planePoints[i];
       v.x = planePointsArray[j++];
       v.y = planePointsArray[j++];
       v.z = planePointsArray[j++];

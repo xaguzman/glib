@@ -24,7 +24,6 @@ class TouchTest extends Test{
   }
   
   render(){
-//    super.render();
     Glib.gl.clearColor(0, 0, 0, 1);
     Glib.gl.clear(GL.COLOR_BUFFER_BIT);
     _batch.begin();
@@ -45,14 +44,13 @@ class TouchTest extends Test{
 }
 
 class MyInputHandler extends EmptyProcessor{
-  Vector2 vMousedown = new Vector2.zero();
-  Vector2 vMouseUp = new Vector2.zero();
-  Vector2 mousePos = new Vector2.zero();
-  Vector2 mouseDrag = new Vector2.zero();
+  Vector2 vMousedown = new Vector2();
+  Vector2 vMouseUp = new Vector2();
+  Vector2 mousePos = new Vector2();
+  Vector2 mouseDrag = new Vector2();
   
   @override
   bool mouseDown(int screenX, int screenY, int button) {
-    
     vMousedown.setValues(screenX.toDouble(), screenY.toDouble());
     
     return true;

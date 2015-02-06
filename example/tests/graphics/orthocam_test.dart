@@ -5,6 +5,7 @@ class OrthographicCameraTest extends Test{
   Texture texture;
   OrthographicCamera camera;
   double cameraDelta;
+  SpriteBatch batch;
     
   OrthographicCameraTest():super("Orthographic camera test"){
     cameraDelta = 2.0;
@@ -13,13 +14,13 @@ class OrthographicCameraTest extends Test{
   create(){
     texture = new Texture.from('assets/spritesheet-body.png');
     camera = new OrthographicCamera()..setToOrtho();
+    batch = new SpriteBatch(); 
   }
     
   render(){
     super.render();
-    var batch = new SpriteBatch();
     camera.update();
-    batch.projection.setFrom(camera.combined);
+    batch.projection.setMatrix(camera.combined);
     batch
       ..begin()
       ..drawTexture(texture, 50.0, 50.0)

@@ -37,7 +37,7 @@ class SpriteBatch implements Disposable{
   static const int _vertexPerSprite = 5;
   
   
-  SpriteBatch ([int size = 500, ShaderProgram defaultShader]) {
+  SpriteBatch ([int size = 1000, ShaderProgram defaultShader]) {
     
     // 65535 is max index, so 65535 / 6 = 10922.
     if (size > 10922)
@@ -50,8 +50,7 @@ class SpriteBatch implements Disposable{
      ]);
     
     _mesh = new Mesh(false, size * 4, size * 6, attributes);
-    setOrthographicMatrix(projection, 0.0, _graphics.width.toDouble(), 0.0, _graphics.height.toDouble(), 0.0, 1.0);
-//    projection.setToOrtho2D(0.0, _width.toDouble(), 0.0, _height.toDouble());
+    projection.setToOrtho2D(0.0, _graphics.width.toDouble(), 0.0, _graphics.height.toDouble());
 
     _vertices = new Float32List(size * _vertexPerSprite);
 
@@ -258,7 +257,7 @@ class SpriteBatch implements Disposable{
   }
   
   void _setupMatrices(ShaderProgram currentShader){
-    combined.setFrom(projection).multiply(transform);
+    combined.setMatrix(projection).multiply(transform);
     currentShader.setUniformMatrix4fv('u_proj', combined);
     currentShader.setUniformi("u_texture", 0);
   }
@@ -267,7 +266,6 @@ class SpriteBatch implements Disposable{
     _mesh.dispose();
     if(_ownsShader && _defaultShader != null)
       _defaultShader.dispose();
-      
   }
   
 }

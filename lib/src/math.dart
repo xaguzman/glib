@@ -2,7 +2,7 @@ library glib.math;
 
 import 'dart:typed_data';
 import 'common.dart';
-import 'dart:math' as math;
+import 'dart:math';
 
 //import 'package:vector_math/vector_math.dart' as VMath;
 //export 'package:vector_math/vector_math.dart';
@@ -13,8 +13,12 @@ part 'math/quaternion.dart';
 part 'math/ray.dart';
 part 'math/vector2.dart';
 part 'math/vector3.dart';
+part 'math/plane.dart';
 
 class MathUtils{  
+  static final double radiansToDegrees = 180 / PI;
+  static final double degreesToRadians = PI / 180;
+  
   static double clampDouble(double value, double min, double max){
     if ( value < min)
       return min;
@@ -30,7 +34,7 @@ class NumberUtils{
   static final Float32List float32 = new Float32List.view(int8.buffer, 0, 1);
 
   /**
-   * Returns a float representation of the given int bits. ArrayBuffer
+   * Returns a double representation of the given int bits. ArrayBuffer
    * is used for the conversion.
    *
    * @method  intBitsToFloat
@@ -49,7 +53,7 @@ class NumberUtils{
    *
    * @method  floatToIntBits
    * @static
-   * @param  {Number} f the float to cast
+   * @param  {Number} f the double to cast
    * @return {Number}   the int bits
    */
   static int floatToIntBits(double d) {
@@ -69,7 +73,7 @@ class NumberUtils{
   }
 
   /**
-   * Returns a float encoded ABGR value from the given RGBA
+   * Returns a double encoded ABGR value from the given RGBA
    * bytes (0 - 255). Useful for saving bandwidth in vertex data.
    *
    * @method  colorToFloat
