@@ -317,7 +317,7 @@ class ShaderProgram implements Disposable {
   void setUniformMatrix3fv (location_OR_name, values_OR_Matrix3, [bool transpose = false]) {
     _checkManaged();
     var location = _fetchUniformLocation(location_OR_name);
-    Float32List values = values_OR_Matrix3 is Matrix3 ? values_OR_Matrix3 : values_OR_Matrix3;
+    Float32List values = values_OR_Matrix3 is Matrix3 ? values_OR_Matrix3.val : values_OR_Matrix3;
     _graphics.gl.uniformMatrix3fv(location, transpose, values);
   }
 

@@ -24,8 +24,7 @@ class TouchTest extends Test{
   }
   
   render(){
-    Glib.gl.clearColor(0, 0, 0, 1);
-    Glib.gl.clear(GL.COLOR_BUFFER_BIT);
+    super.render();
     _batch.begin();
     
     font.draw(_batch, "Mouse position: ${_handler.mousePos}", 20.0, 5.0);

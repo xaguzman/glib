@@ -11,7 +11,6 @@ abstract class Viewport {
   /// Applies the viewport to the camera and sets the glViewport.
   /// [centerCamera] If true, the camera position is set to the center of the world
   void apply (bool centerCamera) {
-    
     _graphics.gl.viewport(screenX, screenY, screenWidth, screenHeight);
     camera.viewportWidth = worldWidth;
     camera.viewportHeight = worldHeight;

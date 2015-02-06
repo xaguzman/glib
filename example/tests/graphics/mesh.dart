@@ -48,9 +48,8 @@ class MeshTest extends Test{
   }
   
   render(){
+    super.render();
     Glib.gl.viewport(0, 0, 800, 480);
-    Glib.gl.clearColor(0,0,0, 1);
-    Glib.gl.clear(GL.COLOR_BUFFER_BIT);
     Glib.gl.enable(GL.BLEND);
     Glib.gl.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA);
     shader.begin();

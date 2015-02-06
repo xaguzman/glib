@@ -24,8 +24,7 @@ class KeyboardTest extends Test{
   }
   
   render(){
-    Glib.gl.clearColor(0, 0, 0, 1);
-    Glib.gl.clear(GL.COLOR_BUFFER_BIT);
+    super.render();
     _batch.begin();
     
     font

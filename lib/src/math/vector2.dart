@@ -16,7 +16,7 @@ class Vector2{
   void set y(double value){
     val[1] = value;
   }
-  
+    
   Vector2([double x = 0.0, double y = 0.0])
     :val = new List(2)
   {
