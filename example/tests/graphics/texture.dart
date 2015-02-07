@@ -6,6 +6,7 @@ class TextureTest extends Test{
   Texture spriteSheet;
   TextureRegion firstFrame;
   SpriteBatch batch;
+  Camera cam;
   
   TextureTest():super("Texture test");
   
@@ -14,10 +15,13 @@ class TextureTest extends Test{
     spriteSheet = new Texture.from('assets/spritesheet-body.png');
     firstFrame = new TextureRegion(spriteSheet, 0, 0, 64, 64);
     batch = new SpriteBatch();
+    cam = new OrthographicCamera()
+      ..setToOrtho();
   }
   
   render(){
     super.render();
+    cam.update();
     batch
       ..begin()
       ..drawTexture(texture, 0.0, 0.0)
@@ -32,6 +36,7 @@ class TextureTest extends Test{
       ..drawTexture(spriteSheet, 100.0, 100.0)
       ..end()
       ..color = Color.WHITE;
+    cam.position.x = cam.position.x + 1;
   }
   
   dispose(){

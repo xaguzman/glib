@@ -51,7 +51,7 @@ class SpriteBatch implements Disposable{
     
     _mesh = new Mesh(false, size * 4, size * 6, attributes);
     
-    projection.setToOrtho2D(0.0, _graphics.width.toDouble(), 0.0, _graphics.height.toDouble());
+    projection.setToOrtho2D(0.0, 0.0, _graphics.width.toDouble(),  _graphics.height.toDouble());
 
     _vertices = new Float32List(size * _vertexPerSprite);
 
