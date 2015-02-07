@@ -26,8 +26,7 @@ class OrthographicCamera extends Camera{
     projection.setToOrtho(zoom * -viewportWidth / 2, zoom * (viewportWidth / 2), zoom * -(viewportHeight / 2), zoom * viewportHeight / 2, near, far);
     view.setToLookAt(position, up, target: _tmp.set(position).add(direction));
     
-    combined.setMatrix(projection);
-    combined.multiply(view);
+    combined.setMatrix(projection).multiply(view);
 
     if (updateFrustum) {
       invProjectionView.setMatrix(combined);
