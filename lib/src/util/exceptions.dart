@@ -3,6 +3,7 @@ part of glib.common;
 class GlibException implements Exception{
   String msg;
   
+  
   GlibException(String this.msg);
   
   toString() => msg;

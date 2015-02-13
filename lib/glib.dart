@@ -11,6 +11,8 @@ export 'src/input.dart';
 
 import 'src/common.dart';
 
+export 'src/math.dart';
+
 part 'src/glib.dart';
 part 'src/application/application.dart';
 part 'src/application/application_listener.dart';

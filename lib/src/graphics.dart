@@ -8,7 +8,6 @@ import 'dart:typed_data';
 import 'dart:math' as Math;
 
 import 'math.dart';
-export 'math.dart';
 import 'common.dart';
 
 
@@ -21,6 +20,7 @@ part 'graphics/glutils/shader_program.dart';
 part 'graphics/glutils/vertex_buffer_object.dart';
 part 'graphics/glutils/index_buffer_object.dart';
 part 'graphics/2d/sprite_batch.dart';
+part 'graphics/2d/animation.dart';
 part 'graphics/font.dart';
 part 'graphics/camera.dart';
 part 'graphics/orthographic_camera.dart';
@@ -35,7 +35,7 @@ part 'graphics/viewport/viewport.dart';
 
 Graphics _graphics;
 
-abstract class Graphics{
+abstract class Graphics extends Disposable{
   
   double get deltaTime;
   
@@ -45,9 +45,7 @@ abstract class Graphics{
   /// updates the elapsed time since the last rendering, also the frames per second.
   /// you should not directly call this
   void update();
-  
-  void disposeGraphics();
-    
+     
   GL.RenderingContext get gl; 
   Map<int, Texture> get textures; 
   
@@ -128,7 +126,7 @@ class WebGraphics extends Graphics{
   }
   
   @override
-  void disposeGraphics(){
+  void dispose(){
       textures.values.forEach( (texture) => texture._dispose());
       textures.clear();
       _watch.stop();

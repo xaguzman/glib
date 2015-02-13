@@ -18,6 +18,7 @@ part 'math/plane.dart';
 class MathUtils{  
   static final double radiansToDegrees = 180 / PI;
   static final double degreesToRadians = PI / 180;
+  static final Random _random = new Random();
   
   static double clampDouble(double value, double min, double max){
     if ( value < min)
@@ -25,6 +26,11 @@ class MathUtils{
     if (value > max)
       return max;
     return value;
+  }
+  
+  /// Returns a random number between 0 (inclusive) and the specified value (inclusive).
+  static int randomInt(int range) {
+    return _random.nextInt(range + 1);
   }
 }
 

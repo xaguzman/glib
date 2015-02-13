@@ -123,8 +123,8 @@ class TextureRegion{
     }
   }
   
-  bool isFlipX() => _u > _u2;
-  bool isFlipY() => _v > _v2;
+  bool get isFlipX => _u > _u2;
+  bool get isFlipY => _v > _v2;
   
   List<List<TextureRegion>> split(int tileWidth, int tileHeight){
     int x = regionX;
