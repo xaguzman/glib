@@ -8,7 +8,7 @@ class Vector3{
   static const Vector3 Z = const Vector3._internal(const [0.0, 0.0, 1.0]);
   static const Vector3 Zero = const Vector3._internal(const [0.0, 0.0, 0.0]);
   
-  final List<double> val;
+  final Float32List val;
   
   double get x => val[0];
   void set x(double value) { val[0] = value; }
@@ -18,11 +18,11 @@ class Vector3{
   
   double get z => val[2];
   void set z(double value) { val[2] = value; }
-  
+    
   static final Matrix4 tmpMat = new Matrix4();
 
   Vector3([double x = 0.0, double y = 0.0, double z = 0.0])
-    :val = new List(3)
+    :val = new Float32List(3)
   {
     val[0] = x;
     val[1] = y;
@@ -240,10 +240,8 @@ class Vector3{
       return quat.transform(this);
   }
   
-  /**
-   * Multiplies this vector by the given matrix dividing by w, assuming the fourth (w) component of the vector is 1. This is
-   * mostly used to project/unproject vectors via a perspective projection matrix.
-   */
+  /// Multiplies this vector by the given matrix dividing by w, assuming the fourth (w) component of the vector is 1. This is
+  /// mostly used to project/unproject vectors via a perspective projection matrix.
   Vector3 project (Matrix4 matrix) {
     var l_mat = matrix.val;
     num l_w = 1 / (x * l_mat[Matrix4.M30] + y * l_mat[Matrix4.M31] + z * l_mat[Matrix4.M32] + l_mat[Matrix4.M33]);
@@ -264,23 +262,21 @@ class Vector3{
       * l_mat[Matrix4.M11] + z * l_mat[Matrix4.M12], x * l_mat[Matrix4.M20] + y * l_mat[Matrix4.M21] + z * l_mat[Matrix4.M22]);
   }
   
-  /** Rotates this vector by the given angle in degrees around the given axis.
-   * 
-   * @param degrees the angle in degrees
-   * @param axisX the x-component of the axis
-   * @param axisY the y-component of the axis
-   * @param axisZ the z-component of the axis
-   * @return This vector for chaining */
+  /// Rotates this vector by the given angle in degrees around the given axis.
+  /// 
+  /// [degrees] the angle in degrees
+  /// [axisX] the x-component of the axis
+  /// [axisY] the y-component of the axis
+  /// [axisZ] the z-component of the axis
   Vector3 rotateDeg(double degrees, double axisX, double axisY, double axisZ) => 
       this.mulMatrix4(tmpMat.setToRotation(axisX, axisY, axisZ, degrees));
 
-  /** Rotates this vector by the given angle in radians around the given axis.
-   * 
-   * @param radians the angle in radians
-   * @param axisX the x-component of the axis
-   * @param axisY the y-component of the axis
-   * @param axisZ the z-component of the axis
-   * @return This vector for chaining */
+  /// Rotates this vector by the given angle in radians around the given axis.
+  /// 
+  /// [degrees] the angle in radians
+  /// [axisX] the x-component of the axis
+  /// [axisY] the y-component of the axis
+  /// [axisZ] the z-component of the axis
   Vector3 rotateRad(double radians, double axisX, double axisY, double axisZ) {
     return this.mulMatrix4(tmpMat.setToRotationRad(axisX, axisY, axisZ, radians));
   }
@@ -297,9 +293,9 @@ class Vector3{
 
   /** Rotates this vector by the given angle in radians around the given axis.
    * 
-   * @param axis the axis
-   * @param radians the angle in radians
-   * @return This vector for chaining */
+   * [axis] the axis
+   * [radians] the angle in radians
+   */
   Vector3 rotateRadVector(final Vector3 axis, double radians) {
     tmpMat.setToRotationRad(axis.x, axis.y, axis.z, radians);
     return this.mulMatrix4(tmpMat);

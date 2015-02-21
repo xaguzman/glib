@@ -4,7 +4,12 @@ part of glib.graphics;
 class TextureRegion{
   Texture texture;
   double _u, _v, _u2, _v2;
-  int _width, _height;
+  int _regionWidth, _regionHeight;
+  
+  TextureRegion.empty(){
+    _regionWidth = _regionHeight = 0;
+    _u = _v = _u2 = _v2 = 0.0;
+  }
   
   /** 
    * Creates a new subregion out of the passed [texture]
@@ -15,17 +20,24 @@ class TextureRegion{
    * [width] if ommited, it will be set to the [texture]'s width
    * [height] if ommited, it will be set to the [texture]'s height
    */ 
-  TextureRegion(this.texture, [int x = 0, int y = 0 , int width, int height]){
-    if ( height == null)
-      height = texture.height;
-    if (width == null)
-      width = texture.width;
+  TextureRegion(this.texture, [int x = 0, int y = 0 , int width, int height]){   
+    if(texture == null)
+      throw new ArgumentError.notNull("texture");
     
-    if (texture.loaded)
+    if (texture.loaded){
+      if ( height == null)
+        height = texture.height;
+      if (width == null)
+        width = texture.width;
+          
       setRegion(x, y, width, height);
-    else{
+    }else{
       setRegion(0, 0, 1, 1);
       texture.onLoad.then((texture){
+        if ( height == null)
+          height = texture.height;
+        if (width == null)
+          width = texture.width;
         setRegion(x, y, width, height);
       });
     }
@@ -40,18 +52,18 @@ class TextureRegion{
     num invTexWidth = 1.0 / texture.width;
     num invTexHeight = 1.0 / texture.height;
     setUVs(x * invTexWidth, y * invTexHeight, (x + width) * invTexWidth, (y + height) * invTexHeight);
-    _width = width.abs();
-    _height = height.abs();
+    _regionWidth = width.abs();
+    _regionHeight = height.abs();
   }
   
   void setUVs(double u1, double v1, double u2, double v2){
     int texWidth = texture.width, texHeight = texture.height;
     
-    _width = ((u2 - u1).abs() * texWidth).round();
-    _height = ((v2 - v1).abs() * texHeight).round();
+    _regionWidth = ((u2 - u1).abs() * texWidth).round();
+    _regionHeight = ((v2 - v1).abs() * texHeight).round();
 
     // For a 1x1 region, adjust UVs toward pixel center to avoid filtering artifacts on AMD GPUs when drawing very stretched.
-    if (_width == 1 && _height == 1) {
+    if (_regionWidth == 1 && _regionHeight == 1) {
       num adjustX = 0.25 / texWidth;
       u1 += adjustX;
       u2 -= adjustX;
@@ -69,25 +81,25 @@ class TextureRegion{
   double get u => _u;
   void set u(double u){
     _u = u;
-    _width = ((_u2 - _u).abs() * texture.width).round();
+    _regionWidth = ((_u2 - _u).abs() * texture.width).round();
   }
   
   double get v => _v;
   void set v(double v){
     _v = v;
-    _height = ((_v2 - _v).abs() * texture.height).round();
+    _regionHeight = ((_v2 - _v).abs() * texture.height).round();
   }
   
   double get u2 => _u2;
   void set u2(double u2){
     _u2 = u2;
-    _width = ((_u2 - _u).abs() * texture.width).round();
+    _regionWidth = ((_u2 - _u).abs() * texture.width).round();
   }
   
   double get v2 => _v2;
   void set v2 (double v2) {
     _v2 = v2;
-    _height = ((_v2 - _v).abs() * texture.height).round();
+    _regionHeight = ((_v2 - _v).abs() * texture.height).round();
   }
   
   int get regionX => (_u * texture.width).round();
@@ -100,12 +112,12 @@ class TextureRegion{
     v = y / texture.height;
   }
   
-  int get regionWidth => _width;
+  int get regionWidth => _regionWidth;
   void set regionWidth(int width){
     u2 = _u + width / texture.width;
   }
   
-  int get regionHeight => _height;
+  int get regionHeight => _regionHeight;
   void set regionHeight(int height){
     v2 = _u + height / texture.height;
   }
@@ -132,8 +144,8 @@ class TextureRegion{
     int width = regionWidth;
     int height = regionHeight;
 
-    int rows = _height ~/ tileHeight;
-    int cols = _width ~/ tileWidth;
+    int rows = _regionHeight ~/ tileHeight;
+    int cols = _regionWidth ~/ tileWidth;
 
     int startX = x;
     List<List<TextureRegion>> tiles = new List.generate(rows, (_) => new List(cols));

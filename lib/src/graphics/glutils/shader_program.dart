@@ -54,14 +54,10 @@ class ShaderProgram implements Disposable {
   /// whether this shader was invalidated
   bool _invalidated = false;
 
-  /** reference count **/
+  /// reference count
   int _refCount = 0;
 
-  /** Constructs a new ShaderProgram and immediately compiles it.
-   * 
-   * @param vertexShader the vertex shader
-   * @param fragmentShader the fragment shader */
-
+  /// Constructs a new ShaderProgram and immediately compiles it.
   ShaderProgram(this.vertexShaderSource, this.fragmentShaderSource) {
     if (vertexShaderSource == null) throw new ArgumentError("vertex shader must not be null");
     if (fragmentShaderSource == null) throw new ArgumentError("fragment shader must not be null");
@@ -243,7 +239,7 @@ class ShaderProgram implements Disposable {
     
   /**
    * A convenience method to set uniformfv from the given arguments.
-   * The GL call is determined based length of [buffer] 
+   * The GL call is determined based on the length of [buffer] 
    * For example, `setUniformfv("var", buffer)` maps to `gl.uniform2fv`, if buffer.length == 2
    * 
    * [location_OR_name] the name of the uniform, or the [GL.UniformLocation] itself
@@ -424,13 +420,8 @@ class ShaderProgram implements Disposable {
 //    return builder.toString();
 //  }
 
-  /** Sets the given attribute
-   * 
-   * location_OR_name either the location (int) or name(String) of the vertex attribute you want to disable
-   * value1 the first value
-   * value2 the second value
-   * value3 the third value
-   * value4 the fourth value */
+  /// Sets the given attribute
+  /// [location_OR_name] either the location (int) or name(String) of the vertex attribute you want to set
   void setAttributef (location_OR_name, num value1, num value2, num value3, num value4) {
     _checkManaged();
     var location = _fetchAttributeLocation(location_OR_name);    

@@ -25,18 +25,7 @@ class SpriteBatch implements Disposable{
   
   int _blendSrcFunc = GL.SRC_ALPHA;
   int _blendDstFunc = GL.ONE_MINUS_SRC_ALPHA;
-  
- 
-  
-  /** 
-   * 5 vertices per sprite:
-   * 2: position.xy
-   * 1: packed color
-   * 2: texcoord0.xy
-   */
-  static const int _vertexPerSprite = 5;
-  
-  
+   
   SpriteBatch ([int size = 1000, ShaderProgram defaultShader]) {
     
     // 65535 is max index, so 65535 / 6 = 10922.
@@ -53,7 +42,7 @@ class SpriteBatch implements Disposable{
     
     projection.setToOrtho2D(0.0, 0.0, _graphics.width.toDouble(),  _graphics.height.toDouble());
 
-    _vertices = new Float32List(size * _vertexPerSprite);
+    _vertices = new Float32List(size * Sprite.VERTEX_SIZE);
 
     int len = size * 6;
     Int16List indices = new Int16List(len);
@@ -273,6 +262,28 @@ class SpriteBatch implements Disposable{
 
 
 
+class Batch{
+  static const int X1 = 0;
+  static const int Y1 = 1;
+  static const int C1 = 2;
+  static const int U1 = 3;
+  static const int V1 = 4;
+  static const int X2 = 5;
+  static const int Y2 = 6;
+  static const int C2 = 7;
+  static const int U2 = 8;
+  static const int V2 = 9;
+  static const int X3 = 10;
+  static const int Y3 = 11;
+  static const int C3 = 12;
+  static const int U3 = 13;
+  static const int V3 = 14;
+  static const int X4 = 15;
+  static const int Y4 = 16;
+  static const int C4 = 17;
+  static const int U4 = 18;
+  static const int V4 = 19;
+}
 
 
 

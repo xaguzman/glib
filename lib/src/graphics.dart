@@ -15,6 +15,8 @@ part 'graphics/glutils/mesh.dart';
 part 'graphics/glutils/gl_texture.dart';
 part 'graphics/texture.dart';
 part 'graphics/texture_region.dart';
+part 'graphics/sprite.dart';
+//part 'graphics/texture_atlas.dart';
 part 'graphics/glutils/vertex_attribute.dart';
 part 'graphics/glutils/shader_program.dart';
 part 'graphics/glutils/vertex_buffer_object.dart';
@@ -37,6 +39,7 @@ Graphics _graphics;
 
 abstract class Graphics extends Disposable{
   
+  /// the time elapsed between the last frame and the current frame, in seconds!
   double get deltaTime;
   
   /// the current frames per second
