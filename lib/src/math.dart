@@ -37,13 +37,15 @@ class MathUtils{
   }
 }
 
+/// Number conversion utilities. Useful for packing data into single doubles and ints.
+/// Ported from https://github.com/mattdesl/number-util
 class NumberUtils{
   static final Int8List int8 = new Int8List(4);
   static final Int32List int32 = new Int32List.view(int8.buffer, 0, 1);
   static final Float32List float32 = new Float32List.view(int8.buffer, 0, 1);
 
   /// Returns a double representation of the given int bits. [Float32List] is used for the conversion.
-  static double intBitsToDouble(int value){
+  static double intToDoubleBits(int value){
     int32[0] = value;
     return float32[0];
   }
@@ -58,7 +60,7 @@ class NumberUtils{
   ///
   /// [value] an ABGR packed integer
   static double intToFloatColor (int value) {
-    return NumberUtils.intBitsToDouble( value & 0xfeffffff );
+    return NumberUtils.intToDoubleBits( value & 0xfeffffff );
   }
 
   /// Returns a double encoded ABGR value from the given RGBA bytes (0 - 255). Useful for saving bandwidth in vertex data.
@@ -76,7 +78,8 @@ class NumberUtils{
     int color = a | b | g | r;
     return NumberUtils.intToFloatColor(color);
   }
-
+  
+  
   /// Returns true if the number is a power-of-two.
   static bool isPowerOfTwo(int n) => (n & (n - 1)) == 0;
 

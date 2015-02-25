@@ -1,9 +1,7 @@
 part of glib.graphics;
 
 /// Stores information for a color. All the channels are normalized
-class Color{
-  double r, g, b, a;
-  
+class Color{ 
   static final Color CLEAR = new Color(0.0, 0.0, 0.0, 0.0);
   static final Color WHITE = new Color(1.0, 1.0, 1.0, 1.0);
   static final Color BLACK = new Color(0.0, 0.0, 0.0, 1.0);
@@ -23,6 +21,12 @@ class Color{
   static final Color MAROON = new Color(0.5, 0.0, 0.0, 1.0);
   static final Color TEAL = new Color(0.0, 0.5, 0.5, 1.0);
   static final Color NAVY = new Color(0.0, 0.0, 0.5, 1.0);
+  
+  static double _toDouble(int channel) => channel / 255;
+  static int _toInt(double channel) => (channel * 255).toInt();
+  
+  
+  double r, g, b, a;
   
   Color([double r = 0.0, double g = 0.0, double b = 0.0, double a = 1.0]){
     this.r = MathUtils.clampDouble(r, 0.0, 1.0);
@@ -98,9 +102,7 @@ class Color{
     b = other.b;
     a = other.a;
   }
-  
-  static double _toDouble(int channel) => channel / 255;
-  static int _toInt(double channel) => (channel * 255).toInt();
+   
 }
 
 

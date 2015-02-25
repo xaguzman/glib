@@ -14,11 +14,7 @@ class TouchTest extends Test{
     _handler = new MyInputHandler();
     Glib.input.processor = _handler;
   }
-  
-  pause(){}
-  
-  resume(){}
-  
+    
   resize(width, height){
  
   }

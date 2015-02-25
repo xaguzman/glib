@@ -1,6 +1,6 @@
 library glib.tests;
 
-import 'dart:html';
+import 'dart:html' hide Animation;
 import 'package:glib/glib.dart';
 import 'dart:web_gl' as GL;
 import 'dart:typed_data';

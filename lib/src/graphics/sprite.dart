@@ -77,7 +77,7 @@ class Sprite extends TextureRegion{
   }
     
   /// Sets the position and size of the sprite when drawn, before scaling and rotation are applied. If origin, rotation, or scale
-  /// are changed, it is slightly more efficient to set the bounds after those operations. */
+  /// are changed, it is slightly more efficient to set the bounds after those operations. 
   void setBounds (double x, double y, double width, double height) {
     this._x = x;
     this._y = y;
@@ -143,12 +143,12 @@ class Sprite extends TextureRegion{
   /// to set the position after those operations. If both position and size are to be changed, it is better to use [setBounds]
   void set y(double val) => translateY( val - _y);
   
-  /// Sets the x position so that it is centered on the given x parameter */
+  /// Sets the x position so that it is centered on the given [x] parameter
   void set centerX(double x){ 
     this.x = x - _width / 2; 
   }
   
-  /// Sets the y position so that it is centered on the given x parameter */
+  /// Sets the y position so that it is centered on the given [y] parameter
   void set centerY(double y){
     this.y = y - _height / 2;
   }
@@ -223,14 +223,14 @@ class Sprite extends TextureRegion{
     _dirty = true;
   }
   
-  /// The rotation of the sprite in degrees. Rotation is centered on the origin set in [setOrigin]
+  /// The rotation of the sprite in degrees. Rotation is centered on the origin set by [setOrigin]
   void set rotation(double degrees){
     this._rotation = degrees;
     _dirty = true;
    
   }
   
-  /// The rotation of the sprite in degrees. Rotation is centered on the origin set in [setOrigin]
+  /// The rotation of the sprite in degrees. Rotation is centered on the origin set by [setOrigin]
   double get rotation => _rotation;
   
   /// Sets the sprite's rotation in degrees relative to the current rotation. Rotation is centered on the origin set in [setOrigin]
@@ -309,8 +309,8 @@ class Sprite extends TextureRegion{
 //        final double cos = MathUtils.cosDeg(rotation );
 //        final double sin = MathUtils.sinDeg(rotation);
         
-        final double cosine = cos(rotation);
-        final double sine = sin(rotation);
+        final double cosine = cos(rotation * MathUtils.degreesToRadians);
+        final double sine = sin(rotation * MathUtils.degreesToRadians);
         final double localXCos = localX * cosine;
         final double localXSin = localX * sine;
         final double localYCos = localY * cosine;
@@ -410,14 +410,8 @@ class Sprite extends TextureRegion{
   
   /// Returns the color of this sprite. Changing the returned color will have no affect, [setColor] must be used
   Color getColor () {
-//    int intBits = NumberUtils.floatToIntColor(_vertices[Batch.C1]);
-    int intBits = NumberUtils.floatToIntBits(_vertices[Batch.C1]);
-    Color color = this.color;
-    color.r = (intBits & 0xff) / 255;
-    color.g = ((intBits >> 8) & 0xff) / 255;
-    color.b = ((intBits >> 16) & 0xff) / 255;
-    color.a = ((intBits >> 24) & 0xff) / 255;
-    return color;
+    return color
+        ..setDouble(_vertices[Batch.C1]);
   }
   
 }
