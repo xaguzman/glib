@@ -48,7 +48,7 @@ class TextureRegion{
     setUVs(other.u, other.v, other.u2, other.v2);
   }
   
-  void setRegion(num x, num y, num width, num height){
+  void setRegion(int x, int y, int width, int height){
     num invTexWidth = 1.0 / texture.width;
     num invTexHeight = 1.0 / texture.height;
     setUVs(x * invTexWidth, y * invTexHeight, (x + width) * invTexWidth, (y + height) * invTexHeight);

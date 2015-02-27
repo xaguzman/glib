@@ -13,7 +13,7 @@ class Sprite extends TextureRegion{
 
   final Float32List _vertices = new Float32List(SPRITE_SIZE);
   
-  final Color color = Color.WHITE.copy();
+  final Color _color = Color.WHITE.copy();
   double _width, _height;
   double _x = 0.0, _y = 0.0;
   double _rotation = 0.0, _scaleX = 1.0, _scaleY = 1.0;
@@ -33,15 +33,33 @@ class Sprite extends TextureRegion{
   /// [y] the Y-axis coordinate matching the lower left corner of the region
   /// [srcWidth] The width of the texture region. May be negative to flip the sprite when drawn.
   /// [srcHeight] The height of the texture region. May be negative to flip the sprite when drawn. */
-  Sprite(Texture texture, [int x, int y, int srcWidth, int srcHeight]): super(texture, x, y, srcWidth, srcHeight) {
-    setSize(srcWidth.abs().toDouble(), srcHeight.abs().toDouble());
-    setOrigin(_width / 2, _height / 2);
+  Sprite(Texture texture, [int x, int y, int srcWidth, int srcHeight])
+  : super(texture, x, y, srcWidth, srcHeight) {
+    
+    if (texture.loaded){
+      if ( srcHeight == null)
+        srcHeight = texture.height;
+      if (srcWidth == null)
+        srcWidth = texture.width;
+      setSize(srcWidth.abs().toDouble(), srcHeight.abs().toDouble());
+      setOrigin(_width / 2, _height / 2);
+    }else{
+      texture.onLoad.then((texture){
+        if ( srcHeight == null)
+          srcHeight = texture.height;
+        if (srcWidth == null)
+          srcWidth = texture.width;
+        setSize(srcWidth.abs().toDouble(), srcHeight.abs().toDouble());
+        setOrigin(_width / 2, _height / 2);
+      });
+    }
   }
 
 
     // Note the region is copied.
   /// Creates a sprite based on a specific TextureRegion, the new sprite's region is a copy of the parameter region, altering one does not affect the other
-  Sprite.fromRegion(TextureRegion region): super.copy(region) {
+  Sprite.fromRegion(TextureRegion region)
+  : super.copy(region) {
     setSize(region.regionWidth.toDouble(), region.regionHeight.toDouble());
     setOrigin( _width / 2, _height / 2);
   }
@@ -72,7 +90,7 @@ class Sprite extends TextureRegion{
     _rotation = other._rotation;
     _scaleX = other._scaleX;
     _scaleY = other._scaleY;
-    color.set(other.color);
+    _color.set(other._color);
     _dirty = other._dirty;
   }
     
@@ -127,7 +145,7 @@ class Sprite extends TextureRegion{
     vertices[Batch.X4] = x2;
     vertices[Batch.Y4] = _y;
 
-    if (_rotation != 0 || _scaleX != 1 || _scaleY != 1) 
+    if (_rotation != 0.0 || _scaleX != 1.0 || _scaleY != 1.0) 
       _dirty = true;
   }
   
@@ -209,6 +227,23 @@ class Sprite extends TextureRegion{
     vertices[Batch.Y4] += yAmount;
   }
   
+  /** Sets the alpha portion of the color used to tint this sprite. */
+  void setAlpha (double a) {
+    int intBits = NumberUtils.floatToIntBits(_vertices[Batch.C1]);
+    int alphaBits = 255 * a.toInt() << 24;
+
+    // clear alpha on original color
+    intBits = intBits & 0x00FFFFFF;
+    // write new alpha
+    intBits = intBits | alphaBits;
+    double color = NumberUtils.intToFloatColor(intBits);
+    _vertices[Batch.C1] = color;
+    _vertices[Batch.C2] = color;
+    _vertices[Batch.C3] = color;
+    _vertices[Batch.C4] = color;
+  }
+
+  
   /// Sets the origin in relation to the sprite's position for scaling and rotation
   void setOrigin (double originX, double originY) {
     this._originX = originX;
@@ -288,7 +323,10 @@ class Sprite extends TextureRegion{
     _dirty = true;
   }
   
-  Float32List getVertices () {
+  /// Obtains the vertices which this sprite is composed off.
+  /// 
+  /// This getter performs some operations to obtain the rectangle, so you should catch this result
+  Float32List get vertices {
     if (_dirty) {
       _dirty = false;
 
@@ -362,8 +400,10 @@ class Sprite extends TextureRegion{
   /// Returns the bounding axis aligned [Rect] that bounds this sprite. The rectangles x and y coordinates describe its
   /// bottom left corner. If you change the position or size of the sprite, you have to fetch the triangle again for it to be
   /// recomputed.
-  Rect getBoundingRectangle () {
-    Float32List vertices = getVertices();
+  /// 
+  /// This getter performs some operations to obtain the rectangle, so you should catch this result
+  Rect get boundingRectangle  {
+    Float32List vertices = this.vertices;
 
     double minx = vertices[Batch.X1];
     double miny = vertices[Batch.Y1];
@@ -397,21 +437,158 @@ class Sprite extends TextureRegion{
   
   void draw (SpriteBatch batch, [double alphaModulation]) {
     if (alphaModulation == null){
-      batch.drawVertices(texture, getVertices(), 0, SPRITE_SIZE); 
+      batch.drawVertices(texture, vertices, 0, SPRITE_SIZE); 
     }else{
-      double oldAlpha = getColor().a;
+      double oldAlpha = color.a;
       setAlpha(oldAlpha * alphaModulation);
       
-      batch.drawVertices(texture, getVertices(), 0, SPRITE_SIZE);
+      batch.drawVertices(texture, vertices, 0, SPRITE_SIZE);
       
       setAlpha(oldAlpha);
     }
   }
+    
+  /// Returns the color of this sprite. Changing the returned color will have no effect, you need to specifically assign it
+  /// using the color setter or one of the methods: [setColorValues]
+  Color get color => _color..setDouble(_vertices[Batch.C1]);
   
-  /// Returns the color of this sprite. Changing the returned color will have no affect, [setColor] must be used
-  Color getColor () {
-    return color
-        ..setDouble(_vertices[Batch.C1]);
+  /// Sets the color used to tint this sprite. [Color.WHITE].
+  void set color (Color tint){
+    double color = tint.toDouble();
+    _vertices[Batch.C1] = color;
+    _vertices[Batch.C2] = color;
+    _vertices[Batch.C3] = color;
+    _vertices[Batch.C4] = color;
   }
   
+  /// Sets the color used to tint this sprite by assigning the [r] [g] [b] [a] channels. [Color.WHITE].
+  void setColorValues(double r, double g, double b, double a){
+//    int intBits = (255 * a.toInt()) << 24 | ((255 * b.toInt()) << 16) | ((int)(255 * g) << 8) | ((int)(255 * r));
+    int intBits = Color._toInt(a) << 24 | Color._toInt(b) << 16 | Color._toInt(g) << 8 | Color._toInt(r);
+    double color = NumberUtils.intToFloatColor(intBits);
+    _vertices[Batch.C1] = color;
+    _vertices[Batch.C2] = color;
+    _vertices[Batch.C3] = color;
+    _vertices[Batch.C4] = color;
+  }
+  
+//  /// Sets the color used to tint this sprite, the passed [color] is assigned to all of the channels.
+//  /// This means that setColorDouble(1.0) would give you white
+//  void setColorDouble(double color){
+//    var vertices = _vertices;
+//    vertices[Batch.C1] = color;
+//    vertices[Batch.C2] = color;
+//    vertices[Batch.C3] = color;
+//    vertices[Batch.C4] = color;
+//  }
+  
+  @override
+  void setUVs (double u, double v, double u2, double v2) {
+    super.setUVs(u, v, u2, v2);
+
+    Float32List vertices = _vertices;
+    vertices[Batch.U1] = u;
+    vertices[Batch.V1] = v2;
+
+    vertices[Batch.U2] = u;
+    vertices[Batch.V2] = v;
+
+    vertices[Batch.U3] = u2;
+    vertices[Batch.V3] = v;
+
+    vertices[Batch.U4] = u2;
+    vertices[Batch.V4] = v2;
+  }
+  
+  @override
+  void set u (double u) {
+    super.u = u;
+    _vertices[Batch.U1] = u;
+    _vertices[Batch.U2] = u;
+  }
+
+  @override
+  void set v (double v) {
+    super.v  = v;
+    _vertices[Batch.V2] = v;
+    _vertices[Batch.V3] = v;
+  }
+
+  @override
+  void set u2 (double u2) {
+    super.u2 = u2;
+    _vertices[Batch.U3] = u2;
+    _vertices[Batch.U4] = u2;
+  }
+
+  @override
+  void set v2 (double v2) {
+    super.v2 = v2;
+    _vertices[Batch.V1] = v2;
+    _vertices[Batch.V4] = v2;
+  }
+  
+  /// Set the sprite's flip state regardless of current condition
+  /// [x] the desired horizontal flip state
+  /// [y] the desired vertical flip state
+  void setFlip (bool x, bool y) {
+    bool performX = false;
+    bool performY = false;
+    if (isFlipX != x) {
+      performX = true;
+    }
+    if (isFlipY != y) {
+      performY = true;
+    }
+    flip(performX, performY);
+  }
+  
+  @override
+  /// bool parameters x,y are not setting a state, but performing a flip
+  /// [onX] perform horizontal flip
+  /// [onY] perform vertical flip */
+  void flip (bool onX, bool onY) {
+    super.flip(onX, onY);
+    Float32List vertices = _vertices;
+    if (onX) {
+      double temp = vertices[Batch.U1];
+      vertices[Batch.U1] = vertices[Batch.U3];
+      vertices[Batch.U3] = temp;
+      temp = vertices[Batch.U2];
+      vertices[Batch.U2] = vertices[Batch.U4];
+      vertices[Batch.U4] = temp;
+    }
+    if (onY) {
+      double temp = vertices[Batch.V1];
+      vertices[Batch.V1] = vertices[Batch.V3];
+      vertices[Batch.V3] = temp;
+      temp = vertices[Batch.V2];
+      vertices[Batch.V2] = vertices[Batch.V4];
+      vertices[Batch.V4] = temp;
+    }
+  }
+  
+  void scroll (double xAmount, double yAmount) {
+    Float32List vertices = _vertices;
+    if (xAmount != 0) {
+      double u = (vertices[Batch.U1] + xAmount) % 1;
+      double u2 = u + _width / texture.width;
+      this.u = u;
+      this.u2 = u2;
+      vertices[Batch.U1] = u;
+      vertices[Batch.U2] = u;
+      vertices[Batch.U3] = u2;
+      vertices[Batch.U4] = u2;
+    }
+    if (yAmount != 0) {
+      double v = (vertices[Batch.V2] + yAmount) % 1;
+      double v2 = v + _height / texture.height;
+      this.v = v;
+      this.v2 = v2;
+      vertices[Batch.V1] = v2;
+      vertices[Batch.V2] = v;
+      vertices[Batch.V3] = v;
+      vertices[Batch.V4] = v2;
+    }
+  }
 }

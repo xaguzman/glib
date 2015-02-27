@@ -186,7 +186,7 @@ class SpriteBatch implements Disposable{
     }
     int copyCount = Math.min(remainingVertices, count);
 
-    _vertices.setRange(_currentVertex, _currentVertex + copyCount, vertices, offset + 1);
+    _vertices.setRange(_currentVertex, _currentVertex + copyCount, vertices, offset);
     
     _currentVertex += copyCount;
     count -= copyCount;

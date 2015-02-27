@@ -10,6 +10,8 @@ part 'graphics/mesh.dart';
 part 'graphics/orthocam_test.dart';
 part 'graphics/texture.dart';
 part 'graphics/animation2d_test.dart';
+part 'graphics/sprite_tests.dart';
+
 part 'input/touch_test.dart';
 part 'input/keyboard_test.dart';
 
@@ -28,6 +30,7 @@ main(){
     new OrthographicCameraTest(),
     new TextureTest(),
     new Animation2dTest(),
+    new SpriteRotationTest(),
     new TouchTest(),
     new KeyboardTest()
   ], key: (test) => test.name, value: (test) => test);
