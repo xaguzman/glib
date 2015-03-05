@@ -10,7 +10,7 @@ class SpriteRotationTest extends Test{
   SpriteRotationTest():super("Texture test");
   
   create(){    
-    var texture = new Texture.from("assets/spritesheet-body.png");
+    var texture = new Texture.from("assets/head.png");
     sprite1 = new Sprite(texture, 0, 0, 64, 64);
     sprite2 = new Sprite(texture, 0, 0, 64, 64);
     sprite3 = new Sprite(texture, 0, 0, 64, 64);

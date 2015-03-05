@@ -14,7 +14,7 @@ class Sprite extends TextureRegion{
   final Float32List _vertices = new Float32List(SPRITE_SIZE);
   
   final Color _color = Color.WHITE.copy();
-  double _width, _height;
+  double _width = 0.0, _height = 0.0;
   double _x = 0.0, _y = 0.0;
   double _rotation = 0.0, _scaleX = 1.0, _scaleY = 1.0;
   double _originX = 0.0, _originY = 0.0;
