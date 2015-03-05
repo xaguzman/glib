@@ -95,12 +95,19 @@ class Color{
     a = ((intBits >> 24) & 0xff) / 255;
   }
   
+  void setDoubleChannels(double r, double g, double b, double a){
+    this.r = r;
+    this.g = g;
+    this.b = b;
+    this.a = a;
+  }
+  
   /// copies the rgba channels from [other] into this color
-  void set(Color other){
-    r = other.r;
-    g = other.g;
-    b = other.b;
-    a = other.a;
+  void set(Color other) => setDoubleChannels(other.r, other.g, other.b, other.a);
+  
+  static double toDoubleBits(double r, double g, double b, double a){
+    int color = Color._toInt(a) << 24 | Color._toInt(b) << 16 | Color._toInt(g) << 8 | Color._toInt(r) ;
+    return NumberUtils.intToFloatColor(color);
   }
    
 }

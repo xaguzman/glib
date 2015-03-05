@@ -29,6 +29,8 @@ part 'graphics/orthographic_camera.dart';
 part 'graphics/loaders/texture_loader.dart';
 part 'graphics/color.dart';
 part 'graphics/viewport/viewport.dart';
+part 'graphics/glutils/immediate_mode_renderer.dart';
+part 'graphics/glutils/shape_renderer.dart';
 
 
 //GL.RenderingContext _gl;

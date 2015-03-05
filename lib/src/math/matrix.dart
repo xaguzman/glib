@@ -205,6 +205,34 @@ class Matrix4{
     return this;
   }
   
+  /** Postmultiplies this matrix with a scale matrix. Postmultiplication is also used by OpenGL ES' 1.x
+   * glTranslate/glRotate/glScale.
+   * @param scaleX The scale in the x-axis.
+   * @param scaleY The scale in the y-axis.
+   * @param scaleZ The scale in the z-axis.
+   * @return This matrix for the purpose of chaining methods together. */
+  Matrix4 scale (double scaleX, double scaleY, double scaleZ) {
+    _tmp[M00] = scaleX;
+    _tmp[M01] = 0.0;
+    _tmp[M02] = 0.0;
+    _tmp[M03] = 0.0;
+    _tmp[M10] = 0.0;
+    _tmp[M11] = scaleY;
+    _tmp[M12] = 0.0;
+    _tmp[M13] = 0.0;
+    _tmp[M20] = 0.0;
+    _tmp[M21] = 0.0;
+    _tmp[M22] = scaleZ;
+    _tmp[M23] = 0.0;
+    _tmp[M30] = 0.0;
+    _tmp[M31] = 0.0;
+    _tmp[M32] = 0.0;
+    _tmp[M33] = 1.0;
+
+    _mul(val, _tmp);
+    return this;
+  }
+  
   /// multiples both matrices and stores result in [a]
   _mul(Float32List mata, Float32List matb){
     _tmp[M00] = mata[M00] * matb[M00] + mata[M01] * matb[M10] + mata[M02] * matb[M20] + mata[M03] * matb[M30];
