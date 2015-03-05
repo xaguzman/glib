@@ -13,7 +13,7 @@ class Sprite extends TextureRegion{
 
   final Float32List _vertices = new Float32List(SPRITE_SIZE);
   
-  final Color _color = Color.WHITE.copy();
+  final Color _color = new Color();
   double _width = 0.0, _height = 0.0;
   double _x = 0.0, _y = 0.0;
   double _rotation = 0.0, _scaleX = 1.0, _scaleY = 1.0;
@@ -21,7 +21,7 @@ class Sprite extends TextureRegion{
   
   Rect _bounds = new Rect();
     
-  bool _dirty = false; 
+  bool _dirty = true; 
     
   /// Creates an uninitialized sprite. The sprite will need a texture region and bounds set before it can be drawn
   Sprite.empty(): super.empty();
@@ -33,40 +33,40 @@ class Sprite extends TextureRegion{
   /// [y] the Y-axis coordinate matching the lower left corner of the region
   /// [srcWidth] The width of the texture region. May be negative to flip the sprite when drawn.
   /// [srcHeight] The height of the texture region. May be negative to flip the sprite when drawn. */
-  Sprite(Texture texture, [int x, int y, int srcWidth, int srcHeight])
+  Sprite(Texture texture, [int x = 0, int y = 0, int srcWidth, int srcHeight])
   : super(texture, x, y, srcWidth, srcHeight) {
     
+    setColorValues(1.0, 1.0, 1.0, 1.0);
+    
     if (texture.loaded){
-      if ( srcHeight == null)
-        srcHeight = texture.height;
-      if (srcWidth == null)
-        srcWidth = texture.width;
-      setSize(srcWidth.abs().toDouble(), srcHeight.abs().toDouble());
-      setOrigin(_width / 2, _height / 2);
+      srcHeight = srcHeight == null ? texture.height : srcHeight;
+      srcWidth = srcWidth == null ? texture.width : srcWidth;
+      _init(srcWidth, srcHeight);
     }else{
       texture.onLoad.then((texture){
-        if ( srcHeight == null)
-          srcHeight = texture.height;
-        if (srcWidth == null)
-          srcWidth = texture.width;
-        setSize(srcWidth.abs().toDouble(), srcHeight.abs().toDouble());
-        setOrigin(_width / 2, _height / 2);
+        srcHeight = srcHeight == null ? texture.height : srcHeight;
+        srcWidth = srcWidth == null ? texture.width : srcWidth;
+        _init(srcWidth, srcHeight);
       });
-    }
+    } 
   }
-
 
     // Note the region is copied.
   /// Creates a sprite based on a specific TextureRegion, the new sprite's region is a copy of the parameter region, altering one does not affect the other
   Sprite.fromRegion(TextureRegion region)
   : super.copy(region) {
-    setSize(region.regionWidth.toDouble(), region.regionHeight.toDouble());
-    setOrigin( _width / 2, _height / 2);
+    setColorValues(1.0, 1.0, 1.0, 1.0);
+    _init(region.regionWidth, region.regionHeight);
   }
 
   /// Creates a sprite that is a copy in every way of the specified sprite
   Sprite.copy(Sprite sprite): super.empty() {
     set(sprite);
+  }
+  
+  _init(int width, int height){
+    setSize(width.abs().toDouble(), height.abs().toDouble());
+    setOrigin(_width / 2, _height / 2);
   }
   
   void set(Sprite other){
@@ -149,6 +149,9 @@ class Sprite extends TextureRegion{
       _dirty = true;
   }
   
+  double get width => _width;
+  double get height => _height;
+  
   /// Sets the position where the sprite will be drawn. If origin, rotation, or scale are changed, it is slightly more efficient
   /// to set the position after those operations. If both position and size are to be changed, it is better to use [setBounds]
   void setPosition(double x, double y) => translate(x - _x, y - _y);
@@ -178,7 +181,7 @@ class Sprite extends TextureRegion{
   }
   
   /// Sets the x position relative to the current position where the sprite will be drawn. If origin, rotation, or scale are
-  /// changed, it is slightly more efficient to translate after those operations. */
+  /// changed, it is slightly more efficient to translate after those operations
   void translateX (double xAmount) {
     this._x += xAmount;
 
@@ -227,7 +230,7 @@ class Sprite extends TextureRegion{
     vertices[Batch.Y4] += yAmount;
   }
   
-  /** Sets the alpha portion of the color used to tint this sprite. */
+  /// Sets the alpha portion of the color used to tint this sprite
   void setAlpha (double a) {
     int intBits = NumberUtils.floatToIntBits(_vertices[Batch.C1]);
     int alphaBits = 255 * a.toInt() << 24;
@@ -310,10 +313,26 @@ class Sprite extends TextureRegion{
   /// Sets the sprite's scale for both X and Y. If [scaley] is not provided, scale on both, X and Y, will be set to [scalex]  
   /// The sprite scales out from the origin. This will not affect the values returned by [width] and [height]
   void setScale(double scalex, [double scaley]){
-    this._scaleX = scalex;
-    this._scaleY = scaley == null ? scalex : scaley;
-    _dirty = true; 
+    if (scalex == null)
+      throw new ArgumentError.notNull('scalex');
+    
+    scaley = scaley == null ? scalex : scaley;
+    scaleX = scalex;
+    scaleY = scaley;
   }
+  
+  double get scaleX => _scaleX;
+  void set scaleX(double scalex){
+    this._scaleX = scalex;
+    _dirty = true;
+  }
+  
+  double get scaleY => _scaleY;
+  void set scaleY(double scaley){
+    this._scaleY = scaley;
+    _dirty = true;
+  }
+  
   
   /// Sets the sprite's scale relative to the current scale. for example: original scale 2 -> sprite.scale(4) -> final scale 6.
   /// The sprite scales out from the origin. This will not affect the values returned by [width] and [height]
@@ -325,7 +344,7 @@ class Sprite extends TextureRegion{
   
   /// Obtains the vertices which this sprite is composed off.
   /// 
-  /// This getter performs some operations to obtain the rectangle, so you should catch this result
+  /// This getter performs some operations to obtain the vertices, so you should catch this result
   Float32List get vertices {
     if (_dirty) {
       _dirty = false;

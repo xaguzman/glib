@@ -30,7 +30,7 @@ main(){
     new OrthographicCameraTest(),
     new TextureTest(),
     new Animation2dTest(),
-    new SpriteRotationTest(),
+    new SpriteTransformTest(),
     new TouchTest(),
     new KeyboardTest()
   ], key: (test) => test.name, value: (test) => test);

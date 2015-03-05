@@ -1,25 +1,52 @@
 part of glib.tests;
 
-class SpriteRotationTest extends Test{
+class SpriteTransformTest extends Test{
   
   SpriteBatch batch;
-  Sprite sprite1, sprite2, sprite3, sprite4, sprite5, sprite6, sprite7;
+  Sprite sprRot1, sprRot2, sprRot3, sprRot4, sprRot5, sprRot6;
+  
+  Sprite sprScl1, sprScl2, sprScl3;
+  
+  Sprite spriteAll;
+  
+  Random colorRandom = new Random();
+  
   Font fps;
   double accum = 0.0;
   
-  SpriteRotationTest():super("Texture test");
+  SpriteTransformTest():super("Texture test");
   
   create(){    
     var texture = new Texture.from("assets/head.png");
-    sprite1 = new Sprite(texture, 0, 0, 64, 64);
-    sprite2 = new Sprite(texture, 0, 0, 64, 64);
-    sprite3 = new Sprite(texture, 0, 0, 64, 64);
-    sprite4 = new Sprite(texture, 0, 0, 64, 64);
-    sprite5 = new Sprite(texture, 0, 0, 64, 64);
-    sprite6 = new Sprite(texture, 0, 0, 64, 64);
-    sprite7 = new Sprite(texture, 0, 0, 64, 64);
+    sprRot1 = new Sprite(texture);
+    sprRot2 = new Sprite(texture);
+    sprRot3 = new Sprite(texture);
+    sprRot4 = new Sprite(texture);
+    sprRot5 = new Sprite(texture);
+    sprRot6 = new Sprite(texture);
+    
+    sprScl1 = new Sprite(texture);
+    sprScl2 = new Sprite(texture);
+    sprScl3 = new Sprite(texture);
+    
+    spriteAll = new Sprite(texture);
+    
     batch = new SpriteBatch();
     fps = new Font();
+    
+    
+    sprRot1.setPosition(20.0, 30.0);
+    sprRot2.setPosition(60.0, 30.0);
+    sprRot3.setPosition(20.0, 70.0);
+    sprRot4.setPosition(60.0, 70.0);
+    sprRot5.setPosition(100.0,  30.0);
+    sprRot6.setPosition(140.0,  30.0);
+    
+    sprScl1.setPosition(100.0, 100.0);
+    sprScl2.setPosition(170.0, 100.0);
+    sprScl3.setPosition(240.0, 100.0);
+    
+    spriteAll.setPosition(300.0, 300.0);
   }
   
   render(){
@@ -27,49 +54,67 @@ class SpriteRotationTest extends Test{
     
     accum += Glib.graphics.deltaTime;
             
-    // sprite1 tests rotation
-    sprite1
-      ..rotate(1.0)
-      ..setPosition(10.0,  10.0);
     
-    sprite2
-      ..rotate(-1.0)
-      ..setPosition(45.0, 10.0 );
+    sprRot1.rotate(1.0);
+    sprRot2.rotate(-1.0);
     
-    sprite3
-      ..rotate90(true)
-      ..setPosition(80.0, 10.0 );
-    
-    sprite4
-      ..rotate90(false)
-      ..setPosition(115.0, 10.0 );
+    if (accum >= 2.0){
+      sprRot3.rotate90(true);      
+      sprRot4.rotate90(false);
+    }
     
   // fixed rotation
-    sprite5
-      ..rotation = 45.0
-      ..setPosition(140.0, 10.0 );
+    sprRot5.rotation = 45.0;
+    sprRot6.rotation = -45.0;
     
-    sprite6
-      ..rotation = -45.0
-      ..setPosition(175.0, 10.0 );
     
-    sprite7.setPosition(20.0, 180.0 ); //unchanged sprite
+    if (sprScl1.scaleX  <= 2.0){
+      sprScl1.scale(0.01); 
+    }
     
+    if (sprScl2.scaleX <= 2.0){
+      sprScl2.setScale(sprScl2.scaleX * 1.02);
+    }
+    
+    if (sprScl3.width <= 70){
+      sprScl3.setSize(sprScl3.width + 0.1, sprScl3.height + 0.1);
+    }
+    
+    if (spriteAll.scaleX <= 3.0){
+      spriteAll.scale(0.08);
+    }
+    
+    spriteAll
+      ..rotate(3.0)
+      ..setColorValues( colorRandom.nextDouble() , colorRandom.nextDouble(), colorRandom.nextDouble(), 1.0);
     
     batch.begin();
-      sprite1.draw(batch);
-      sprite2.draw(batch);
-      sprite3.draw(batch);
-      sprite4.draw(batch);
-      sprite5.draw(batch);
-      sprite6.draw(batch);
+      sprRot1.draw(batch);
+      sprRot2.draw(batch);
+      sprRot3.draw(batch);
+      sprRot4.draw(batch);
+      sprRot5.draw(batch);
+      sprRot6.draw(batch);
+  
+      sprScl1.draw(batch);
+      sprScl2.draw(batch);
+      sprScl3.draw(batch);
+      
+      spriteAll.draw(batch);
+      
+      fps.draw(batch, "Fps: ${Glib.graphics.fps}", 5.0, 5.0);
     batch.end();
+    
+    if (accum >= 2.0)
+      accum = 0.0;
   }
   
   dispose(){
-    sprite1.texture.dispose();
+    sprRot1.texture.dispose();
     batch.dispose();
+    fps.dispose();
   }
   
-  String get name => 'Sprite rotation test';
+  String get name => 'Sprite transform tests';
 }
+

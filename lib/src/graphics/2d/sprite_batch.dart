@@ -169,7 +169,7 @@ class SpriteBatch implements Disposable{
     drawTexture(region.texture, x, y, width, height, region.u, region.v2, region.u2, region.v);
   }
   
-  void drawVertices(Texture texture, Float32List vertices, int offset, int count) {
+  void drawVertices(Texture texture, Float32List spriteVertices, int offset, int count) {
     if (!_drawing) 
       throw new StateError("SpriteBatch.begin must be called before draw.");
 
@@ -186,15 +186,15 @@ class SpriteBatch implements Disposable{
     }
     int copyCount = Math.min(remainingVertices, count);
 
-    _vertices.setRange(_currentVertex, _currentVertex + copyCount, vertices, offset);
-    
+    _vertices.setRange(_currentVertex, _currentVertex + copyCount, spriteVertices, offset);
     _currentVertex += copyCount;
     count -= copyCount;
+    
     while (count > 0) {
       offset += copyCount;
       flush();
       copyCount = Math.min(verticesLength, count);
-      _vertices.setRange(0, copyCount, vertices, offset + 1);
+      _vertices.setRange(_currentVertex, copyCount, spriteVertices, offset);
       _currentVertex += copyCount;
       count -= copyCount;
     }
