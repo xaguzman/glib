@@ -20,17 +20,17 @@ abstract class InputProcessor{
   /// return true if the input was processed by this processor, false otherwise
   bool keyTyped(String keycode);
   
-  /// called when a mouse button was pressed
+  /// called when a the screen touch happens (or mouse down, on the desktop).
   /// return true if the input was processed by this processor, false otherwise
-  bool mouseDown(int screenX, int screenY, int button);
+  bool touchDown(int screenX, int screenY, int button);
   
-  /// called when a mouse button was released
+  /// called when a touch is released
   /// return true if the input was processed by this processor, false otherwise
-  bool mouseUp(int screenX, int screenY, int button);
+  bool touchUp(int screenX, int screenY, int button);
   
   /// called when the mouse is dragged with a button pressed around the screen
   /// return true if the input was processed by this processor, false otherwise
-  bool mouseDragged(int screenX, int screenY, int button);
+  bool touchDragged(int screenX, int screenY, int button);
   
   /// called when the mouse moves around the screen without any button pressed
   /// return true if the input was processed by this processor, false otherwise
@@ -57,11 +57,11 @@ class EmptyProcessor implements InputProcessor{
 
   bool keyTyped(String key) => false;
 
-  bool mouseDown(int screenX, int screenY, int button) => false;
+  bool touchDown(int screenX, int screenY, int button) => false;
 
-  bool mouseUp(int screenX, int screenY, int button) => false;
+  bool touchUp(int screenX, int screenY, int button) => false;
 
-  bool mouseDragged(int screenX, int screenY, int button) => false;
+  bool touchDragged(int screenX, int screenY, int button) => false;
 
   bool mouseMoved(int screenX, int screenY) => false;
 

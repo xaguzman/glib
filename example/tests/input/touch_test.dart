@@ -45,14 +45,14 @@ class MyInputHandler extends EmptyProcessor{
   Vector2 mouseDrag = new Vector2();
   
   @override
-  bool mouseDown(int screenX, int screenY, int button) {
+  bool touchDown(int screenX, int screenY, int button) {
     vMousedown.setValues(screenX.toDouble(), screenY.toDouble());
     
     return true;
   }
 
   @override
-  bool mouseUp(int screenX, int screenY, int button) {
+  bool touchUp(int screenX, int screenY, int button) {
     vMouseUp.setValues(screenX.toDouble(), screenY.toDouble());
     
     return true;
@@ -66,7 +66,7 @@ class MyInputHandler extends EmptyProcessor{
   }
   
   @override 
-  bool mouseDragged(int screenX, int screenY, int button){
+  bool touchDragged(int screenX, int screenY, int button){
     mouseDrag.setValues(screenX.toDouble(), screenY.toDouble());
     return true;
   }

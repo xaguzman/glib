@@ -35,6 +35,18 @@ class MathUtils{
   static int randomInt(int range) {
     return _random.nextInt(range + 1);
   }
+
+  static num cbrt(num val){
+    return pow(val, 1 / 3);
+  }
+
+  static double cosDeg(num value){
+    return cos(value * degreesToRadians);
+  }
+
+  static double sinDeg(num value){
+    return sin(value * degreesToRadians);
+  }
 }
 
 /// Number conversion utilities. Useful for packing data into single doubles and ints.

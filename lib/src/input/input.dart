@@ -46,11 +46,11 @@ abstract class Input extends Disposable{
 /// The difference between the current and the last mouse position on the y-axis.
   int getDeltaY(int pointer);
   
-  /// whether the screen is currently being clicked
-  bool get isClicked;
+  /// whether the screen is currently being touched(clicked)
+  bool get isTouched;
   
-  /// whether a new mouse down event just occurred
-  bool get justClicked;
+  /// whether a new touch down event just occurred
+  bool get isJustTouched;
   
   /// wether the passed in mouse [Button] is pressed
   bool isButtonPressed(int button);
@@ -153,7 +153,7 @@ class CanvasInput implements Input{
         _deltaX[touchId] = 0;
         _deltaY[touchId] = 0;
         if (processor != null) {
-          processor.mouseDown(_touchX[touchId], _touchY[touchId], Buttons.LEFT);
+          processor.touchDown(_touchX[touchId], _touchY[touchId], Buttons.LEFT);
         }       
       }
       
@@ -170,13 +170,13 @@ class CanvasInput implements Input{
         _touchX[touchId] = _getTouchRelativeX(touch, canvas);
         _touchY[touchId] = _getTouchRelativeY(touch, canvas);
         if (processor != null) {
-          processor.mouseDragged(_touchX[touchId], _touchY[touchId], Buttons.LEFT);
+          processor.touchDragged(_touchX[touchId], _touchY[touchId], Buttons.LEFT);
         }
       }
       currentEventTimeStamp = _watch.elapsedMilliseconds;
       e.preventDefault();
     }
-    if (e.type == "touchcancel"){
+    if (e.type == "touchend" || e.type == "touchcancel"){
       var touches = e.changedTouches;
       for (int i = 0, j = touches.length; i < j; i++) {
         Touch touch = touches[i];
@@ -187,24 +187,7 @@ class CanvasInput implements Input{
         _touchX[touchId] = _getTouchRelativeX(touch, canvas);
         _touchY[touchId] = _getTouchRelativeY(touch, canvas);
         if (processor != null) {
-          processor.mouseUp(_touchX[touchId], _touchY[touchId], Buttons.LEFT);
-        }         
-      }
-      this.currentEventTimeStamp = _watch.elapsedMilliseconds;
-      e.preventDefault();
-    }
-    if (e.type == "touchend") {     
-      var touches = e.changedTouches;
-      for (int i = 0, j = touches.length; i < j; i++) {
-        Touch touch = touches[i];
-        int touchId = touch.identifier;
-        _touched[touchId] = false;
-        _deltaX[touchId] = _getTouchRelativeX(touch, canvas) - _touchX[touchId];
-        _deltaY[touchId] = _getTouchRelativeY(touch, canvas) - _touchY[touchId];       
-        _touchX[touchId] = _getTouchRelativeX(touch, canvas);
-        _touchY[touchId] = _getTouchRelativeY(touch, canvas);
-        if (processor != null) {
-          processor.mouseUp(_touchX[touchId], _touchY[touchId], Buttons.LEFT);
+          processor.touchUp(_touchX[touchId], _touchY[touchId], Buttons.LEFT);
         }         
       }
       this.currentEventTimeStamp = _watch.elapsedMilliseconds;
@@ -294,7 +277,7 @@ class CanvasInput implements Input{
       
       currentEventTimeStamp = _watch.elapsedMilliseconds;
       if (processor != null) 
-        processor.mouseDown(_touchX[0], _touchY[0], event.button);
+        processor.touchDown(_touchX[0], _touchY[0], event.button);
     }
     
     if (event.type == "mousemove") {
@@ -312,7 +295,7 @@ class CanvasInput implements Input{
       this.currentEventTimeStamp = _watch.elapsedMilliseconds;
       if (processor != null) {
         if (_touched[0])
-          processor.mouseDragged(_touchX[0], _touchY[0], event.button);
+          processor.touchDragged(_touchX[0], _touchY[0], event.button);
         else
           processor.mouseMoved(_touchX[0], _touchY[0]);
       }
@@ -338,7 +321,7 @@ class CanvasInput implements Input{
       this.currentEventTimeStamp = _watch.elapsedMilliseconds;
       this._touched[0] = false;
       if (processor != null) 
-        processor.mouseUp(_touchX[0], _touchY[0], event.button);
+        processor.touchUp(_touchX[0], _touchY[0], event.button);
       
     }
     _watch.reset();
@@ -369,10 +352,10 @@ class CanvasInput implements Input{
   int getDeltaY(int pointer) => _deltaY[pointer];
   
   @override
-  bool get isClicked => _touched[0];
+  bool get isTouched => _touched[0];
   
   @override
-  bool get justClicked => justTouched;
+  bool get isJustTouched => justTouched;
   
   @override
   bool isButtonPressed(int button) => button == Buttons.LEFT && _touched[0];

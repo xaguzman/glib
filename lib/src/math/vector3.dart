@@ -3,10 +3,10 @@ part of glib.math;
 
 class Vector3{
   
-  static const Vector3 X = const Vector3._internal(const [1.0, 0.0, 0.0]);
-  static const Vector3 Y = const Vector3._internal(const [0.0, 1.0, 0.0]);
-  static const Vector3 Z = const Vector3._internal(const [0.0, 0.0, 1.0]);
-  static const Vector3 Zero = const Vector3._internal(const [0.0, 0.0, 0.0]);
+  static const Vector3 X = const Vector3._internal(const Float32List.fromList(const [1.0, 0.0, 0.0]));
+  static const Vector3 Y = const Vector3._internal(const Float32List.fromList(const [0.0, 1.0, 0.0]));
+  static const Vector3 Z = const Vector3._internal(const Float32List.fromList(const [0.0, 0.0, 1.0]));
+  static const Vector3 Zero = const Vector3._internal(const Float32List.fromList(const [0.0, 0.0, 0.0]));
   
   final Float32List val;
   
