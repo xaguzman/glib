@@ -5,7 +5,7 @@ class Vector2{
   static const Vector2 X = const Vector2._internal( const [1.0, 0.0]);
   static const Vector2 Y = const Vector2._internal(const [0.0, 1.0]);
   
-  final List<double> val;
+  final Float32List val;
   
   double get x => val[0];
   void set x(double value){ 
@@ -18,7 +18,7 @@ class Vector2{
   }
     
   Vector2([double x = 0.0, double y = 0.0])
-    :val = new List(2)
+    :val = new Float32List(2)
   {
     val[0] = x;
     val[1] = y;
@@ -150,15 +150,14 @@ class Vector2{
       return dx * dx + dy * dy;
     }
 
-  
   Vector2 limit (num limit) {
     if (length2() > limit * limit) {
-      nor();
-      scl(limit);
+      nor().scl(limit);
     }
     return this;
   }
 
+  /// clamps x and y to be min <= val <= max
   clamp (num min, num max) {
     num l2 = length2();
     if (l2 == 0) return this;
@@ -168,6 +167,7 @@ class Vector2{
       nor().scl(min);
   }
 
+  /// returns the cross product against the other vector
   num crs (x_OR_vec2, [num y]) {
     if(x_OR_vec2 is Vector2){
       return this.x * x_OR_vec2.y - this.y * x_OR_vec2.x;
@@ -231,6 +231,7 @@ class Vector2{
     return this;
   }
 
+  /// linear interpolation between this vector and the [target] vector, scaled by alpha
   Vector2 lerp (Vector2 target, num alpha) {
     final num invAlpha = 1 - alpha;
     this.x = (x * invAlpha) + (target.x * alpha);

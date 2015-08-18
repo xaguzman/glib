@@ -32,14 +32,16 @@ part 'graphics/viewport/viewport.dart';
 part 'graphics/glutils/immediate_mode_renderer.dart';
 part 'graphics/glutils/shape_renderer.dart';
 
+part 'graphics/maps/map.dart';
+part 'graphics/maps/tiled/tiled_map.dart';
+part 'graphics/maps/tiled/tiled_map_tile.dart';
+part 'graphics/maps/tiled/tiled_map_tileset.dart';
+part 'graphics/maps/tiled/tiled_map_layers.dart';
 
-//GL.RenderingContext _gl;
-//Map<String, Texture> _textures;
-//int _width, _height;
 
 Graphics _graphics;
 
-abstract class Graphics extends Disposable{
+abstract class Graphics implements Disposable{
   
   /// the time elapsed between the last frame and the current frame, in seconds!
   double get deltaTime;
@@ -59,7 +61,8 @@ abstract class Graphics extends Disposable{
 }
 
 class WebGraphics extends Graphics{
-  Stopwatch _watch;
+  /// updates the elapsed time between frames, DO NOT ALTER THIS
+  final Stopwatch watch = new Stopwatch();
   CanvasElement canvas;
   GL.RenderingContext _gl;
   Map<int, Texture> _textures;
@@ -90,7 +93,7 @@ class WebGraphics extends Graphics{
   
   @override 
   void update(){
-    _deltatime = _watch.elapsedMilliseconds / 1000; 
+    _deltatime = watch.elapsedMilliseconds / 1000;
     _elapsedTime += deltaTime;
     _frames++;
     if (_elapsedTime > 1) {
@@ -98,7 +101,7 @@ class WebGraphics extends Graphics{
       _fps = _frames;
       _frames = 0;
     }
-    _watch.reset();
+    watch.reset();
   }
   
   /// initializes the graphics context 
@@ -127,14 +130,14 @@ class WebGraphics extends Graphics{
     _gl.viewport(0, 0, canvas.width, canvas.height);
     
     _graphics = this;
-    _watch = new Stopwatch()..start(); 
+    watch.start();
   }
   
   @override
   void dispose(){
       textures.values.forEach( (texture) => texture._dispose());
       textures.clear();
-      _watch.stop();
+      watch.stop();
   }
    
 }

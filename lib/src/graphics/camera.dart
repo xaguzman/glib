@@ -18,8 +18,8 @@ abstract class Camera{
     /// the combined projection and view matrix
     final Matrix4 combined = new Matrix4.identity();
     
-    final Matrix4 _tmpM4 = new Matrix4.identity();
-    final Vector3 _tmpV3 = new Vector3();
+//    final Matrix4 _tmpM4 = new Matrix4.identity();
+//    final Vector3 _tmpV3 = new Vector3();
     
     /// the inverse combined projection and view matrix
     final Matrix4 invProjectionView = new Matrix4.identity();
@@ -50,7 +50,7 @@ abstract class Camera{
      * [z] the x-coordinate of the point to look at */
     void lookAt(double x, double y, double z) {
       _tmpVec.setValues(x, y, z).sub(position).nor();
-      if (! isZero(_tmpVec) ) {
+      if (!_tmpVec.isZero ) {
         double dot = _tmpVec.dot(up); // up and direction must ALWAYS be orthonormal vectors
         if ((dot - 1).abs() < 0.000000001) {
           // Collinear
@@ -64,8 +64,7 @@ abstract class Camera{
       }
     }
 
-    /** Recalculates the direction of the camera to look at the point (x, y, z).
-     * @param target the point to look at */
+    //// Recalculates the direction of the camera to look at the point (x, y, z)
     void lookAtVector(Vector3 target) {
       lookAt(target.x, target.y, target.z);
     }
@@ -77,37 +76,37 @@ abstract class Camera{
       up.setVector(_tmpVec).crs(direction).nor();
     }
 
-//    /** Rotates the direction and up vector of this camera by the given angle around the given axis. The direction and up vector
-//     * will not be orthogonalized.
-//     * 
-//     * [angle] the angle
-//     * [axisX] the x-component of the axis
-//     * [axisY] the y-component of the axis
-//     * [axisZ] the z-component of the axis */
-//    void rotateUnits(double angle, double axisX, double axisY, double axisZ) {
-//      direction.rotateDeg(angle, axisX, axisY, axisZ);
-//      up.rotateDeg(angle, axisX, axisY, axisZ);
-//    }
-//
-//    /** Rotates the direction and up vector of this camera by the given angle around the given axis. The direction and up vector
-//     * will not be orthogonalized.
-//     * 
-//     * [axis] the axis to rotate around
-//     * [angle] the angle */
-//    void rotateVector(Vector3 axis, double angle) {
-//      
-//      direction.rotateDegVector(axis, angle);
-//      up.rotateDegVector(axis, angle);
-//    }
-//
-//    /** Rotates the direction and up vector of this camera by the given rotation matrix. The direction and up vector will not be
-//     * orthogonalized.
-//     * 
-//     * @param transform The rotation matrix */
-//    void rotateMatrix(final Matrix4 transform) {
-//      direction.rotateMatrix4(transform);
-//      up.rotateMatrix4(transform);
-//    }
+    /** Rotates the direction and up vector of this camera by the given angle around the given axis. The direction and up vector
+     * will not be orthogonalized.
+     *
+     * [angle] the angle
+     * [axisX] the x-component of the axis
+     * [axisY] the y-component of the axis
+     * [axisZ] the z-component of the axis */
+    void rotateUnits(double angle, double axisX, double axisY, double axisZ) {
+      direction.rotateDeg(angle, axisX, axisY, axisZ);
+      up.rotateDeg(angle, axisX, axisY, axisZ);
+    }
+
+    /** Rotates the direction and up vector of this camera by the given angle around the given axis. The direction and up vector
+     * will not be orthogonalized.
+     *
+     * [axis] the axis to rotate around
+     * [angle] the angle */
+    void rotateVector(Vector3 axis, double angle) {
+
+      direction.rotateDegVector(axis, angle);
+      up.rotateDegVector(axis, angle);
+    }
+
+    /** Rotates the direction and up vector of this camera by the given rotation matrix. The direction and up vector will not be
+     * orthogonalized.
+     *
+     * @param transform The rotation matrix */
+    void rotateMatrix(final Matrix4 transform) {
+      direction.rotateMatrix4(transform);
+      up.rotateMatrix4(transform);
+    }
 
     /** Rotates the direction and up vector of this camera by the given {@link Quaternion}. The direction and up vector will not be
      * orthogonalized.
@@ -118,28 +117,28 @@ abstract class Camera{
       quat.rotate(up);
     }
 
-//    /** Rotates the direction and up vector of this camera by the given angle around the given axis, with the axis attached to given
-//     * point. The direction and up vector will not be orthogonalized.
-//     * 
-//     * @param point the point to attach the axis to
-//     * @param axis the axis to rotate around
-//     * @param angle the angle */
-//    void rotateAround (Vector3 point, Vector3 axis, double angle) {
-//      _tmpVec.setFrom(point);
-//      _tmpVec.sub(position);
-//      translateVector(_tmpVec);
-//      rotateVector(axis, angle);
-//      _tmpVec.rotateDegVector(axis, angle);
-//      translateUnits(-_tmpVec.x, -_tmpVec.y, -_tmpVec.z);
-//    }
+    /** Rotates the direction and up vector of this camera by the given angle around the given axis, with the axis attached to given
+     * point. The direction and up vector will not be orthogonalized.
+     *
+     * @param point the point to attach the axis to
+     * @param axis the axis to rotate around
+     * @param angle the angle */
+    void rotateAround (Vector3 point, Vector3 axis, double angle) {
+      _tmpVec.setVector(point);
+      _tmpVec.sub(position);
+      translateVector(_tmpVec);
+      rotateVector(axis, angle);
+      _tmpVec.rotateDegVector(axis, angle);
+      translateUnits(-_tmpVec.x, -_tmpVec.y, -_tmpVec.z);
+    }
 
-//    /** Transform the position, direction and up vector by the given matrix
-//     * 
-//     * @param transform The transform matrix */
-//    void transform (final Matrix4 transform) {
-//      position.mulMatrix4(transform);
-//      rotateMatrix(transform);
-//    }
+    /** Transform the position, direction and up vector by the given matrix
+     *
+     * @param transform The transform matrix */
+    void transform (final Matrix4 transform) {
+      position.mulMatrix4(transform);
+      rotateMatrix(transform);
+    }
 
     /** Moves the camera by the given amount on each axis.
      * @param x the displacement on the x-axis
@@ -220,5 +219,3 @@ abstract class Camera{
       return _ray;
     }
 }
-
-bool isZero(Vector3 v) => v.x * v.y * v.z == 0.0;

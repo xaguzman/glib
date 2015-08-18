@@ -283,12 +283,7 @@ class Batch{
   static const int V4 = 19;
 }
 
-
-
-
-
-
-  final String _defaultFragShader = 
+  final String _defaultFragShader =
   """
   precision mediump float;
   varying vec2 v_texCoords;

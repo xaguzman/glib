@@ -45,6 +45,7 @@ abstract class WebApplication implements Application {
     _lastHeight = graphics.height;
     actions = new List();
     _input = new CanvasInput(graphics.canvas);
+    document.onVisibilityChange.listen( _visibilityChanged );
 
     appLogger = this;
     Glib._app = this;
@@ -73,6 +74,18 @@ abstract class WebApplication implements Application {
     actions.clear();
     _listener.render();
     _input.reset();    
+  }
+
+  void _visibilityChanged(Event e){
+    bool visible = !document.hidden;
+
+    if (visible){
+//      graphics.watch.start();
+      listener.resume();
+    }else{
+//      graphics.watch.stop();
+      listener.pause();
+    }
   }
 
   void log(String tag, String message) {

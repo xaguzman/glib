@@ -45,16 +45,6 @@ class WebGLImmediateModeRenderer implements ImmediateModeRenderer{
   /* final */ Float32List vertices;
   /* final */ List<String> shaderUniformNames;
 
-//  WebGLImmediateModeRenderer (bool hasNormals, bool hasColors, int numTexCoords) {
-//    this(5000, hasNormals, hasColors, numTexCoords, createDefaultShader(hasNormals, hasColors, numTexCoords));
-//    ownsShader = true;
-//  }
-//
-//  WebGLImmediateModeRenderer (int maxVertices, bool hasNormals, bool hasColors, int numTexCoords) {
-//    this(maxVertices, hasNormals, hasColors, numTexCoords, createDefaultShader(hasNormals, hasColors, numTexCoords));
-//    ownsShader = true;
-//  }
-
   WebGLImmediateModeRenderer (bool hasNormals, bool hasColors, int this.numTexCoords, [int this.maxVertices, ShaderProgram this.shader])
     : numVertices = 0,
       vertexIdx = 0
@@ -68,7 +58,7 @@ class WebGLImmediateModeRenderer implements ImmediateModeRenderer{
     VertexAttributes attribs = _buildVertexAttributes(hasNormals, hasColors, numTexCoords);
     mesh = new Mesh(false, maxVertices, 0, attribs);
     
-    vertices = new List(maxVertices * (mesh.getVertexAttributes().vertexStride ~/ 4));
+    vertices = new Float32List(maxVertices * (mesh.getVertexAttributes().vertexStride ~/ 4));
     vertexSize = mesh.getVertexAttributes().vertexStride ~/ 4;
     normalOffset = mesh.getVertexAttribute(Usage.Normal) != null ? mesh.getVertexAttribute(Usage.Normal).offset ~/ 4 : 0;
     colorOffset = mesh.getVertexAttribute(Usage.ColorPacked) != null ? mesh.getVertexAttribute(Usage.ColorPacked).offset ~/ 4
