@@ -20,8 +20,8 @@ class ShapeRendererTest extends Test{
     shapeRenderer
       ..projectionMatrix.setMatrix(cam.combined)
       ..begin(ShapeType.Filled)
-      ..setColorValues(1.0, 1.0, 1.0, 1.0)
-      ..rect(3.0, 3.0, 100.0, 100.0)
+//      ..setColorValues(1.0, 1.0, 1.0, 1.0)
+//      ..rect(3.0, 3.0, 100.0, 100.0)
       ..setColorValues(1.0, 0.0, 0.0 , 1.0)
       ..circle(53.0, 180.0, 50.0)
       ..end();

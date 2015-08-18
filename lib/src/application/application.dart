@@ -1,6 +1,6 @@
 part of glib;
 
-abstract class Application extends Disposable{
+abstract class Application extends Disposable implements Logger{
 
   static const int LOG_NONE = 0;
   static const int LOG_DEBUG = 3;
@@ -13,22 +13,8 @@ abstract class Application extends Disposable{
 //  Audio get audio;
   Input get input;
 
-  /// Logs an information message to the console
-  void log(String tag, String message);
-  /// Logs an error message to the console
-  void error(String tag, String message);
-  /** Logs a debug message to the console*/
-  void debug(String tag, String message);
-
-
-  /** The application's logging level. [LOG_NONE] will mute all log output. [LOG_ERROR] will only let error messages through.
-   * [LOG_INFO] will let all non-debug messages through, and [LOG_DEBUG] will let all messages through.
-   */
-  int logLevel;
-
   /// Posts a function on the main loop thread, which will be executed on the next game loop
   void postAction(Function runnable);
-  
 }
 
 abstract class WebApplication implements Application {
@@ -36,8 +22,6 @@ abstract class WebApplication implements Application {
   final WebApplicationConfiguration config;
   int _lastWidth, _lastHeight;
 
-  Stopwatch _watch;
-  Duration _duration;
   CanvasInput _input;
   WebGraphics _graphics;
   List<Function> actions;
@@ -62,9 +46,7 @@ abstract class WebApplication implements Application {
     actions = new List();
     _input = new CanvasInput(graphics.canvas);
 
-    _watch = new Stopwatch();
-    var duration = new Duration(milliseconds: ((1 / config.fps) * 1000).toInt());
-    
+    appLogger = this;
     Glib._app = this;
     Glib._gl = graphics.gl;
     Glib._graphics = graphics;
@@ -72,6 +54,8 @@ abstract class WebApplication implements Application {
     
     listener.create();
     listener.resize(graphics.width, graphics.height);
+
+    var duration = new Duration(milliseconds:  1000 ~/ config.fps);
     _timer = new Timer.periodic(duration, _mainLoop);
   }
   

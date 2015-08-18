@@ -1,8 +1,8 @@
 part of glib.graphics;
 
-class TextureLoader {//implements AssetLoader{
+class TextureLoader implements AssetLoader<ImageElement>{
   Completer<ImageElement> _completer = new Completer();
-  Future<ImageElement> get done => _completer.future;
+//  Future<ImageElement> get _done => _completer.future;
 
   ImageElement img = new ImageElement();
   String _url;
@@ -13,8 +13,9 @@ class TextureLoader {//implements AssetLoader{
         (e) => _completer.completeError('Could not load texture $_url. Error: $e'));
   }
   
-  load(){
-    img.src = _url; 
+  Future<ImageElement> load(){
+    img.src = _url;
+    return _completer.future;
   }
   
 }

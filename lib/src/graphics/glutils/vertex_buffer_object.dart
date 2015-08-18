@@ -27,7 +27,7 @@ class VertexBufferObject implements Disposable{
 
   
   int getNumVertices () {
-    return _limit ~/ attributes.vertexStride;
+    return _limit * 4 ~/ attributes.vertexStride;
   }
 
   

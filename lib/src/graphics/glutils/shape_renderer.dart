@@ -267,47 +267,6 @@ class ShapeRenderer implements Disposable {
     }
   }
 
-//  /** Draws a rectangle in the x/y plane using [ShapeType.Line] or [ShapeType.Filled]. */
-//  void rect (double x, double y, double width, double height) {
-//    _check(ShapeType.Line, ShapeType.Filled, 8);
-//
-//    if (shapeType == ShapeType.Line) {
-//      renderer.color(color);
-//      renderer.vertex(x, y, 0);
-//      renderer.color(color);
-//      renderer.vertex(x + width, y, 0);
-//
-//      renderer.color(color);
-//      renderer.vertex(x + width, y, 0);
-//      renderer.color(color);
-//      renderer.vertex(x + width, y + height, 0);
-//
-//      renderer.color(color);
-//      renderer.vertex(x + width, y + height, 0);
-//      renderer.color(color);
-//      renderer.vertex(x, y + height, 0);
-//
-//      renderer.color(color);
-//      renderer.vertex(x, y + height, 0);
-//      renderer.color(color);
-//      renderer.vertex(x, y, 0);
-//    } else {
-//      renderer.color(color);
-//      renderer.vertex(x, y, 0);
-//      renderer.color(color);
-//      renderer.vertex(x + width, y, 0);
-//      renderer.color(color);
-//      renderer.vertex(x + width, y + height, 0);
-//
-//      renderer.color(color);
-//      renderer.vertex(x + width, y + height, 0);
-//      renderer.color(color);
-//      renderer.vertex(x, y + height, 0);
-//      renderer.color(color);
-//      renderer.vertex(x, y, 0);
-//    }
-//  }
-
   /** Draws a rectangle in the x/y plane using [ShapeType.Line] or [ShapeType.Filled], being x,y the bottom left corner
    *
    * [col1] The color at (x, y).
@@ -361,13 +320,6 @@ class ShapeRenderer implements Disposable {
     }
   }
 
-//  /** Draws a rectangle in the x/y plane using [ShapeType.Line] or [ShapeType.Filled]. The x and y specify the lower
-//   * left corner. The originX and originY specify the point about which to rotate the rectangle. */
-//  void rect (double x, double y, double originX, double originY, double width, double height, double scaleX, double scaleY,
-//    double degrees) {
-//    rect(x, y, originX, originY, width, height, scaleX, scaleY, degrees, color, color, color, color);
-//  }
-
   /** Draws a rectangle in the x/y plane using [ShapeType.Line] or [ShapeType.Filled]. The x and y specify the lower
    * left corner. The originX and originY specify the point about which to rotate the rectangle.
    *
@@ -377,7 +329,8 @@ class ShapeRenderer implements Disposable {
    *
    * [col3] The color at (x + width, y + height)
    *
-   * [col4] The color at (x, y + height) */
+   * [col4] The color at (x, y + height)
+   **/
   void rectRot(double x, double y, double originX, double originY, double width, double height, double scaleX, double scaleY,
     double degrees, [Color col1, Color col2, Color col3, Color col4]) {
     _check(ShapeType.Line, ShapeType.Filled, 8);
@@ -453,7 +406,7 @@ class ShapeRenderer implements Disposable {
 
   }
 
-  /** Draws a line using a rotated rectangle, where with one edge is centered at x1, y1 and the opposite edge centered at x2, y2. */
+  /// Draws a line using a rotated rectangle, where with one edge is centered at x1, y1 and the opposite edge centered at x2, y2.
   void rectLine (double x1, double y1, double x2, double y2, double width) {
     _check(ShapeType.Line, ShapeType.Filled, 8);
 
@@ -675,11 +628,6 @@ class ShapeRenderer implements Disposable {
     x(p.x, p.y, size);
   }
 
-//  /// Calls [arc(float, float, float, float, float, int)} by estimating the number of segments needed for a smooth arc.
-//  void arc (double x, double y, double radius, double start, double degrees) {
-//    arc(x, y, radius, start, degrees, Math.max(1, (int)(6 * (float)Math.cbrt(radius) * (degrees / 360.0f))));
-//  }
-
   /// Draws an arc using [ShapeType.Line] or [ShapeType.Filled]
   void arc (double x, double y, double radius, double start, double degrees, [int segments]) {
     if (segments == null){
@@ -741,7 +689,7 @@ class ShapeRenderer implements Disposable {
   /// Draws a circle using [ShapeType.Line] or [ShapeType.Filled]
   void circle (double x, double y, double radius, [int segments]) {
     if (segments == null){
-      segments = 6 * MathUtils.cbrt(radius).toInt();
+      segments = (6 * MathUtils.cbrt(radius)).toInt();
     }
     if (segments <= 0) throw new ArgumentError.value(0, "segments", "segments must be > 0");
 
@@ -765,17 +713,22 @@ class ShapeRenderer implements Disposable {
       renderer.vertex(x + cx, y + cy, .0);
     } else {
       _check(ShapeType.Line, ShapeType.Filled, segments * 3 + 3);
+      appLogger.log('ShapeRenderer circle segments: ', '$segments');
       segments--;
       for (int i = 0; i < segments; i++) {
+        appLogger.log('Vertex $i', '');
         renderer.color(color);
         renderer.vertex(x, y, .0);
         renderer.color(color);
+        appLogger.log(' x,y ', '$x, $y');
         renderer.vertex(x + cx, y + cy, .0);
+        appLogger.log(' x+cx,y+cy ', '${x+cx}, ${y+cy}');
         double temp = cx;
         cx = cos * cx - sin * cy;
         cy = sin * temp + cos * cy;
         renderer.color(color);
         renderer.vertex(x + cx, y + cy, .0);
+        appLogger.log(' x+cx,y+cy ', '${x+cx}, ${y+cy}');
       }
       // Ensure the last segment is identical to the first.
       renderer.color(color);
@@ -790,7 +743,7 @@ class ShapeRenderer implements Disposable {
     renderer.vertex(x + cx, y + cy, .0);
   }
 
-  // Draws an ellipse using [ShapeType.Line] or [ShapeType.Filled]
+  /// Draws an ellipse using [ShapeType.Line] or [ShapeType.Filled]
   void ellipse (double x, double y, double width, double height, [int segments]) {
     if(segments == null){
       segments = Math.max(1, 12 * MathUtils.cbrt(Math.max(width * .5, height * .5))).toInt();
@@ -826,7 +779,7 @@ class ShapeRenderer implements Disposable {
     }
   }
 
-  /** Draws a cone using [ShapeType.Line] or [ShapeType.Filled]. */
+  /// Draws a cone using [ShapeType.Line] or [ShapeType.Filled]
   void cone (double x, double y, double z, double radius, double height, int segments) {
     if (segments == null){
       segments = Math.max(1, 4 * Math.sqrt(radius)).toInt();
@@ -992,7 +945,7 @@ class ShapeRenderer implements Disposable {
     }
   }
 
-  /** Finishes the batch of shapes and ensures they get rendered. */
+  /// Finishes the batch of shapes and ensures they get rendered
   void end () {
     renderer.end();
     _shapeType = null;
@@ -1004,7 +957,7 @@ class ShapeRenderer implements Disposable {
     begin(type);
   }
 
-  /** Returns the current shape type. */
+  /// Returns the current shape type.
   ShapeType getCurrentType () {
     return _shapeType;
   }
@@ -1013,7 +966,7 @@ class ShapeRenderer implements Disposable {
     return renderer;
   }
 
-  /** @return true if currently between begin and end. */
+  /// returns true if currently between begin and end
   bool isDrawing () {
     return _shapeType != null;
   }
@@ -1024,8 +977,8 @@ class ShapeRenderer implements Disposable {
 }
 
 
-/** Shape types to be used with [begin(ShapeType)].
-   * @author mzechner, stbachmann */
+/// Shape types to be used with [ShapeRenderer.begin(ShapeType)]
+/// @author mzechner, stbachmann
 class ShapeType {
   static const Point = const ShapeType._(GL.POINTS); 
   static const Line = const ShapeType._(GL.LINES);

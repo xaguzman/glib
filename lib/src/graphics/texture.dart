@@ -29,12 +29,16 @@ class Texture extends GLTexture {
   Texture.from(this.url): super(GL.TEXTURE_2D), loaded = false {
     var loader = new TextureLoader(url);
     uploadData(1, 1); //create dummy data so rendering doesn't break when using this constructor
-    loader.done.then(_loadImageElement);
-    loader.load();
+    loader
+      .load()
+      .then(_loadImageElement)
+      .catchError( (Error e) {
+        throw new AsyncError("Error when loading $url", e.stackTrace);
+      });
     _assignId();
   }
   
-//  Texture.copy(Texture other): super(GL.TEXTURE_2D, other.glTexture) ;
+  Texture.copy(Texture other): super(GL.TEXTURE_2D, other.glTexture) ;
   
   _assignId(){
     _id = Texture._texturesCount++;

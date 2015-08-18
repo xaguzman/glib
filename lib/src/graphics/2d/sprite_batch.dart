@@ -1,7 +1,7 @@
 part of glib.graphics;
 
 
-class SpriteBatch implements Disposable{
+class SpriteBatch extends Batch implements Disposable{
 
   bool isBlendingEnabled = true;
   final Matrix4 transform = new Matrix4.identity();
@@ -259,8 +259,6 @@ class SpriteBatch implements Disposable{
   }
   
 }
-
-
 
 class Batch{
   static const int X1 = 0;
