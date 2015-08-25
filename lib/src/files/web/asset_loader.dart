@@ -3,7 +3,7 @@ part of glib.webfiles;
 abstract class AssetLoader{
 
   static Future<dynamic> httpLoad( String url, String responseType,
-                                   dynamic extractResponse(HttpRequest), [OnProgress listener] ) {
+                                   dynamic extractResponse(HttpRequest), [OnProgress listener = null] ) {
 
     var completer = new Completer<dynamic>();
 
@@ -32,11 +32,16 @@ abstract class AssetLoader{
     return completer.future;
   }
 
-  Future<String> loadText(String url) => httpLoad(url, 'text', (x) =>  x.responseText);
-  Future<List<int>> loadBinary(String url) => httpLoad(url, 'arraybuffer', (x) =>  x.response);
-  Future<Blob> loadAudio(String url) => httpLoad(url, 'blob', (x) =>  x.response);
+  Future<String> loadText(String url, [OnProgress progressListener]) =>
+    httpLoad(url, 'text', (x) =>  x.responseText, progressListener);
 
-  Future<ImageElement> loadImage(String url){
+  Future<List<int>> loadBinary(String url, [OnProgress progressListener]) =>
+    httpLoad(url, 'arraybuffer', (x) =>  x.response, progressListener);
+
+  Future<Blob> loadAudio(String url, [OnProgress progressListener]) =>
+    httpLoad(url, 'blob', (x) =>  x.response, progressListener);
+
+  Future<ImageElement> loadImage(String url, [OnProgress progressListener]){
     var completer = new Completer<dynamic>();
 
     ImageElement image = new ImageElement();
@@ -46,11 +51,28 @@ abstract class AssetLoader{
     image.onError.listen((event) {
       completer.complete(null);
     });
+
     image.src = url;
     return completer.future;
   }
 
 //  Future<List<int>> loadAudio(String url);
+
+  Future load(String url, AssetType type, String mimeType, OnProgress progressListener){
+    switch(type){
+      case AssetType.Text:
+        return loadText(url, progressListener);
+      case AssetType.Image:
+        return loadImage(url);
+      case AssetType.Binary:
+        return loadBinary(url, progressListener);
+      case AssetType.Audio:
+        return loadAudio(url, progressListener);
+      case AssetType.Directory:
+        return new Future.value(url);
+    }
+    throw "Unsupported asset type $type";
+  }
 
 }
 

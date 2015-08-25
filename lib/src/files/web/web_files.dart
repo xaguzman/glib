@@ -3,6 +3,7 @@ library glib.webfiles;
 import 'dart:convert';
 import 'dart:html';
 import 'dart:async';
+import 'dart:math' as Math;
 import 'package:glib/src/files.dart';
 import 'package:path/path.dart' as _path;
 
