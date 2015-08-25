@@ -1,6 +1,6 @@
-library glib.files;
+library glib.input;
 
 import 'common.dart';
 
-part 'files/text_file_loader.dart';
-part 'files/texture_loader.dart';
+part 'input/input.dart';
+part 'input/input_processor.dart';

@@ -3,5 +3,3 @@ description: webgl
 dependencies:
   mime: any
   barback: any
-dev_dependencies:
-  browser: any

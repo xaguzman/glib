@@ -2,7 +2,7 @@ library glib.graphics;
 
 import 'dart:html';
 import 'dart:web_gl' as GL;
-export 'dart:web_gl';
+export 'dart:web_gl' hide Texture;
 import 'dart:core';
 import 'dart:typed_data';
 import 'dart:math' as Math;
@@ -26,7 +26,6 @@ part 'graphics/2d/animation.dart';
 part 'graphics/font.dart';
 part 'graphics/camera.dart';
 part 'graphics/orthographic_camera.dart';
-part 'graphics/loaders/texture_loader.dart';
 part 'graphics/color.dart';
 part 'graphics/viewport/viewport.dart';
 part 'graphics/glutils/immediate_mode_renderer.dart';
