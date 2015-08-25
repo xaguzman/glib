@@ -1,7 +1,7 @@
 name: glib
 description: webgl
 dependencies:
-  asset_pack: any
-  vector_math: any
+  mime: any
+  barback: any
 dev_dependencies:
   browser: any
