@@ -1,6 +1,6 @@
 part of glib.webfiles;
 
-abstract class AssetLoader{
+class AssetLoader{
 
   static Future<dynamic> httpLoad( String url, String responseType,
                                    dynamic extractResponse(HttpRequest), [OnProgress listener = null] ) {

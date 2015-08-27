@@ -6,7 +6,7 @@ class _Preloader {
 
   _Preloader(this.baseUrl);
 
-  void preload(String assetFileUrl) async {
+  void preload(String assetFileUrl, Function updateCallback(PreloaderState), Function errorCallback(String)){
     AssetLoader loader = new AssetLoader();
 
     var assetFileDescriptor = loader.loadText(_path.url.join(baseUrl, assetFileUrl));
@@ -50,13 +50,13 @@ class _Preloader {
 
           var assetListener = loader.load(_path.url.join(baseUrl, asset.url), asset._type, asset.mimetype, (amount){
             asset.loaded = amount;
-            callback.update(state);
+            updateCallback(state);
           });
 
           assetListener.catchError((error){
             asset.failed = true;
-            callback.error(asset.url);
-            callback.update(state);
+            errorCallback(asset.url);
+            updateCallback(state);
           });
 
           assetListener.then( (result) {
@@ -78,12 +78,11 @@ class _Preloader {
                 break;
             }
             asset.succeed = true;
-            callback.update(state);
+            updateCallback(state);
           });
         }
-        callback.update(state);
+        updateCallback(state);
       }
-
     });
   }
 
@@ -172,8 +171,8 @@ class PreloaderState {
     return size;
   }
 
-  double getProgress() {
-    double total = totalSize.toDouble();
+  num getProgress() {
+    var total = totalSize;
     return total == 0 ? 1 : (downloadedSize / total);
   }
 
