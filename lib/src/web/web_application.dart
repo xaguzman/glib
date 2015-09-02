@@ -1,21 +1,4 @@
-part of glib;
-
-abstract class Application extends Disposable implements Logger{
-
-  static const int LOG_NONE = 0;
-  static const int LOG_DEBUG = 3;
-  static const int LOG_INFO = 2;
-  static const int LOG_ERROR = 1;
-
-  ApplicationListener get listener;
-
-  Graphics get graphics;
-//  Audio get audio;
-  Input get input;
-
-  /// Posts a function on the main loop thread, which will be executed on the next game loop
-  void postAction(Function runnable);
-}
+part of glib.web;
 
 abstract class WebApplication implements Application {
   ApplicationListener _listener;
@@ -31,15 +14,15 @@ abstract class WebApplication implements Application {
   @override WebGraphics get graphics => _graphics;
   @override Input get input => _input;
   @override ApplicationListener get listener => _listener;
-  
+
   ///Creates a new application with the given configuration. If [canvas] is not specified, it will automatically
   ///use the [config.width] and [config.height] to create a new canvas, which you can then access through [graphics.canvas]
   WebApplication(this._listener, this.config, {CanvasElement canvas}) {
     if (canvas != null){
       _graphics = new WebGraphics.withCanvas(canvas, config.stencil, config.antialiasing, config.preserveDrawingBuffer);
     }else{
-      _graphics = new WebGraphics.config(config.width, config.height, 
-          config.stencil, config.antialiasing, config.preserveDrawingBuffer);
+      _graphics = new WebGraphics.config(config.width, config.height,
+      config.stencil, config.antialiasing, config.preserveDrawingBuffer);
     }
     _lastWidth = graphics.width;
     _lastHeight = graphics.height;
@@ -52,17 +35,17 @@ abstract class WebApplication implements Application {
     Glib._gl = graphics.gl;
     Glib._graphics = graphics;
     Glib._input = input;
-    
+
     listener.create();
     listener.resize(graphics.width, graphics.height);
 
     var duration = new Duration(milliseconds:  1000 ~/ config.fps);
     _timer = new Timer.periodic(duration, _mainLoop);
   }
-  
+
   void _mainLoop(timer) {
     if (!_timer.isActive) return;
-    
+
     graphics.update();
     if (graphics.width != _lastWidth || graphics.height != _lastHeight) {
       _listener.resize(graphics.width, graphics.height);
@@ -73,7 +56,7 @@ abstract class WebApplication implements Application {
     actions.forEach((func) => func());
     actions.clear();
     _listener.render();
-    _input.reset();    
+    _input.reset();
   }
 
   void _visibilityChanged(Event e){
@@ -103,7 +86,7 @@ abstract class WebApplication implements Application {
   void postAction(Function runnable) {
     actions.add(runnable);
   }
-  
+
   void dispose(){
     _timer.cancel();
     graphics.dispose();

@@ -9,14 +9,14 @@ export 'dart:math';
 //import 'package:vector_math/vector_math.dart' as VMath;
 //export 'package:vector_math/vector_math.dart';
 
-part 'math/frustum.dart';
-part 'math/matrix.dart';
-part 'math/quaternion.dart';
-part 'math/ray.dart';
-part 'math/vector2.dart';
-part 'math/vector3.dart';
-part 'math/plane.dart';
-part 'math/rect.dart';
+part 'math';
+part 'math';
+part 'math';
+part 'math';
+part 'math';
+part 'math';
+part 'math';
+part 'math';
 
 class MathUtils{  
   static final double radiansToDegrees = 180 / PI;

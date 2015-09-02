@@ -1,8 +1,4 @@
-library glib.webgraphics;
-
-import 'dart:html';
-import '../../graphics.dart';
-
+part of glib.web;
 
 class WebGraphics extends Graphics{
   /// updates the elapsed time between frames, DO NOT ALTER THIS

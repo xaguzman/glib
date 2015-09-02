@@ -3,23 +3,11 @@ library glib.files;
 abstract class Files{
 
   FileHandle getFileHandle (String path, FileType type);
-
-  @override
   FileHandle classpath (String path);
-
-  @override
   FileHandle internal (String path);
-
-  @override
   String getExternalStoragePath ();
-
-  @override
   bool isExternalStorageAvailable ();
-
-  @override
   String getLocalStoragePath ();
-
-  @override
   bool isLocalStorageAvailable ();
 }
 

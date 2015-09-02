@@ -1,4 +1,4 @@
-part of glib.webfiles;
+part of glib.web;
 
 class _Preloader {
 
