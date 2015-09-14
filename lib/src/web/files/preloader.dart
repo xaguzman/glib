@@ -21,8 +21,10 @@ class _Preloader {
 
     assetFileDescriptor.then( (String content){
       var lines = content.split("\n");
-      List<Asset> assets = new List(lines.length);
+      List<Asset> assets = new List();
       for (String line in lines){
+        if (line.isEmpty)
+          continue;
         var tokens = line.split(":");
         if ( tokens.length != 4)
           throw "Invalid assets description file";
@@ -176,6 +178,22 @@ class _Preloader {
   bool isBinary (String url) => binaries.containsKey(url);
   bool isAudio (String url) => audio.contains(url);
   bool isDirectory (String url) => dirs.contains(url);
+
+  dynamic load(String file){
+    if (txts.containsKey(file))
+      return txts[file];
+    if (imgs.containsKey(file))
+      return imgs[file];
+
+    if (binaries.containsKey(file))
+      return binaries[file];
+
+    var audio = this.audio.firstWhere( (String x) => x == file, orElse: () => null);
+    if (audio != null)
+      return audio;
+
+    return null;
+  }
 }
 
 class PreloaderState {

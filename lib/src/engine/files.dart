@@ -1,5 +1,7 @@
 library glib.files;
 
+import 'dart:async';
+
 abstract class Files{
 
   FileHandle getFileHandle (String path, FileType type);
@@ -9,6 +11,7 @@ abstract class Files{
   bool isExternalStorageAvailable ();
   String getLocalStoragePath ();
   bool isLocalStorageAvailable ();
+  dynamic load(String filePath);
 }
 
 abstract class FileHandle{

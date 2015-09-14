@@ -7,6 +7,7 @@ import 'dart:core';
 import 'dart:typed_data';
 import 'dart:math' as Math;
 
+import 'files.dart';
 import 'math.dart';
 import 'common.dart';
 
@@ -41,6 +42,7 @@ part 'graphics/maps/tiled/tiled_map_tileset.dart';
 //part 'graphics/maps/tiled/tmx_map_loader.dart';
 
 Graphics _graphics;
+Files _files;
 
 abstract class Graphics implements Disposable{
 
@@ -60,8 +62,9 @@ abstract class Graphics implements Disposable{
   int get width;
   int get height;
 
-  initGraphics(Graphics instance){
+  initGraphics(Graphics instance, Files files){
    _graphics = instance;
+    _files = files;
   }
 
   @override

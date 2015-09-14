@@ -57,6 +57,8 @@ class WebFiles implements Files {
   bool isLocalStorageAvailable () {
     return false;
   }
+
+  dynamic load(String filePath) => preloader.load(filePath);
 }
 
 class WebFileHandle implements FileHandle{
@@ -106,9 +108,7 @@ class WebFileHandle implements FileHandle{
   String get pathWithoutExtension => _path.url.withoutExtension(file);
 
   @override
-  List<int> readBytes() {
-
-  }
+  List<int> readBytes() => preloader.readBytes(file);
 
   @override
   int get length => preloader.length(file);

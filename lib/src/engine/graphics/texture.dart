@@ -27,15 +27,18 @@ class Texture extends GLTexture {
   
   /// creates a texture from an image stored in the given [url]
   Texture.from(this.url): super(GL.TEXTURE_2D), loaded = false {
-    var loader = new TextureLoader(url);
-    uploadData(1, 1); //create dummy data so rendering doesn't break when using this constructor
-    loader
-      .load()
-      .then(_loadImageElement)
-      .catchError( (Error e) {
-        throw new AsyncError("Error when loading $url", e.stackTrace);
-      });
+//    uploadData(1, 1);//create dummy data so rendering doesn't break when using this constructor
+    _loadImageElement(_files.load(url));
     _assignId();
+//    var loader = new TextureLoader(url);
+//    uploadData(1, 1); //create dummy data so rendering doesn't break when using this constructor
+//    loader
+//      .load()
+//      .then(_loadImageElement)
+//      .catchError( (Error e) {
+//        throw new AsyncError("Error when loading $url", e.stackTrace);
+//      });
+//    _assignId();
   }
   
   Texture.copy(Texture other): super(GL.TEXTURE_2D, other.glTexture){

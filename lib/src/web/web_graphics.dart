@@ -69,8 +69,7 @@ class WebGraphics extends Graphics{
 
     _gl.viewport(0, 0, canvas.width, canvas.height);
 
-//    _graphics = this;
-    initGraphics(this);
+    initGraphics(this, Glib.files);
     watch.start();
   }
 

@@ -9,11 +9,13 @@ abstract class WebApplication implements Application {
   WebGraphics _graphics;
   List<Function> actions;
   Timer _timer;
+  WebFiles _files;
 
   @override int logLevel;
-  @override WebGraphics get graphics => _graphics;
+  @override Graphics get graphics => _graphics;
   @override Input get input => _input;
   @override ApplicationListener get listener => _listener;
+  @override Files get files => _files;
 
   ///Creates a new application with the given configuration. If [canvas] is not specified, it will automatically
   ///use the [config.width] and [config.height] to create a new canvas, which you can then access through [graphics.canvas]
@@ -27,13 +29,26 @@ abstract class WebApplication implements Application {
     _lastWidth = graphics.width;
     _lastHeight = graphics.height;
     actions = new List();
-    _input = new CanvasInput(graphics.canvas);
+
     document.onVisibilityChange.listen( _visibilityChanged );
 
     appLogger = this;
+    _Preloader preloader = new _Preloader('assets');
+    preloader.preload("assets.txt", (PreloaderState state){
+      // TODO show some loading ui?
+      if(state.hasEnded()){
+        startLoop();
+      }
+    }, (String errorMsg){
+      error("Error when loading assets", errorMsg);
+    });
 
+    _files = new WebFiles(preloader);
+    _input = new CanvasInput(_graphics.canvas);
+  }
 
-    Glib.init(this, graphics, input, graphics.gl);
+  void startLoop(){
+    Glib.init(this, graphics, input, graphics.gl, _files);
 
     listener.create();
     listener.resize(graphics.width, graphics.height);

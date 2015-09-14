@@ -9,6 +9,7 @@ export 'src/engine/input.dart';
 import 'src/engine/common.dart';
 export 'src/engine/common.dart';
 
+import 'src/engine/files.dart';
 export 'src/engine/files.dart';
 export 'src/engine/math.dart';
 
