@@ -17,6 +17,7 @@ abstract class FileHandle{
   String get extension;
   String get path;
   String get pathWithoutExtension;
+  int get length;
   FileType get fileType;
   List<int> readBytes();
   String readString([String charset = 'utf-8']);

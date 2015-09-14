@@ -36,15 +36,20 @@ class WebAssetsBundleGenerator extends AggregateTransformer{
     StringBuffer buffer = new StringBuffer();
 
     for(FileSystemEntity f in dir.listSync(recursive: true, followLinks: true)){
+
+      var normalizedPath = f.path.replaceAll("\\", '/');
+      if(normalizedPath.contains("/packages") )
+        continue;
+
       buffer
         ..write(getFileCode(f))
-        ..write(":${ f.path.replaceAll(assetsRoot, '') }")
+        ..write(":${ normalizedPath.replaceAll(assetsRoot, '') }")
         ..write(":${getFileLength(f)}")
         ..writeln(":${getMimeType(f)}");
-
     }
     AssetId id = new AssetId(transform.package, path.url.join(transform.key, "assets.txt"));
     Asset asset = new Asset.fromString(id, buffer.toString());
+    transform.addOutput(asset);
   }
 
   bool isOf(String extension, List allowedExtensions) => allowedExtensions.contains(extension);

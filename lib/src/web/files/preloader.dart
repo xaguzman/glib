@@ -3,8 +3,16 @@ part of glib.web;
 class _Preloader {
 
   final String baseUrl;
+  final CanvasElement _canvas;
+  CanvasRenderingContext2D _ctx;
 
-  _Preloader(this.baseUrl);
+
+
+  _Preloader(this.baseUrl) :
+    this._canvas = new CanvasElement(){
+    this._ctx = _canvas.context2D;
+  }
+
 
   void preload(String assetFileUrl, Function updateCallback(PreloaderState), Function errorCallback(String)){
     AssetLoader loader = new AssetLoader();
@@ -88,9 +96,10 @@ class _Preloader {
 
   Map<String, ImageElement> imgs = new Map();
   Map<String, String> txts = new Map();
-  Map<String, Blob> binaries = new Map();
+  Map<String, List<int>> binaries = new Map();
   List<String> dirs = new List();
   List<String> audio = new List();
+
 
   List<FileHandle> list(String url, String prefix, String suffix, String contains) {
 
@@ -129,11 +138,33 @@ class _Preloader {
       } on Error{
         return txts[file].codeUnits.length;
       }
+
     }
     if (imgs.containsKey(file) || binaries.containsKey(file) || audio.contains(file)){
       return 1;
     }
     return 0;
+  }
+
+  List<int> readBytes(String file){
+    if(isText(file)){
+      return UTF8.encode(txts[file]);
+    }
+    if(isImage(file)){
+      var img = imgs[file];
+      _canvas
+        ..width = img.width
+        ..height = img.height;
+
+      _ctx.drawImage(img, 0, 0);
+      var imgData = _ctx.getImageData(0, 0, _canvas.width, _canvas.height);
+      return imgData.data;
+    }
+    if (isBinary(file)){
+      return binaries[file];
+    }
+    //TODO what should be done for these?
+    return new List();
   }
 
   bool contains (String url) =>

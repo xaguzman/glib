@@ -6,6 +6,8 @@ import 'dart:math' as Math;
 import 'dart:convert';
 
 import 'package:glib/glib.dart';
+export 'package:glib/glib.dart';
+
 import 'package:path/path.dart' as _path;
 
 part 'src/web/web_application.dart';

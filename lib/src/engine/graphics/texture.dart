@@ -38,7 +38,9 @@ class Texture extends GLTexture {
     _assignId();
   }
   
-  Texture.copy(Texture other): super(GL.TEXTURE_2D, other.glTexture) ;
+  Texture.copy(Texture other): super(GL.TEXTURE_2D, other.glTexture){
+   _assignId();
+  }
   
   _assignId(){
     _id = Texture._texturesCount++;
@@ -133,4 +135,27 @@ class Texture extends GLTexture {
 //  static int getNumManagedTextures () {
 //    return managedTextures.get(Gdx.app).size;
 //  }
+}
+
+//TODO decouple this from dart:html
+class TextureLoader{
+
+  final String _url;
+
+  TextureLoader(this._url);
+
+  Future<ImageElement> load(){
+    var completer = new Completer<ImageElement>();
+
+    ImageElement image = new ImageElement();
+    image.onLoad.listen((event) {
+      completer.complete(image);
+    });
+    image.onError.listen((event) {
+      completer.complete(null);
+    });
+
+    image.src = _url;
+    return completer.future;
+  }
 }

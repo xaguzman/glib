@@ -111,13 +111,16 @@ class WebFileHandle implements FileHandle{
   }
 
   @override
+  int get length => preloader.length(file);
+
+  @override
   String readString([String charset = 'utf-8']) {
     if (preloader.isText(file))
       return preloader.txts[file];
     try{
       return UTF8.decoder.convert(readBytes());
     }on Error{
-      return null;
+      return '';
     }
   }
 

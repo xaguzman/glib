@@ -144,18 +144,17 @@ class TextureWrap{
   static final Repeat         = const TextureWrap._internal(GL.REPEAT);
 }
 
-
-/// wrappers for the webgl-specific classes
-abstract class ActiveInfo {
-  String get name;
-  int get size;
-  int get type;
-}
-
-abstract class UniformLocation { }
-
-abstract class Program { }
-
-abstract class Buffer { }
-
-abstract class FloatBuffer{ }
+// /// wrappers for the webgl-specific classes
+//abstract class ActiveInfo {
+//  String get name;
+//  int get size;
+//  int get type;
+//}
+//
+//abstract class UniformLocation { }
+//
+//abstract class Program { }
+//
+//abstract class Buffer { }
+//
+//abstract class FloatBuffer{ }

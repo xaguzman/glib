@@ -69,14 +69,14 @@ class WebGraphics extends Graphics{
 
     _gl.viewport(0, 0, canvas.width, canvas.height);
 
-    _graphics = this;
+//    _graphics = this;
+    initGraphics(this);
     watch.start();
   }
 
   @override
   void dispose(){
-    textures.values.forEach( (texture) => texture._dispose());
-    textures.clear();
+    super.dispose();
     watch.stop();
   }
 

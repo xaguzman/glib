@@ -43,7 +43,7 @@ part 'graphics/maps/tiled/tiled_map_tileset.dart';
 Graphics _graphics;
 
 abstract class Graphics implements Disposable{
-  
+
   /// the time elapsed between the last frame and the current frame, in seconds!
   double get deltaTime;
   
@@ -54,9 +54,19 @@ abstract class Graphics implements Disposable{
   /// you should not directly call this
   void update();
      
-  GL.RenderingContext get gl; 
+  GL.RenderingContext get gl;
   Map<int, Texture> get textures; 
   
   int get width;
   int get height;
+
+  initGraphics(Graphics instance){
+   _graphics = instance;
+  }
+
+  @override
+  void dispose(){
+    textures.values.forEach( (texture) => texture._dispose());
+    textures.clear();
+  }
 }

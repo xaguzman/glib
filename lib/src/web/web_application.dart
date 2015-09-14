@@ -31,10 +31,9 @@ abstract class WebApplication implements Application {
     document.onVisibilityChange.listen( _visibilityChanged );
 
     appLogger = this;
-    Glib._app = this;
-    Glib._gl = graphics.gl;
-    Glib._graphics = graphics;
-    Glib._input = input;
+
+
+    Glib.init(this, graphics, input, graphics.gl);
 
     listener.create();
     listener.resize(graphics.width, graphics.height);
