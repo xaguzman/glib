@@ -32,18 +32,18 @@ class ShaderProgram implements Disposable {
   bool _isCompiled = false;
 
   // uniform lookup
-  final Map<String, GL.ActiveInfo> _uniforms = new Map();
-  final Map<String, GL.UniformLocation> _uniformLocations = new Map();
+  final Map<String, ActiveInfo> _uniforms = new Map();
+  final Map<String, UniformLocation> _uniformLocations = new Map();
   List<String> _uniformNames;
 
   // attribute lookup
-  final Map<String, GL.ActiveInfo> _attributes = new Map();
+  final Map<String, ActiveInfo> _attributes = new Map();
   final Map<String, int> _attributesLocation = new Map();
   List<String> _attributeNames;
 
-  GL.Program _program;
-  GL.Shader _vertexShader;
-  GL.Shader _fragmentShader;
+  Program _program;
+  Shader _vertexShader;
+  Shader _fragmentShader;
 
   /// vertex shader source
   final String vertexShaderSource;
@@ -55,7 +55,7 @@ class ShaderProgram implements Disposable {
   bool _invalidated = false;
 
   /// reference count
-  int _refCount = 0;
+//  int _refCount = 0;
 
   /// Constructs a new ShaderProgram and immediately compiles it.
   ShaderProgram(this.vertexShaderSource, this.fragmentShaderSource) {
@@ -94,7 +94,7 @@ class ShaderProgram implements Disposable {
     _isCompiled = true;
   }
 
-  GL.Shader _loadShader (int type, String source) {
+  Shader _loadShader (int type, String source) {
     var shader = _graphics.gl.createShader(type);
     if (shader == null) return null;
 
@@ -111,7 +111,7 @@ class ShaderProgram implements Disposable {
     return shader;
   }
 
-  GL.Program _linkProgram () {
+  Program _linkProgram () {
     var program = _graphics.gl.createProgram();
     if (program == null) return null;
 
@@ -155,8 +155,8 @@ class ShaderProgram implements Disposable {
     return location;
   }
 
-  GL.UniformLocation _fetchUniformLocation (location_OR_name, [bool pedantic = null]) {
-    if (location_OR_name is GL.UniformLocation)
+  UniformLocation _fetchUniformLocation (location_OR_name, [bool pedantic = null]) {
+    if (location_OR_name is UniformLocation)
       return location_OR_name;
     
     if(location_OR_name is! String)
@@ -165,7 +165,7 @@ class ShaderProgram implements Disposable {
     if( pedantic == null)
       pedantic = ShaderProgram.pedantic;
     
-    GL.UniformLocation location;
+    UniformLocation location;
     
     if( _uniformLocations.containsKey(location_OR_name) )
       return _uniformLocations[location_OR_name];
@@ -446,7 +446,7 @@ class ShaderProgram implements Disposable {
     _attributeNames = new List<String>(numAttributes);
 
     for (int i = 0; i < numAttributes; i++) {
-      GL.ActiveInfo info = _graphics.gl.getActiveAttrib(_program, i);
+      ActiveInfo info = _graphics.gl.getActiveAttrib(_program, i);
       int location = _graphics.gl.getAttribLocation(_program, info.name);
       _attributes[info.name] = info;
       _attributesLocation[info.name] = location; 
@@ -473,7 +473,7 @@ class ShaderProgram implements Disposable {
   int getUniformType (String name) => _uniforms[name].type;
 
   /// returns the location of the uniform
-  GL.UniformLocation getUniformLocation (String name) => _uniformLocations[name];
+  UniformLocation getUniformLocation (String name) => _uniformLocations[name];
 
   /// returns the size of the uniform
   int getUniformSize (String name) => _uniforms[name].size;

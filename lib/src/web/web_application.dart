@@ -16,6 +16,7 @@ abstract class WebApplication implements Application {
   @override Input get input => _input;
   @override ApplicationListener get listener => _listener;
   @override Files get files => _files;
+  @override GL get gl => _graphics.gl;
 
   ///Creates a new application with the given configuration. If [canvas] is not specified, it will automatically
   ///use the [config.width] and [config.height] to create a new canvas, which you can then access through [graphics.canvas]

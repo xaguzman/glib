@@ -1,5 +1,7 @@
 name: glib
-description: webgl
+description: libgdx-like framework
 dependencies:
   mime: any
   barback: any
+dev-dependencies:
+  browser: any

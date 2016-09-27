@@ -2,7 +2,7 @@ part of glib.graphics;
 
 class IndexBufferObject implements Disposable{
   Int16List buffer;
-  GL.Buffer glBuffer;
+  Buffer glBuffer;
   bool isDirty = true;
   bool isBound = false;
   final int usage;
@@ -50,7 +50,7 @@ class IndexBufferObject implements Disposable{
           _limit = offset + count ;
 
     if (isBound) {
-      _graphics.gl.bufferData(GL.ELEMENT_ARRAY_BUFFER, buffer, usage);
+      _graphics.gl.bufferDataTyped(GL.ELEMENT_ARRAY_BUFFER, buffer, usage);
       isDirty = false;
     }
   }
@@ -66,7 +66,7 @@ class IndexBufferObject implements Disposable{
 
     _graphics.gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, glBuffer);
     if (isDirty) {
-      _graphics.gl.bufferData(GL.ELEMENT_ARRAY_BUFFER, buffer, usage);
+      _graphics.gl.bufferDataTyped(GL.ELEMENT_ARRAY_BUFFER, buffer, usage);
       isDirty = false;
     }
     isBound = true;

@@ -1,10 +1,12 @@
 part of glib.web;
 
+WebGraphics _graphics;
+
 class WebGraphics extends Graphics{
   /// updates the elapsed time between frames, DO NOT ALTER THIS
   final Stopwatch watch = new Stopwatch();
   CanvasElement canvas;
-  GL.RenderingContext _gl;
+  WebGL _gl;
   Map<int, Texture> _textures;
   int _width, _height;
 
@@ -17,17 +19,17 @@ class WebGraphics extends Graphics{
   @override int get fps => _fps;
   @override int get width => _width;
   @override int get height => _height;
-  @override GL.RenderingContext get gl => _gl;
+  @override GL get gl => _gl;
   @override Map<int, Texture> get textures => _textures;
 
-  WebGraphics();
+  WebGraphics() : super(_loadImageElement);
 
-  WebGraphics.config(int width, int height, [bool stencil=false, bool antialiasing=false, bool preserveDrawingBuffer=false]){
+  WebGraphics.config(int width, int height, [bool stencil=false, bool antialiasing=false, bool preserveDrawingBuffer=false]) : super(_loadImageElement){
     this.canvas = new CanvasElement(width: width, height: height);
     _initGraphics(stencil: stencil, antialiasing: antialiasing, preserveDrawingBuffer: preserveDrawingBuffer);
   }
 
-  WebGraphics.withCanvas(this.canvas, [bool stencil=false, bool antialiasing=false, bool preserveDrawingBuffer=false]){
+  WebGraphics.withCanvas(this.canvas, [bool stencil=false, bool antialiasing=false, bool preserveDrawingBuffer=false]): super(_loadImageElement){
     _initGraphics(stencil: stencil, antialiasing: antialiasing, preserveDrawingBuffer: preserveDrawingBuffer);
   }
 
@@ -49,27 +51,25 @@ class WebGraphics extends Graphics{
     if (this.canvas == null)
       throw new GlibException("No canvas element assigned");
 
-    _gl = this.canvas.getContext("webgl");
-    if (_gl == null)
-      _gl = this.canvas.getContext("experimental-webgl");
+    var glCtx = this.canvas.getContext3d(
+        alpha: false,
+        antialias: antialiasing,
+        premultipliedAlpha: false,
+        stencil: stencil,
+        preserveDrawingBuffer: preserveDrawingBuffer
+    );
+
+    _gl = new WebGL(glCtx);
 
     _textures = new Map();
 
     _width = canvas.width;
     _height = canvas.height;
 
-    GL.ContextAttributes attribs = _gl.getContextAttributes();
-
-    attribs
-      ..antialias = antialiasing
-      ..stencil = stencil
-      ..premultipliedAlpha = false
-      ..alpha = false
-      ..preserveDrawingBuffer = preserveDrawingBuffer;
-
     _gl.viewport(0, 0, canvas.width, canvas.height);
 
     initGraphics(this, Glib.files);
+    _graphics = this;
     watch.start();
   }
 
@@ -80,3 +80,4 @@ class WebGraphics extends Graphics{
   }
 
 }
+

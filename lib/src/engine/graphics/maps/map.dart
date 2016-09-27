@@ -116,7 +116,7 @@ class GameMapProperties {
     });
   }
 
-  void remove(String key) => _properties.remove(key);
+  Object remove(String key) => _properties.remove(key);
 
   void clear() => _properties.clear();
 

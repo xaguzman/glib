@@ -3,7 +3,7 @@ part of glib.graphics;
 class VertexBufferObject implements Disposable{
   final VertexAttributes _attributes;
   Float32List _buffer;
-  GL.Buffer glBuffer;
+  Buffer glBuffer;
   final bool isStatic;
   int usage;
   bool isDirty = false;
@@ -44,8 +44,8 @@ class VertexBufferObject implements Disposable{
   void _bufferChanged () {
     if (!isBound)
       return;
-    
-    _graphics.gl.bufferData(GL.ARRAY_BUFFER, _buffer, usage);
+
+    _graphics.gl.bufferDataTyped(GL.ARRAY_BUFFER, _buffer, usage);
     isDirty = false;
   }
 
@@ -61,7 +61,7 @@ class VertexBufferObject implements Disposable{
     
     _graphics.gl.bindBuffer(GL.ARRAY_BUFFER, glBuffer); 
     if (isDirty) {
-      _graphics.gl.bufferData(GL.ARRAY_BUFFER, _buffer, usage);
+      _graphics.gl.bufferDataTyped(GL.ARRAY_BUFFER, _buffer, usage);
       isDirty = false;
     }
 

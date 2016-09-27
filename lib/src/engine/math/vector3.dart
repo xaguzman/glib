@@ -2,11 +2,11 @@ part of glib.math;
 
 
 class Vector3{
-  
-  static const Vector3 X = const Vector3._internal(const Float32List.fromList(const [1.0, 0.0, 0.0]));
-  static const Vector3 Y = const Vector3._internal(const Float32List.fromList(const [0.0, 1.0, 0.0]));
-  static const Vector3 Z = const Vector3._internal(const Float32List.fromList(const [0.0, 0.0, 1.0]));
-  static const Vector3 Zero = const Vector3._internal(const Float32List.fromList(const [0.0, 0.0, 0.0]));
+
+  static final Vector3 X = new Vector3._internal([1.0, 0.0, 0.0]);
+  static final Vector3 Y = new Vector3._internal([0.0, 1.0, 0.0]);
+  static final Vector3 Z = new Vector3._internal([0.0, 0.0, 1.0]);
+  static final Vector3 Zero = new Vector3._internal([0.0, 0.0, 0.0]);
   
   final Float32List val;
   
@@ -29,7 +29,7 @@ class Vector3{
     val[2] = z;
   }
   
-  const Vector3._internal(this.val);
+  Vector3._internal(this.val);
 
   Vector3.from(final Vector3 vector): this(vector.x, vector.y, vector.z) ;
   

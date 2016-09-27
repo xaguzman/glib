@@ -1,6 +1,6 @@
 part of glib.graphics;
 
-abstract class GL20 {
+abstract class GL{
   static const int ACTIVE_ATTRIBUTES = 0x8B89;
   static const int ACTIVE_TEXTURE = 0x84E0;
   static const int ACTIVE_UNIFORMS = 0x8B86;
@@ -308,7 +308,7 @@ abstract class GL20 {
   void bindBuffer(int target, Buffer buffer);
   void bindFramebuffer(int target, Framebuffer framebuffer);
   void bindRenderbuffer(int target, Renderbuffer renderbuffer);
-  void bindTexture(int target, Texture texture);
+  void bindTexture(int target, GLTexture texture);
   void blendColor(num red, num green, num blue, num alpha);
   void blendEquation(int mode);
   void blendEquationSeparate(int modeRGB, int modeAlpha);
@@ -335,14 +335,14 @@ abstract class GL20 {
   Program createProgram();
   Renderbuffer createRenderbuffer();
   Shader createShader(int type);
-  Texture createTexture();
+  GLTexture createTexture();
   void cullFace(int mode);
   void deleteBuffer(Buffer buffer);
   void deleteFramebuffer(Framebuffer framebuffer);
   void deleteProgram(Program program);
   void deleteRenderbuffer(Renderbuffer renderbuffer);
   void deleteShader(Shader shader);
-  void deleteTexture(Texture texture);
+  void deleteTexture(GLTexture texture);
   void depthFunc(int func);
   void depthMask(bool flag);
   void depthRange(num zNear, num zFar);
@@ -356,7 +356,7 @@ abstract class GL20 {
   void finish();
   void flush();
   void framebufferRenderbuffer(int target, int attachment, int renderbuffertarget, Renderbuffer renderbuffer);
-  void framebufferTexture2D(int target, int attachment, int textarget, Texture texture, int level);
+  void framebufferTexture2D(int target, int attachment, int textarget, GLTexture texture, int level);
   void frontFace(int mode);
   void generateMipmap(int target);
   ActiveInfo getActiveAttrib(Program program, int index);
@@ -390,7 +390,7 @@ abstract class GL20 {
   bool isProgram(Program program);
   bool isRenderbuffer(Renderbuffer renderbuffer);
   bool isShader(Shader shader);
-  bool isTexture(Texture texture);
+  bool isTexture(GLTexture texture);
   void lineWidth(num width);
   void linkProgram(Program program);
   void pixelStorei(int pname, int param);
@@ -497,3 +497,30 @@ abstract class GL20 {
   }
 }
 
+abstract class Shader{ }
+
+abstract class ShaderPrecisionFormat {}
+
+abstract class Buffer{ }
+
+abstract class Program{ }
+
+abstract class Framebuffer{ }
+
+abstract class Renderbuffer{ }
+
+abstract class UniformLocation{ }
+
+abstract class ContextAttributes{
+
+  bool alpha, antialias, depth, premultipliedAlpha, preserveDrawingBuffer, stencil;
+
+}
+
+abstract class ActiveInfo{
+  String get name;
+  int get size;
+  int get type;
+}
+
+abstract class GLTexture {}

@@ -23,22 +23,22 @@ class TextureRegion{
   TextureRegion(this.texture, [int x = 0, int y = 0 , int width, int height]){   
     if(texture == null)
       throw new ArgumentError.notNull("texture");
-    
-    if (texture.loaded){
+
+    var setValues = (int x, int y, int w, int h ){
       if ( height == null)
         height = texture.height;
       if (width == null)
         width = texture.width;
-          
+
       setRegion(x, y, width, height);
+    };
+    
+    if (texture.loaded){
+      setValues(x, y, width, height);
     }else{
       setRegion(0, 0, 1, 1);
       texture.onLoad.then((texture){
-        if ( height == null)
-          height = texture.height;
-        if (width == null)
-          width = texture.width;
-        setRegion(x, y, width, height);
+        setValues(x, y, width, height);
       });
     }
   }

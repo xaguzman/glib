@@ -1,4 +1,15 @@
-part of glib;
+library glib;
+
+import 'graphics.dart';
+import 'input.dart';
+import 'files.dart';
+import 'common.dart';
+
+part 'application/application.dart';
+part 'application/application_configuration.dart';
+part 'application/application_listener.dart';
+
+
 
 class Glib{
   static Application _app;
@@ -11,8 +22,8 @@ class Glib{
   static Input _input;
   static Input get input => _input;
   
-  static RenderingContext _gl;
-  static RenderingContext get gl =>_gl;
+  static GL _gl;
+  static GL get gl =>_gl;
 
   static Files _files;
   static Files get files => _files;

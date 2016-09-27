@@ -1,9 +1,9 @@
 part of glib.math;
 
 class Vector2{
-  static const Vector2 Zero = const Vector2._internal(const [0.0, 0.0]);
-  static const Vector2 X = const Vector2._internal( const [1.0, 0.0]);
-  static const Vector2 Y = const Vector2._internal(const [0.0, 1.0]);
+  static final Vector2 Zero = new Vector2._internal([0.0, 0.0]);
+  static final Vector2 X = new Vector2._internal([1.0, 0.0]);
+  static final Vector2 Y = new Vector2._internal([0.0, 1.0]);
   
   final Float32List val;
   
@@ -24,8 +24,8 @@ class Vector2{
     val[1] = y;
   }
   
-  const Vector2._internal(this.val);
-  
+  Vector2._internal(this.val);
+
   Vector2.from(Vector2 v): this(v.x, v.y);
   
   Vector2.fromVector3(Vector3 v): this(v.x, v.y);

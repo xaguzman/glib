@@ -6,8 +6,6 @@ class _Preloader {
   final CanvasElement _canvas;
   CanvasRenderingContext2D _ctx;
 
-
-
   _Preloader(this.baseUrl) :
     this._canvas = new CanvasElement(){
     this._ctx = _canvas.context2D;

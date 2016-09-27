@@ -1,7 +1,5 @@
 library glib.files;
 
-import 'dart:async';
-
 abstract class Files{
 
   FileHandle getFileHandle (String path, FileType type);

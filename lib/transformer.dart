@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:async';
 import 'package:path/path.dart' as path;
 import 'package:barback/barback.dart';
 import 'package:mime/mime.dart' as mime;
@@ -11,7 +10,7 @@ class WebAssetsBundleGenerator extends AggregateTransformer{
 
   var imgExtensions = ['.jpg', '.png', '.bmp'];
   var audioExtensions = ['.mp3', '.ogg', '.wav'];
-  var txtExtensions = ['.txt', '.json', '.xml', '.glsl', '.fnt', '.pack', '.atlas', '.obj', '.g3dj'];
+  var txtExtensions = ['.txt', '.json', '.xml', '.glsl', '.fnt', '.pack', '.atlas', '.obj', '.g3dj', '.tmx'];
 
   WebAssetsBundleGenerator.asPlugin(BarbackSettings settings){
     String paramRoot = settings.configuration['assetsRoot'];

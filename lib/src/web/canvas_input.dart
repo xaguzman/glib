@@ -153,7 +153,7 @@ class CanvasInput implements Input{
     if (event is WheelEvent){
       event.stopPropagation();
 
-      int val = event.wheelDeltaY;
+      int val = event.deltaY;
       if (val == null || val == 0) {
         val = -event.detail;
       }

@@ -445,9 +445,9 @@ abstract class Keys {
 //      case CONTROL_RIGHT:
 //        return "R-Ctrl";
       case DELETE:
-        return "Delete";
+        return "Del";
       case ESC:
-        return "Escape";
+        return "Esc";
       case END:
         return "End";
       case INSERT:
