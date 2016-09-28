@@ -23,6 +23,7 @@ part 'graphics/glutils/vertex_attribute.dart';
 part 'graphics/2d/animation.dart';
 part 'graphics/2d/sprite_batch.dart';
 part 'graphics/font.dart';
+part 'graphics/bitmap_font.dart.dart';
 part 'graphics/camera.dart';
 part 'graphics/orthographic_camera.dart';
 part 'graphics/color.dart';
