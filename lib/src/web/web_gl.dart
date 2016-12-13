@@ -11,9 +11,8 @@ class WebGL implements GL{
   WebGLActiveInfo _activeUniform = new WebGLActiveInfo();
   WebGLUniformLocation _uniformLocation = new WebGLUniformLocation();
 
-  WebGL(this._webGL) :
-    _attributes = new WebGLContextAttributes(){
-    _attributes.nativeContextAttributes = _webGL.getContextAttributes();
+  WebGL(this._webGL){
+    _attributes = new WebGLContextAttributes(_webGL.getContextAttributes());
   }
 
   @override int get drawingBufferHeight => _webGL.drawingBufferHeight;
@@ -43,11 +42,11 @@ class WebGL implements GL{
 
   @override void blendFuncSeparate(int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) => _webGL.blendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha);
 
-  @override void bufferByteData(int target, ByteBuffer data, int usage) => _webGL.bufferByteData(target, data, usage);
+  @override void bufferByteData(int target, ByteBuffer data, int usage) => _webGL.bufferData(target, data, usage);
 
   @override void bufferDataTyped(int target, TypedData data, int usage) => _webGL.bufferDataTyped(target, data, usage);
 
-  @override void bufferSubByteData(int target, int offset, ByteBuffer data) => _webGL.bufferSubByteData(target, offset, data);
+  @override void bufferSubByteData(int target, int offset, ByteBuffer data) =>  _webGL.bufferSubData(target, offset, data);
 
   @override void bufferSubData(int target, int offset, data) => _webGL.bufferSubData(target, offset, data);
 
@@ -155,7 +154,7 @@ class WebGL implements GL{
 
   @override Object getBufferParameter(int target, int pname) => _webGL.getBufferParameter(target, pname);
 
-  @override WebGLContextAttributes getContextAttributes() => _attributes..nativeContextAttributes = _webGL.getContextAttributes();
+  @override WebGLContextAttributes getContextAttributes() => _attributes.nativeContextAttributes ;//= _webGL.getContextAttributes();
 
   @override int getError() => _webGL.getError();
 
@@ -245,36 +244,12 @@ class WebGL implements GL{
   @override void texImage2D(int target, int level, int internalformat, int format_OR_width, int height_OR_type, border_OR_canvas_OR_image_OR_pixels_OR_video, [int format, int type, TypedData pixels])
     => _webGL.texImage2D(target, level, internalformat, format_OR_width, height_OR_type, border_OR_canvas_OR_image_OR_pixels_OR_video, format, type, pixels);
 
-  @override void texImage2DCanvas(int target, int level, int internalformat, int format, int type, CanvasElement canvas)
-    => _webGL.texImage2DCanvas(target, level, internalformat, format, type, canvas);
-
-  @override void texImage2DImage(int target, int level, int internalformat, int format, int type, ImageElement image)
-    => _webGL.texImage2DImage(target, level, internalformat, format, type, image);
-
-  @override void texImage2DImageData(int target, int level, int internalformat, int format, int type, ImageData pixels)
-    => _webGL.texImage2DImageData(target, level, internalformat, format, type, pixels);
-
-  @override void texImage2DVideo(int target, int level, int internalformat, int format, int type, VideoElement video)
-    => _webGL.texImage2DVideo(target, level, internalformat, format, type, video);
-
   @override void texParameterf(int target, int pname, num param) => _webGL.texParameterf(target, pname, param);
 
   @override void texParameteri(int target, int pname, int param) => _webGL.texParameteri(target, pname, param);
 
   @override void texSubImage2D(int target, int level, int xoffset, int yoffset, int format_OR_width, int height_OR_type, canvas_OR_format_OR_image_OR_pixels_OR_video, [int type, TypedData pixels])
     => _webGL.texSubImage2D(target, level, xoffset, yoffset, format_OR_width, height_OR_type, canvas_OR_format_OR_image_OR_pixels_OR_video, type, pixels);
-
-  @override void texSubImage2DCanvas(int target, int level, int xoffset, int yoffset, int format, int type, CanvasElement canvas)
-    => _webGL.texSubImage2DCanvas(target, level, xoffset, yoffset, format, type, canvas);
-
-  @override void texSubImage2DImage(int target, int level, int xoffset, int yoffset, int format, int type, ImageElement image)
-    => _webGL.texSubImage2DImage(target, level, xoffset, yoffset, format, type, image);
-
-  @override void texSubImage2DImageData(int target, int level, int xoffset, int yoffset, int format, int type, ImageData pixels)
-    => _webGL.texSubImage2DImageData(target, level, xoffset, yoffset, format, type, pixels);
-
-  @override void texSubImage2DVideo(int target, int level, int xoffset, int yoffset, int format, int type, VideoElement video)
-    => _webGL.texSubImage2DVideo(target, level, xoffset, yoffset, format, type, video);
 
   @override void uniform1f(WebGLUniformLocation location, num x) => _webGL.uniform1f(location?.nativeUniformLocation, x);
 
@@ -397,7 +372,9 @@ class WebGLUniformLocation extends UniformLocation {
 }
 
 class WebGLContextAttributes extends ContextAttributes {
-  GLNative.ContextAttributes nativeContextAttributes;
+  var nativeContextAttributes;
+
+  WebGLContextAttributes(this.nativeContextAttributes);
 
   @override bool get alpha => nativeContextAttributes.alpha;
   @override void set alpha(bool value) { nativeContextAttributes.alpha = value; }

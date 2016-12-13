@@ -8,7 +8,7 @@ class WebTexture extends Texture{
     width = canvas.width;
     height = canvas.height;
 
-    _graphics.gl.texImage2DCanvas(glTarget, level, format, format, type, canvas);
+    _graphics.gl.texImage2D(glTarget, level, format, format, type, canvas);
 
     if(genMipMaps)
       _graphics.gl.generateMipmap(glTarget);
@@ -20,7 +20,7 @@ class WebTexture extends Texture{
     height = img.height;
 
 //    _graphics.gl.pixelStorei(GL.UNPACK_FLIP_Y_WEBGL, 1);
-    _graphics.gl.texImage2DImage(glTarget,  level,  format,  format,  type, img);
+    _graphics.gl.texImage2D(glTarget,  level,  format,  format,  type, img);
 
 
 

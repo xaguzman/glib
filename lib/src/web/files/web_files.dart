@@ -58,7 +58,12 @@ class WebFiles implements Files {
     return false;
   }
 
-  dynamic load(String filePath) => preloader.load(filePath);
+  dynamic load(filePath_OR_fileHandle){
+    if (filePath_OR_fileHandle is FileHandle){
+      return preloader.load(filePath_OR_fileHandle.path);
+    }
+    return preloader.load(filePath_OR_fileHandle );
+  }
 }
 
 class WebFileHandle implements FileHandle{
@@ -71,8 +76,7 @@ class WebFileHandle implements FileHandle{
 
   @override
   FileHandle child(String name) =>
-    new WebFileHandle._(preloader, (file.isEmpty ? "" : (file + (file.endsWith("/") ? "" : "/"))) + name,
-    FileType.Internal);
+    new WebFileHandle._(preloader, (file.isEmpty ? "" : (file + (file.endsWith("/") ? "" : "/"))) + name, FileType.Internal);
 
   @override
   String get extension => _path.url.extension(file);
@@ -81,7 +85,7 @@ class WebFileHandle implements FileHandle{
   FileType get fileType => _type;
 
   @override
-  bool isDirectory() => preloader.isDirectory(file);
+  bool get isDirectory => preloader.isDirectory(file);
 
   @override
   List<FileHandle> list({String prefix: null, String suffix: null, String contains: null}) =>

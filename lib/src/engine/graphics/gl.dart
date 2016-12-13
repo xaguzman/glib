@@ -407,17 +407,9 @@ abstract class GL{
   void stencilOp(int fail, int zfail, int zpass);
   void stencilOpSeparate(int face, int fail, int zfail, int zpass);
   void texImage2D(int target, int level, int internalformat, int format_OR_width, int height_OR_type, border_OR_canvas_OR_image_OR_pixels_OR_video, [int format, int type, TypedData pixels]);
-  void texImage2DCanvas(int target, int level, int internalformat, int format, int type, CanvasElement canvas);
-  void texImage2DImage(int target, int level, int internalformat, int format, int type, ImageElement image);
-  void texImage2DImageData(int target, int level, int internalformat, int format, int type, ImageData pixels);
-  void texImage2DVideo(int target, int level, int internalformat, int format, int type, VideoElement video);
   void texParameterf(int target, int pname, num param);
   void texParameteri(int target, int pname, int param);
   void texSubImage2D(int target, int level, int xoffset, int yoffset, int format_OR_width, int height_OR_type, canvas_OR_format_OR_image_OR_pixels_OR_video, [int type, TypedData pixels]);
-  void texSubImage2DCanvas(int target, int level, int xoffset, int yoffset, int format, int type, CanvasElement canvas);
-  void texSubImage2DImage(int target, int level, int xoffset, int yoffset, int format, int type, ImageElement image);
-  void texSubImage2DImageData(int target, int level, int xoffset, int yoffset, int format, int type, ImageData pixels);
-  void texSubImage2DVideo(int target, int level, int xoffset, int yoffset, int format, int type, VideoElement video);
   void uniform1f(UniformLocation location, num x);
   void uniform1fv(UniformLocation location, Float32List v);
   void uniform1i(UniformLocation location, int x);

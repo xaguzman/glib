@@ -53,18 +53,23 @@ class Texture implements Disposable{
     return texture;
   }
 
-  /// creates a texture from an image stored in the given [url]
-  factory Texture.from(String path){
+  /// creates a texture from an image stored in the given path (string) or a fileHandle
+  factory Texture.from(path_OR_fileHandle){
     Texture texture = new Texture(GL.TEXTURE_2D);
+
+    if (path_OR_fileHandle is FileHandle){
+      path_OR_fileHandle = path_OR_fileHandle.path;
+    }
+
     texture
-      ..path = path
+      ..path = path_OR_fileHandle
       ..loaded = false;
 
-    _graphics.uploadTexture( _files.load(path), texture);
+    _graphics.uploadTexture( _files.load(path_OR_fileHandle), texture);
 
-//    texture.onLoad.  (_loadImageElement(_files.load(path)))
     return texture;
   }
+
   
   Texture.copy(Texture other) : this(other.glTarget, other.glTexture);
   
@@ -73,19 +78,6 @@ class Texture implements Disposable{
     _graphics.textures[_id] = this;
   }
 
-  
-//  void _onLoaded(ImageElement img){
-//    width = img.width;
-//    height = img.height;
-//    bind();
-//    uploadImage(img);
-//    setFilter(minFilter, magFilter, force: true);
-//    setWrap(uWrap, uWrap, force: true);
-//    _graphics.gl.bindTexture(glTarget, null);
-//    loaded = true;
-//    _loadCompleter.complete(this);
-//  }
-  
   void uploadData(int width, int height,{int level:0, int format:GL.RGBA, int type:GL.UNSIGNED_BYTE, bool genMipMaps:false, data:null}){
     if (width == null)
       width = 0;

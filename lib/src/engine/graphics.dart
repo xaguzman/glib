@@ -22,8 +22,7 @@ part 'graphics/glutils/shape_renderer.dart';
 part 'graphics/glutils/vertex_attribute.dart';
 part 'graphics/2d/animation.dart';
 part 'graphics/2d/sprite_batch.dart';
-part 'graphics/font.dart';
-part 'graphics/bitmap_font.dart.dart';
+//part 'graphics/font.dart';
 part 'graphics/camera.dart';
 part 'graphics/orthographic_camera.dart';
 part 'graphics/color.dart';
@@ -31,6 +30,9 @@ part 'graphics/viewport/viewport.dart';
 part 'graphics/glutils/vertex_buffer_object.dart';
 part 'graphics/gl.dart';
 
+part 'graphics/fonts/bitmap_font.dart';
+part 'graphics/fonts/bitmap_font_format.dart';
+part 'graphics/fonts/bitmap_font_loader.dart';
 
 part 'graphics/maps/map.dart';
 part 'graphics/maps/tiled/tiled_map.dart';

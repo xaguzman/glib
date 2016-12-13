@@ -23,7 +23,7 @@ abstract class FileHandle{
   List<int> readBytes();
   String readString([String charset = 'utf-8']);
   List<FileHandle> list({String prefix: null, String suffix: null, String contains: null});
-  bool isDirectory();
+  bool get isDirectory;
   FileHandle child(String name);
   FileHandle parent();
   FileHandle sibling(String name) => parent().child(name);
