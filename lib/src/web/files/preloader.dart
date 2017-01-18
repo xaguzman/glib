@@ -58,7 +58,8 @@ class _Preloader {
           }
 
           preloading.add(asset.url);
-          var assetListener = loader.load(_path.url.join(baseUrl, asset.url), asset._type, asset.mimetype, (amount){
+          var assetUrl = asset.url.startsWith("packages") ? asset.url : _path.url.join(baseUrl, asset.url);
+          var assetListener = loader.load(assetUrl, asset._type, asset.mimetype, (amount){
             asset.loaded = amount;
             updateCallback(state);
           });
