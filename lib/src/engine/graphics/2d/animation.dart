@@ -99,25 +99,22 @@ class Animation {
 
 
 /// Defines possible playback modes for an [Animation]
-class AnimationPlayMode {
+enum AnimationPlayMode {
   /// to play the animation once, from start to end.
-  static const AnimationPlayMode NORMAL = const AnimationPlayMode._internal(1);
+  NORMAL,
   
   /// to play the animation once, backwards
-  static const AnimationPlayMode REVERSED = const AnimationPlayMode._internal(2);
+  REVERSED,
   
   /// to play the animation repeatedly, from start to end
-  static const AnimationPlayMode LOOP = const AnimationPlayMode._internal(3);
+  LOOP,
   
   /// to play the animation repeatedly, backwards
-  static const AnimationPlayMode LOOP_REVERSED = const AnimationPlayMode._internal(4);
+  LOOP_REVERSED, 
   
   /// to play the animation repeatedly, from start to end and then backwards 
-  static const AnimationPlayMode LOOP_PINGPONG = const AnimationPlayMode._internal(5);
+  LOOP_PINGPONG,
   
   /// randomly plays the animation frames, in no given order
-  static const AnimationPlayMode LOOP_RANDOM = const AnimationPlayMode._internal(6);
-  
-  final int _val; 
-  const AnimationPlayMode._internal(this._val);
+  LOOP_RANDOM
 }

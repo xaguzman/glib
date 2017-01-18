@@ -3,7 +3,7 @@ part of glib.graphics;
 abstract class BitmapFontLoader {
 
   /// Get the source of the bitmap font.
-  Future<String> getSource();
+  String getSource();
 
   /// Get the BitmapData for a bitmap font page.
   TextureRegion getTextureRegion(String filename);
@@ -15,9 +15,7 @@ class _BitmapFontLoaderFile extends BitmapFontLoader {
   final FileHandle fileFont;
 
   @override
-  Future<String> getSource() {
-    return new Future.value( _files.load(fileFont.path) );
-  }
+  String getSource() => fileFont.readString();
 
   @override
   TextureRegion getTextureRegion(String filename) {

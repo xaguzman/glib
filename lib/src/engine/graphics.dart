@@ -1,6 +1,6 @@
 library glib.graphics;
 
-import 'dart:html';
+// import 'dart:html';
 //export 'dart:web_gl' hide Texture;
 import 'dart:core';
 import 'dart:typed_data';
@@ -44,7 +44,7 @@ part 'graphics/maps/tiled/tiled_map_tileset.dart';
 Graphics _graphics;
 Files _files;
 
-typedef void TextureUploadFunction(Object textureSource, Texture target);
+typedef Texture TextureUploadFunction(Object textureSource);
 
 abstract class Graphics implements Disposable{
 

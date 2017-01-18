@@ -13,6 +13,7 @@ abstract class Application extends Disposable implements Logger{
 //  Audio get audio;
   Input get input;
   Files get files;
+  GL get gl;
 
   /// Posts a function on the main loop thread, which will be executed on the next game loop
   void postAction(Function runnable);

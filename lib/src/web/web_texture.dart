@@ -3,6 +3,7 @@ part of glib.web;
 class WebTexture extends Texture{
   @override WebGLTexture glTexture;
 
+  WebTexture([int target = GL.TEXTURE_2D]) : super(target);
 
   void uploadCanvas(CanvasElement canvas, {int level:0, int format:GL.RGBA, int type:GL.UNSIGNED_BYTE, bool genMipMaps:false}){
     width = canvas.width;
@@ -22,14 +23,13 @@ class WebTexture extends Texture{
 //    _graphics.gl.pixelStorei(GL.UNPACK_FLIP_Y_WEBGL, 1);
     _graphics.gl.texImage2D(glTarget,  level,  format,  format,  type, img);
 
-
-
     if(genMipMaps)
       _graphics.gl.generateMipmap(glTarget);
   }
 }
 
-void _loadImageElement(ImageElement img, WebTexture target){
+Texture _loadImageElement(ImageElement img){
+  WebTexture target = new WebTexture();
   target
     ..width = img.width
     ..height = img.height
@@ -40,4 +40,5 @@ void _loadImageElement(ImageElement img, WebTexture target){
 
   Glib.gl.bindTexture(target.glTarget, target.glTexture);
   target.loadCompleter.complete(target);
+  return target;
 }

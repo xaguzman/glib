@@ -8,19 +8,16 @@ abstract class BitmapFontFormat {
 //  static const BitmapFontFormat JSON = const _BitmapFontFormatJson();
 
   const BitmapFontFormat();
-  Future<BitmapFontData> load(BitmapFontLoader bitmapFontLoader);
+  BitmapFontData load(BitmapFontLoader bitmapFontLoader);
+  BitmapFontData loadFromString(String src);
 }
-
-
-
 
 class _BitmapFontFormatFnt extends BitmapFontFormat{
 
   const _BitmapFontFormatFnt();
 
   @override
-  Future<BitmapFontData> load(BitmapFontLoader bitmapFontLoader) async{
-    var src = await bitmapFontLoader.getSource();
+  BitmapFontData loadFromString(String src){
     var tokenizer = new RegExp(r'(\w+=)(("\S+\ \S+")|\S+|)');
     var splittedSrc = src.split("\n");
     BitmapFontData newData;
@@ -41,32 +38,36 @@ class _BitmapFontFormatFnt extends BitmapFontFormat{
           ..y = int.parse(lineValues["y"])
           ..width = int.parse(lineValues["width"])
           ..height = int.parse(lineValues["height"])
-          ..x0ffset = int.parse(lineValues["xoffset"])
-          ..yOffset = -(glyph.height - int.parse(lineValues["yoffset"]))
+          ..xOffset = int.parse(lineValues["xoffset"])
+          ..yOffset = int.parse(lineValues["yoffset"])
           ..xAdvance = int.parse(lineValues["xadvance"])
           ..page = int.parse(lineValues["page"]);
+        
+        glyph.character = new String.fromCharCode(glyph.id);
+        glyph.yOffset = newData.lineHeight -glyph.height - glyph.yOffset;
 
         if (glyph.width > 0 && glyph.height > 0)
           newData.descent = Math.min(baseLine + glyph.yOffset, newData.descent);
 
         newData.descent += newData.padBottom;
+        newData.glyphs[glyph.id] = glyph;
 
       }else if (line.startsWith("kerning")){
-        int first = int.parse(lineValues["first"]);
-        int second = int.parse(lineValues["second"]);
-        int amount = int.parse(lineValues["amount"]);
+        if (!line.startsWith("kernings")){         
+          int first = int.parse(lineValues["first"]);
+          int second = int.parse(lineValues["second"]);
+          int amount = int.parse(lineValues["amount"]);
 
-        Glyph glyph = newData.getGlyph(new String.fromCharCode(first));
-        if (glyph != null){
-          glyph.setKerning(second, amount);
+          Glyph glyph = newData.getGlyph(new String.fromCharCode(first));
+          if (glyph != null){
+            glyph.setKerning(second, amount);
+          }
         }
-
-
       }else if(line.startsWith("page")){
 
         int pageId = int.parse(lineValues["id"]);
         String fileName = lineValues["file"];
-        newData.imagePaths[pageId] =  fileName;
+        newData.imagePaths.add(fileName);
 
       }else if(line.startsWith("common")){
 
@@ -93,6 +94,10 @@ class _BitmapFontFormatFnt extends BitmapFontFormat{
     };
 
     splittedSrc.forEach( (line) => readLine(line));
-    return new Future.value(newData);
+    return newData;
   }
+
+  @override
+  BitmapFontData load(BitmapFontLoader bitmapFontLoader) => loadFromString(bitmapFontLoader.getSource());
+  
 }

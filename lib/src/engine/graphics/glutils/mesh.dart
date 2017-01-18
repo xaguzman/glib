@@ -163,7 +163,7 @@ class Mesh implements Disposable {
    * @return the VertexAttribute or null if no attribute with that usage was found. */
   VertexAttribute getVertexAttribute (int usage) {
     VertexAttributes attributes = vertices.attributes;
-    int len = attributes.size;
+    // int len = attributes.size;
     return attributes._attributes.firstWhere((attrib) => attrib.usage == usage, orElse: () => null);
   }
 

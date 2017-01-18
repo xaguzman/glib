@@ -5,3 +5,6 @@ dependencies:
   barback: any
 dev-dependencies:
   browser: any
+transformers:
+- glib:
+    assetsRoot: example/basic/assets

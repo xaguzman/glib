@@ -16,6 +16,7 @@ class _Preloader {
     AssetLoader loader = new AssetLoader();
 
     var assetFileDescriptor = loader.loadText(_path.url.join(baseUrl, assetFileUrl));
+    List<String> preloading = new List();
 
     assetFileDescriptor.then( (String content){
       var lines = content.split("\n");
@@ -50,12 +51,13 @@ class _Preloader {
         PreloaderState state = new PreloaderState(assets);
 
         for (Asset asset in assets){
-          if (contains(asset.url)){
+          if (contains(asset.url) || preloading.contains(asset.url) ){
             asset.loaded = asset.size;
             asset.succeed = true;
             continue;
           }
 
+          preloading.add(asset.url);
           var assetListener = loader.load(_path.url.join(baseUrl, asset.url), asset._type, asset.mimetype, (amount){
             asset.loaded = amount;
             updateCallback(state);

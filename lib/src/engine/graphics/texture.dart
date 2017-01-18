@@ -55,20 +55,21 @@ class Texture implements Disposable{
 
   /// creates a texture from an image stored in the given path (string) or a fileHandle
   factory Texture.from(path_OR_fileHandle){
-    Texture texture = new Texture(GL.TEXTURE_2D);
+    // Texture texture = new Texture(GL.TEXTURE_2D);
 
-    if (path_OR_fileHandle is FileHandle){
-      path_OR_fileHandle = path_OR_fileHandle.path;
-    }
+    // if (path_OR_fileHandle is FileHandle){
+    //   path_OR_fileHandle = path_OR_fileHandle.path;
+    // }
 
-    texture
-      ..path = path_OR_fileHandle
-      ..loaded = false;
+    // texture
+    //   ..path = path_OR_fileHandle
+    //   ..loaded = false;
 
-    _graphics.uploadTexture( _files.load(path_OR_fileHandle), texture);
-
-    return texture;
+    return _graphics.uploadTexture( _files.load(path_OR_fileHandle));
   }
+
+  /// creates a texture from an image stored in the given path (string) or a fileHandle
+  // external Texture.from(path_OR_fileHandle);
 
   
   Texture.copy(Texture other) : this(other.glTarget, other.glTexture);

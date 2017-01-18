@@ -434,9 +434,10 @@ class ShaderProgram implements Disposable {
 
     for (int i = 0; i < numUniforms; i++) {
       var info = _graphics.gl.getActiveUniform(_program, i);
-      var location = _graphics.gl.getUniformLocation(_program, info.name);
+      // var location = _graphics.gl.getUniformLocation(_program, info.name);
       _uniforms[info.name] = info;
       _uniformNames[i] = info.name;
+      
     }
   }
 

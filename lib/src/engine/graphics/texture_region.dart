@@ -141,8 +141,8 @@ class TextureRegion{
   List<List<TextureRegion>> split(int tileWidth, int tileHeight){
     int x = regionX;
     int y = regionY;
-    int width = regionWidth;
-    int height = regionHeight;
+    // int width = regionWidth;
+    // int height = regionHeight;
 
     int rows = _regionHeight ~/ tileHeight;
     int cols = _regionWidth ~/ tileWidth;

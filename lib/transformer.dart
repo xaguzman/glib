@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:path/path.dart' as path;
+import 'package:glib/glib.dart' as glib;
 import 'package:barback/barback.dart';
 import 'package:mime/mime.dart' as mime;
 
@@ -15,10 +16,12 @@ class WebAssetsBundleGenerator extends AggregateTransformer{
   WebAssetsBundleGenerator.asPlugin(BarbackSettings settings){
     String paramRoot = settings.configuration['assetsRoot'];
     assetsRoot = paramRoot.replaceAll("\\", '/');
-    assetsRootName = assetsRoot;
-    if (assetsRootName.endsWith("/")){
-      assetsRootName = assetsRootName.substring(0, assetsRootName.length - 1);
+    if (!assetsRoot.endsWith('/')){
+      assetsRoot += '/';
     }
+    assetsRootName = assetsRoot;
+    assetsRootName = assetsRootName.substring(0, assetsRootName.length - 1);
+    
   }
 
   @override
@@ -34,8 +37,20 @@ class WebAssetsBundleGenerator extends AggregateTransformer{
     Directory dir = new Directory(transform.key);
     StringBuffer buffer = new StringBuffer();
 
-    for(FileSystemEntity f in dir.listSync(recursive: true, followLinks: true)){
+    // force auto-download of the embedded resources
+    buffer
+      ..write('t:')
+      ..write(glib.DEFAULT_FONT_PATH)
+      ..write(':21740') // oops, hardcoded size
+      ..writeln(':${getCustomMimeType(glib.DEFAULT_FONT_PATH)}')
+      
+      ..write('i:')
+      ..write(glib.DEFAULT_FONT_PATH.replaceFirst(".fnt", ".png"))
+      ..write(':27253')
+      ..writeln(':image/png');
+    
 
+    for(FileSystemEntity f in dir.listSync(recursive: true, followLinks: true)){
       var normalizedPath = f.path.replaceAll("\\", '/');
       if(normalizedPath.contains("/packages") )
         continue;
@@ -45,10 +60,13 @@ class WebAssetsBundleGenerator extends AggregateTransformer{
         ..write(":${ normalizedPath.replaceAll(assetsRoot, '') }")
         ..write(":${getFileLength(f)}")
         ..writeln(":${getMimeType(f)}");
-    }
+    }  
+    
+
     AssetId id = new AssetId(transform.package, path.url.join(transform.key, "assets.txt"));
     Asset asset = new Asset.fromString(id, buffer.toString());
     transform.addOutput(asset);
+    print("Auto generated: ${asset.id.path} \n${buffer.toString()}");
   }
 
   bool isOf(String extension, List allowedExtensions) => allowedExtensions.contains(extension);
@@ -71,10 +89,28 @@ class WebAssetsBundleGenerator extends AggregateTransformer{
   }
 
   String getMimeType(FileSystemEntity f){
-    var mimeType = mime.lookupMimeType(f.path);
-    if (mimeType == null)
-      mimeType = "application/unknown";
+    String mimeType = "application/unknown";
+    if (f != null){
+      var type = mime.lookupMimeType(f.path);
+      if (type != null)
+        mimeType = type;
+      else{
+        var customMime = getCustomMimeType(f.path);
+        if (customMime != null)
+          mimeType = customMime; 
+      }
+    }
     return mimeType;
+  }
+
+  String getCustomMimeType(String filePath){
+    // get mime from file extensions
+    String extension = path.extension(filePath);
+    if ( isOf(extension, txtExtensions)){
+      return "text/plain";
+    }
+
+    return null;
   }
 
   int getFileLength(FileSystemEntity f){

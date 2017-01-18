@@ -1,5 +1,7 @@
 part of glib.graphics;
 
+const String DEFAULT_FONT_PATH = 'packages/glib/src/engine/graphics/fonts/arial-15.fnt';
+
 class BitmapFont implements Disposable{
 
   static const int _LOG2_PAGE_SIZE = 9;
@@ -12,18 +14,36 @@ class BitmapFont implements Disposable{
   FileHandle fontFile;
   bool _ownsTexture = false;
 
-  static Future<BitmapFont> load(String path, {BitmapFontFormat format: BitmapFontFormat.FNT }) async{
-    FileHandle handle = _files.internal(path);
-    var loader = new _BitmapFontLoaderFile(handle);
-    var data = await format.load(loader);
+  BitmapFont({String path: DEFAULT_FONT_PATH, BitmapFontFormat format: BitmapFontFormat.FNT}) {
+      FileHandle handle = _files.internal(path);
+      var loader = new _BitmapFontLoaderFile(handle);
+      var data = format.load(loader);
+      var textures = data.imagePaths.map( (String path) {
+        return loader.getTextureRegion(path).texture;
+      }).toList();
 
-    return new BitmapFont()
-      ..data = data
-      ..fontFile = handle
-      ..textures = data.imagePaths.map( (path) => loader.getTextureRegion(path).texture)
-      .._ownsTexture = true;
+      data.glyphs.values.forEach( (Glyph g){
+        g.region = new TextureRegion(textures[g.page], g.x, g.y, g.width, g.height);
+      });
+      this.data = data;
+      this.fontFile = handle;
+      this.textures = textures;
+      this._ownsTexture = true;   
   }
 
+  
+
+  void draw(SpriteBatch batch, String text, {double x: 0.0, double y: 0.0}){
+    double xoffset = 0.0;
+
+    for (num i = 0; i < text.length; i++){
+      Glyph glyph = data.getGlyph(text[i]);
+      if (glyph != null){
+        batch.drawRegion(glyph.region, x + xoffset + glyph.xOffset , y + glyph.yOffset);
+        xoffset += glyph.xAdvance;
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -34,7 +54,7 @@ class BitmapFont implements Disposable{
 
 class BitmapFontData{
   /// An array of the image paths, for multiple texture pages.
-  List<String> imagePaths;
+  List<String> imagePaths = new List();
   FileHandle fontFile;
   bool flipped;
   int padTop, padRight, padBottom, padLeft;
@@ -57,7 +77,7 @@ class BitmapFontData{
   /// file, it needs to be set manually depending on how the glyphs are rendered on the backing textures.
   double cursorX;
 
-  final List<List<Glyph>> glyphs = new List(BitmapFont._PAGES);
+  final Map<int, Glyph> glyphs = new Map();
   /// The glyph to display for characters not in the font. May be null.
   Glyph missingGlyph;
 
@@ -71,21 +91,27 @@ class BitmapFontData{
   List<String> xChars = ['x', 'e', 'a', 'o', 'n', 's', 'r', 'c', 'u', 'm', 'v', 'w', 'z'];
   List<String> capChars = ['M', 'N', 'B', 'D', 'C', 'E', 'F', 'K', 'A', 'G', 'H', 'I', 'J', 'L', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
+  // Glyph getGlyph(String char){
+  //   int value = char.codeUnitAt(0);
+  //   var page = glyphs[value ~/ BitmapFont._PAGE_SIZE];
+
+  //   if (page == null) return null;
+
+  //   return page[value & BitmapFont._PAGE_SIZE - 1];
+  // }
+
   Glyph getGlyph(String char){
-    int value = char.codeUnitAt(0);
-    var page = glyphs[value ~/ BitmapFont._PAGE_SIZE];
+    int id = char.codeUnitAt(0);
 
-    if (page == null) return null;
-
-    return page[value & BitmapFont._PAGE_SIZE - 1];
+    var glyph = glyphs[id];
+    
+    return glyphs.containsKey(id) ? glyphs[id] : null;
   }
 }
 
-
-
 class Glyph {
   int id, page;
-  int x, y, width, height, x0ffset, yOffset, xAdvance;
+  int x, y, width, height, xOffset, yOffset, xAdvance;
   TextureRegion region;
   String character;
 
@@ -96,3 +122,4 @@ class Glyph {
   void setKerning(int second, int amount) {
   }
 }
+
