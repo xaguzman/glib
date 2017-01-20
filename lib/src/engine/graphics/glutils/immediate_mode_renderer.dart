@@ -45,7 +45,7 @@ class WebGLImmediateModeRenderer implements ImmediateModeRenderer{
   /* final */ Float32List vertices;
   /* final */ List<String> shaderUniformNames;
 
-  WebGLImmediateModeRenderer (bool hasNormals, bool hasColors, int this.numTexCoords, [int this.maxVertices, ShaderProgram this.shader])
+  WebGLImmediateModeRenderer (bool hasNormals, bool hasColors, int this.numTexCoords, [int this.maxVertices = 5000, ShaderProgram this.shader])
     : numVertices = 0,
       vertexIdx = 0
   {

@@ -8,8 +8,8 @@ class Sprite extends TextureRegion{
   * 1: packed color
   * 2: texcoord0.xy
   */
-  static const VERTEX_SIZE = 2 + 1 + 2;
-  static const SPRITE_SIZE = 4 * VERTEX_SIZE;
+  static const int VERTEX_SIZE = 2 + 1 + 2;
+  static const int SPRITE_SIZE = 4 * VERTEX_SIZE;
 
   final Float32List _vertices = new Float32List(SPRITE_SIZE);
   

@@ -295,7 +295,7 @@ class CanvasInput implements Input{
 
   @override
   bool isKeyPressed([int keycode]){
-    if (keycode == null)
+    if (keycode == null || keycode < 0)
       return pressedKeyCount > 0;
 
     return pressedKeys[keycode];

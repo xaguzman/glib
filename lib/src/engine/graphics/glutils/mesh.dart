@@ -167,17 +167,17 @@ class Mesh implements Disposable {
     return attributes._attributes.firstWhere((attrib) => attrib.usage == usage, orElse: () => null);
   }
 
-  /** @return the vertex attributes of this Mesh */
+  /** returns the [VertexAttributes] of this Mesh */
   VertexAttributes getVertexAttributes () {
     return vertices.attributes;
   }
 
-  /** @return the backing Float32List holding the vertices. Does not have to be a direct buffer on Android! */
+  /** returns the backing Float32List holding the vertices. Does not have to be a direct buffer on Android! */
   Float32List getVerticesBuffer () {
     return vertices.buffer;
   }
 
-  /** @return the backing shortbuffer holding the indices. Does not have to be a direct buffer on Android! */
+  /** returns the backing shortbuffer holding the indices. Does not have to be a direct buffer on Android! */
   Int16List getIndicesBuffer () {
     return indices.buffer;
   }

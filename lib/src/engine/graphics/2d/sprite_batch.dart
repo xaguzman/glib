@@ -28,9 +28,9 @@ class SpriteBatch extends Batch implements Disposable{
    
   SpriteBatch ([int size = 1000, ShaderProgram defaultShader]) {
     
-    // 65535 is max index, so 65535 / 6 = 10922.
-    if (size > 10922)
-      throw new ArgumentError("Can't have more than 10922 sprites per batch: $size");
+    // 32767 is max vertex index, so 32767 / 4 vertices per sprite = 8191 sprites max.
+    if (size > 8191)
+      throw new ArgumentError("Can't have more than 8191 sprites per batch: " + size);
     
     var attributes = new VertexAttributes([
        new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE), 
@@ -111,8 +111,8 @@ class SpriteBatch extends Batch implements Disposable{
 //    print('Render calls: $_batchRenderCalls');
 //    print('Texture swaps: $_textureSwaps');
   }
-  
-  
+
+
   void drawTexture(Texture texture, double x, double y, [double width, double height, double u1 = 0.0, double v1 = 1.0, double u2 = 1.0, double v2 = 0.0]) {
     if (!_drawing) 
       throw new StateError("SpriteBatch.begin must be called before drawTexture");
@@ -167,6 +167,155 @@ class SpriteBatch extends Batch implements Disposable{
       height = region.regionHeight.toDouble();
     
     drawTexture(region.texture, x, y, width, height, region.u, region.v2, region.u2, region.v);
+  }
+
+  /** Draws a rectangle with the bottom left corner at x,y and stretching the region to cover the given width and height. 
+   * 
+   * [originX] and [originY] are both default to 0.5 (center of the region)
+   * 
+   * The rectangle is offset by [originX], [originY] relative to the origin. 
+   * 
+   * Scale specifies the scaling factor by which the rectangle
+	 * should be scaled around [originX], [originY]. 
+   * 
+   * [rotation] specifies the angle of rotation of the rectangle around [originX], [originY]
+   * 
+   * [clockwise] determines if the rotation should be done clockwise or counter-clockwise
+   * */
+  void drawRegionTransform(TextureRegion region, double x, double y, double width, double height, {double originX: 0.5, double originY: 0.5, 
+    double scaleX: 1.0, double scaleY: 1.0, double rotation: 0.0, clockwise: false}) {
+    if (!_drawing) 
+      throw new StateError("SpriteBatch.begin must be called before drawTexture");
+
+    var vertices = this._vertices;
+    
+    if (region.texture != _prevTexture)
+      _changeTexture(region.texture);
+    else if (_currentVertex == _vertices.length) //
+      flush();
+    
+    // bottom left and top right corner points relative to origin
+		final double worldOriginX = x + originX;
+		final double worldOriginY = y + originY;
+		double fx = -originX;
+		double fy = -originY;
+		double fx2 = width - originX;
+		double fy2 = height - originY;
+
+		// scale
+		if (scaleX != 1 || scaleY != 1) {
+			fx *= scaleX;
+			fy *= scaleY;
+			fx2 *= scaleX;
+			fy2 *= scaleY;
+		}
+
+		// construct corner points, start from top left and go counter clockwise
+		final double p1x = fx;
+		final double p1y = fy;
+		final double p2x = fx;
+		final double p2y = fy2;
+		final double p3x = fx2;
+		final double p3y = fy2;
+		final double p4x = fx2;
+		final double p4y = fy;
+
+		double x1;
+		double y1;
+		double x2;
+		double y2;
+		double x3;
+		double y3;
+		double x4;
+		double y4;
+
+		// rotate
+		if (rotation != 0) {
+			final double cos = MathUtils.cosDeg(rotation);
+			final double sin = MathUtils.sinDeg(rotation);
+
+			x1 = cos * p1x - sin * p1y;
+			y1 = sin * p1x + cos * p1y;
+
+			x2 = cos * p2x - sin * p2y;
+			y2 = sin * p2x + cos * p2y;
+
+			x3 = cos * p3x - sin * p3y;
+			y3 = sin * p3x + cos * p3y;
+
+			x4 = x1 + (x3 - x2);
+			y4 = y3 - (y2 - y1);
+		} else {
+			x1 = p1x;
+			y1 = p1y;
+
+			x2 = p2x;
+			y2 = p2y;
+
+			x3 = p3x;
+			y3 = p3y;
+
+			x4 = p4x;
+			y4 = p4y;
+		}
+
+		x1 += worldOriginX;
+		y1 += worldOriginY;
+		x2 += worldOriginX;
+		y2 += worldOriginY;
+		x3 += worldOriginX;
+		y3 += worldOriginY;
+		x4 += worldOriginX;
+		y4 += worldOriginY;
+
+		double u1, v1, u2, v2, u3, v3, u4, v4;
+		if (clockwise) {
+			u1 = region.u2;
+			v1 = region.v2;
+			u2 = region.u;
+			v2 = region.v2;
+			u3 = region.u;
+			v3 = region.v;
+			u4 = region.u2;
+			v4 = region.v;
+		} else {
+			u1 = region.u;
+			v1 = region.v;
+			u2 = region.u2;
+			v2 = region.v;
+			u3 = region.u2;
+			v3 = region.v2;
+			u4 = region.u;
+			v4 = region.v2;
+		}
+
+		double color = this.color;
+		int idx = _currentVertex;
+		vertices[idx] = x1;
+		vertices[idx + 1] = y1;
+		vertices[idx + 2] = color;
+		vertices[idx + 3] = u1;
+		vertices[idx + 4] = v1;
+
+		vertices[idx + 5] = x2;
+		vertices[idx + 6] = y2;
+		vertices[idx + 7] = color;
+		vertices[idx + 8] = u2;
+		vertices[idx + 9] = v2;
+
+		vertices[idx + 10] = x3;
+		vertices[idx + 11] = y3;
+		vertices[idx + 12] = color;
+		vertices[idx + 13] = u3;
+		vertices[idx + 14] = v3;
+
+		vertices[idx + 15] = x4;
+		vertices[idx + 16] = y4;
+		vertices[idx + 17] = color;
+		vertices[idx + 18] = u4;
+		vertices[idx + 19] = v4;
+		this._currentVertex = idx + 20;
+    
   }
   
   void drawVertices(Texture texture, Float32List spriteVertices, int offset, int count) {
@@ -307,7 +456,7 @@ class Batch{
   
   void main(){
     v_color = ${ShaderProgram.COLOR_ATTRIBUTE};
-    v_color.a = v_color.a * (256.0 / 255.0);
+    v_color.a = v_color.a * (255.0 / 254.0);
     v_texCoords = ${ShaderProgram.TEXCOORD_ATTRIBUTE}0;
     gl_Position = u_proj * ${ShaderProgram.POSITION_ATTRIBUTE};
   }

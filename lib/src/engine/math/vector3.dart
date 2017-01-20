@@ -301,6 +301,14 @@ class Vector3{
     return this.mulMatrix4(tmpMat);
   }
   
+  /// linear interpolation between this vector and the [target] vector, scaled by alpha
+  Vector3 lerp (Vector3 target, num alpha) {
+    this
+      ..x += alpha * (target.x - x)
+		  ..y += alpha * (target.y - y)
+		  ..z += alpha * (target.z - z);
+    return this;
+  }
   
   toString() => '[x: $x, y: $y, z: $z]';
 
