@@ -3,6 +3,7 @@ part of glib.web;
 /// the default implementation for [Input]. It will get mouse input from a canvas, and keyboard input from the window
 class CanvasInput implements Input{
 
+  static const int MAX_TOUCHES = 20;
   final CanvasElement canvas;
   bool justTouched;
   List<bool> _touched = new List.filled(20, false);
@@ -274,7 +275,17 @@ class CanvasInput implements Input{
   int getDeltaY(int pointer) => _deltaY[pointer];
 
   @override
-  bool get isTouched => _touched[0];
+  bool get isTouched {
+    for (int pointer = 0; pointer < MAX_TOUCHES; pointer++) {
+			if (_touched[pointer]) {
+				return true;
+			}
+		}
+		return false;
+  }
+
+  @override 
+  bool isPointerTouched(int pointer) => _touched[pointer];
 
   @override
   bool get isJustTouched => justTouched;

@@ -26,7 +26,9 @@ class WebAssetsBundleGenerator extends AggregateTransformer{
 
   @override
   classifyPrimary(AssetId id) {
-    if ( path.url.dirname(id.path) != assetsRootName)
+    // print('clasifyPrimary: ${id.path}. dirname: ${path.url.dirname(id.path)}');
+
+    if ( !path.url.dirname(id.path).startsWith(assetsRootName))
       return null;
 
     return path.url.dirname(id.path);
@@ -34,6 +36,7 @@ class WebAssetsBundleGenerator extends AggregateTransformer{
 
   @override
   apply(AggregateTransform transform) {
+    print("transform.key: ${transform.key}");
     Directory dir = new Directory(transform.key);
     StringBuffer buffer = new StringBuffer();
 
@@ -63,7 +66,7 @@ class WebAssetsBundleGenerator extends AggregateTransformer{
     }  
     
 
-    AssetId id = new AssetId(transform.package, path.url.join(transform.key, "assets.txt"));
+    AssetId id = new AssetId(transform.package, path.url.join(assetsRoot, "assets.txt"));
     Asset asset = new Asset.fromString(id, buffer.toString());
     transform.addOutput(asset);
     print("Auto generated: ${asset.id.path} \n${buffer.toString()}");

@@ -8,6 +8,7 @@ part of glib.input;
  */
 abstract class Input extends Disposable{
   
+  
   /// The current mouse position over the x-axis in screen coordinates. The screen origin is the top left corner.
   /// If no mouse is present, it represents the last touch 'x' coordinate on the screen
   int get x;
@@ -48,6 +49,9 @@ abstract class Input extends Disposable{
   
   /// whether the screen is currently being touched(clicked)
   bool get isTouched;
+
+  /// Whether the screen is currently touched by the pointer with the given index.
+  bool isPointerTouched(int pointer);
   
   /// whether a new touch down event just occurred
   bool get isJustTouched;

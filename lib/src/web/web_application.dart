@@ -47,6 +47,7 @@ abstract class WebApplication implements Application {
     _files = new WebFiles(preloader);
     _input = new CanvasInput(_graphics.canvas);
     _webApp = this;
+    _graphics.initGraphics(_graphics, _files);
   }
 
   void startLoop(){
